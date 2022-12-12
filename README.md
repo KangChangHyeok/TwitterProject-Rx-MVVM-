@@ -29,6 +29,14 @@
 - 프로젝트 기본 세팅 완료.
 - MainTabView 구현 완료.
 </details>
+<details>
+<summary>12월 12일 진행내용</summary>
+
+- 기능 구현
+	- LoginView, RegisterationView 구현 완료.
+- 뷰 드로잉 관련
+	- NSLayoutAchor -> SnapKit으로 수정
+</details>
 
 ## 문제 해결
 <details>
@@ -72,4 +80,34 @@ let appearance = UINavigationBarAppearance()
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
 ```
+</details>
+
+## 궁금한 점
+<details>
+<summary>Resource와 Source의 차이?</summary>
+
+프로젝트 파일이 커지면서 폴더 구조방식에 대해 고민하게 되었고,  
+찾아본 결과 많은 사람들이 기본적으로 Resource와 Source폴더를 기준으로 폴더링 하는 것을 알게 되었다.  
+두 단어를 개발하면서 많이 접하고 사용하지만, 정작 정확한 의미를 몰라서 찾아보게 되었다.  
+
+### Source
+
+ 일반적으로 컴파일 가능하고 사람이 읽을 수 있는 언어로 된 프로그램 코드.
+
+(프로세서에 의해 궁극적으로 실행되는 이진 코드인 대상 코드와 반대).
+
+### Resource
+
+일반적으로 실행 가능한 이미지에 포함된 데이터. 
+
+오류 메시지, 그림, 사운드 클립, 아이콘 등.
+
+출처
+
+[what is a difference between resource and source in programming](https://softwareengineering.stackexchange.com/questions/384540/what-is-a-difference-between-resource-and-source-in-programming)
+
+### 프로젝트에 적용
+-> 단어의 정확한 의미를 알고나서 정확한 기준이 생겨 구분하기 편했다.  
+LaunchScreen 파일이나 Assets 관련 파일은 Resource 파일에 구분하고,  
+내가 작성한 기존 코드들은 Source파일에 정리했다.
 </details>
