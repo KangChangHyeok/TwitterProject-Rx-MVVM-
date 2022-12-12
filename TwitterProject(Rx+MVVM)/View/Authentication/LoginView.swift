@@ -44,7 +44,7 @@ class LoginView: UIViewController {
         return textField
     }()
     
-    private let LoginButton: UIButton = {
+    private let logInButton: UIButton = {
         let button = Utilites().makeButton(buttonTitle: "Log In")
         button.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         return button
@@ -56,7 +56,7 @@ class LoginView: UIViewController {
         return button
     }()
     private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, LoginButton])
+        let stackView = UIStackView(arrangedSubviews: [emailContainerView, passwordContainerView, logInButton])
         stackView.axis = .vertical
         stackView.spacing = 20
         stackView.distribution = .fillEqually
@@ -77,7 +77,8 @@ class LoginView: UIViewController {
         print("buttonTapped")
     }
     @objc func signUpButtonTapped() {
-        print("buttonTapped")
+        let registerView = RegisterationView()
+        navigationController?.pushViewController(registerView, animated: true)
     }
     // MARK: - Methods
     func configureUI() {
