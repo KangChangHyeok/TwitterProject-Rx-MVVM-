@@ -6,14 +6,16 @@
 //
 import UIKit
 import SnapKit
-
+import FirebaseAuth
 class MainTabView: UITabBarController {
     // MARK: - Properties
-    private var actionButton: UIButton = {
+    private lazy var actionButton: UIButton = { [weak self] in
         let button = UIButton()
         button.tintColor = .white
         button.backgroundColor = .twitterBlue
         button.setImage(UIImage(named: "new_tweet"), for: .normal)
+        button.layer.cornerRadius = 28
+        button.layer.masksToBounds = true
         button.addTarget(self, action: #selector(handleActionButtonTapped), for: .touchUpInside)
         return button
     }()
@@ -21,8 +23,35 @@ class MainTabView: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureView()
-        configureUI()
+        logUserOut()
+        view.backgroundColor = .twitterBlue
+        authenticateUserAndConfigureUI()
+        
+    }
+    
+    // MARK: - API
+
+    func authenticateUserAndConfigureUI() {
+        if Auth.auth().currentUser == nil  {
+            print("DEBUG - 사용자가 로그인 하지 않음.")
+            DispatchQueue.main.async {
+                let navigationController = UINavigationController(rootViewController: LoginView())
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
+            }
+        } else {
+            configureView()
+            configureUI()
+        }
+        
+    }
+    
+    func logUserOut() {
+        do {
+            try Auth.auth().signOut()
+        } catch let error {
+            print("DEBUG - \(error.localizedDescription)")
+        }
     }
     // MARK: - Selectors
     @objc func handleActionButtonTapped() {
@@ -47,7 +76,7 @@ class MainTabView: UITabBarController {
         view.addSubview(actionButton)
         actionButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
-            make.bottom.equalTo(tabBar.snp.top).offset(16)
+            make.bottom.equalTo(tabBar.snp.top).offset(-16)
             make.size.equalTo(CGSize(width: 56, height: 56))
         }
     }

@@ -13,6 +13,10 @@ struct AuthService {
     
     static let shared = AuthService()
     
+    func logInUser(email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
+        Auth.auth().signIn(withEmail: email, password: password, completion: completion)
+    }
+    
     func signUpUser(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage, completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let email = email else { return }
         guard let password = password else { return }

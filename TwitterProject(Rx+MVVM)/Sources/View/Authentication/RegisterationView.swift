@@ -114,6 +114,12 @@ class RegisterationView: UIViewController {
                 print(error.localizedDescription)
             }
             print("DEBUG - 유저 정보 DB에 저장 완료.")
+            
+            guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else { return }
+            guard let mainTabView = window.rootViewController as? MainTabView else { return }
+            mainTabView.authenticateUserAndConfigureUI()
+            print("DEBUG - 로그인 성공!")
+            self.dismiss(animated: true)
         }
     }
     // MARK: - Methods

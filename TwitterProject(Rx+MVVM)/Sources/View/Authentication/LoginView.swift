@@ -74,7 +74,19 @@ class LoginView: UIViewController {
     // MARK: - Selectros
     
     @objc func loginButtonTapped() {
-        print("buttonTapped")
+        guard let email = emailTextField.text else { return }
+        guard let password = passwordTextField.text else { return }
+        AuthService.shared.logInUser(email: email, password: password) { authDataResult, error in
+            if let error = error {
+                print("DEBUG - \(error.localizedDescription)")
+                return
+            }
+            print("DEBUG - 로그인 성공!")
+            guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else { return }
+            guard let mainTabView = window.rootViewController as? MainTabView else { return }
+            mainTabView.authenticateUserAndConfigureUI()
+            self.dismiss(animated: true)
+        }
     }
     @objc func signUpButtonTapped() {
         let registerView = RegisterationView()

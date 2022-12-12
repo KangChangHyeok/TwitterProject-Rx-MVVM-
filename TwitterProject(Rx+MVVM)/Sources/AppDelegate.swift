@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FirebaseApp.configure()
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-        window?.rootViewController = UINavigationController(rootViewController: LoginView())
+        window?.rootViewController = MainTabView()
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
