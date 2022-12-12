@@ -9,11 +9,11 @@ import UIKit
 
 struct Utilites {
     
-    func makeContainerView(image: UIImage, textField: UITextField) -> UIView {
+    func makeContainerView(image: UIImage?, textField: UITextField) -> UIView {
         let view = UIView()
         
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "ic_mail_outline_white_2x-1")
+        imageView.image = image
         
         let bottomLine = UIView()
         bottomLine.backgroundColor = .white

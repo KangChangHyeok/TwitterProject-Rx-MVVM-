@@ -13,7 +13,7 @@
 - RxCocoa
 
 ### 뷰 드로잉
-- Only Code
+- snapKit
 
 ### 백엔드
 - fireBase

@@ -7,9 +7,13 @@
 
 
 import UIKit
+import Firebase
 
 class RegisterationView: UIViewController {
     // MARK: - Properties
+    
+    private let imagePicker = UIImagePickerController()
+    private var profileImage: UIImage?
     
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
@@ -20,28 +24,28 @@ class RegisterationView: UIViewController {
     }()
     
     private lazy var emailContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: #imageLiteral(resourceName: "mail"),textField: emailTextField)
+        let view = Utilites().makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
         view.snp.makeConstraints { make in
             make.height.equalTo(50)
         }
         return view
     }()
     private lazy var passwordContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: #imageLiteral(resourceName: "ic_lock_outline_white_2x"), textField: passwordTextField)
+        let view = Utilites().makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
         view.snp.makeConstraints { make in
             make.height.equalTo(50)
         }
         return view
     }()
     private lazy var fullNameContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: #imageLiteral(resourceName: "ic_person_outline_white_2x"),textField: fullNameTextField)
+        let view = Utilites().makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"),textField: fullNameTextField)
         view.snp.makeConstraints { make in
             make.height.equalTo(50)
         }
         return view
     }()
     private lazy var userNameContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: #imageLiteral(resourceName: "ic_person_outline_white_2x"), textField: userNameTextField)
+        let view = Utilites().makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"), textField: userNameTextField)
         view.snp.makeConstraints { make in
             make.height.equalTo(50)
         }
@@ -94,15 +98,31 @@ class RegisterationView: UIViewController {
         navigationController?.popViewController(animated: true)
     }
     @objc func plusPhtoButtonTapped() {
-        print("plusPhtoButtonTapped")
+        present(imagePicker, animated: true)
     }
     @objc func signUpButtonTapped() {
-        
+        guard let profileImage = profileImage else {
+            print("DEBUG - 프로필 이미지를 선택해주세요..")
+            return
+        }
+        AuthService.shared.signUpUser(email: emailTextField.text,
+                                      password: passwordTextField.text,
+                                      fullName: fullNameTextField.text,
+                                      userName: userNameTextField.text,
+                                      profileImage: profileImage) { error, databaseReference in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            print("DEBUG - 유저 정보 DB에 저장 완료.")
+        }
     }
     // MARK: - Methods
     
     func configureUI() {
         view.backgroundColor = .twitterBlue
+        
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
         
         view.addSubview(plusPhotoButton)
         plusPhotoButton.snp.makeConstraints { make in
@@ -120,5 +140,24 @@ class RegisterationView: UIViewController {
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 40, bottom: 16, right: 40))
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
+    }
+}
+// MARK: - UIImagePickerControllerDelegate
+
+extension RegisterationView: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        guard let profileImage = info[.editedImage] as? UIImage else { return }
+        self.profileImage = profileImage
+        plusPhotoButton.layer.cornerRadius = 128 / 2
+        plusPhotoButton.layer.masksToBounds = true
+        plusPhotoButton.imageView?.contentMode = .scaleAspectFill
+        plusPhotoButton.imageView?.clipsToBounds = true
+        plusPhotoButton.layer.borderColor = UIColor.white.cgColor
+        plusPhotoButton.layer.borderWidth = 3
+        
+        self.plusPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
+        
+        dismiss(animated: true)
     }
 }

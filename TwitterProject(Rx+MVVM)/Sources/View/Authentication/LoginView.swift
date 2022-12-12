@@ -19,14 +19,14 @@ class LoginView: UIViewController {
     }()
     
     private lazy var emailContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: #imageLiteral(resourceName: "mail"),textField: emailTextField)
+        let view = Utilites().makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
         view.snp.makeConstraints { make in
             make.height.equalTo(50)
         }
         return view
     }()
     private lazy var passwordContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: #imageLiteral(resourceName: "ic_lock_outline_white_2x"), textField: passwordTextField)
+        let view = Utilites().makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
         view.snp.makeConstraints { make in
             make.height.equalTo(50)
         }
