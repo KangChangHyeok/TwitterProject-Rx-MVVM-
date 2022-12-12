@@ -44,13 +44,25 @@ extension UIView {
         centerXAnchor.constraint(equalTo: superView.centerXAnchor).isActive = true
         centerYAnchor.constraint(equalTo: superView.centerYAnchor).isActive = true
     }
-    func setupCenterX(superView: UIView) {
+    func setupCenterX(superView: UIView, top: NSLayoutYAxisAnchor? = nil,paddingTop: CGFloat = 0,bottom: NSLayoutYAxisAnchor? = nil,paddingBottom: CGFloat = 0) {
         translatesAutoresizingMaskIntoConstraints = false
         centerXAnchor.constraint(equalTo: superView.centerXAnchor).isActive = true
+        
+        if let top = top {
+            topAnchor.constraint(equalTo: top, constant: paddingTop).isActive = true
+        }
+        if let bottom = bottom {
+            bottomAnchor.constraint(equalTo: bottom, constant: paddingBottom).isActive = true
+        }
     }
     func setupCenterY(superView: UIView) {
         translatesAutoresizingMaskIntoConstraints = false
         centerYAnchor.constraint(equalTo: superView.centerYAnchor).isActive = true
+    }
+    func setupSize(height: CGFloat, width: CGFloat) {
+        translatesAutoresizingMaskIntoConstraints = false
+        heightAnchor.constraint(equalToConstant: height).isActive = true
+        widthAnchor.constraint(equalToConstant: width).isActive = true
     }
 }
 // MARK: - UIColor

@@ -5,6 +5,7 @@
 //  Created by 강창혁 on 2022/12/07.
 //
 import UIKit
+import SnapKit
 
 class MainTabView: UITabBarController {
     // MARK: - Properties
@@ -44,8 +45,11 @@ class MainTabView: UITabBarController {
     }
     func configureUI() {
         view.addSubview(actionButton)
-        actionButton.setupNSLayoutAnchor(right: view.rightAnchor,bottom: tabBar.topAnchor,paddingRight: 16,paddingBottom: 16,height: 56, width: 56)
-        actionButton.layer.cornerRadius = 56 / 2
+        actionButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalTo(tabBar.snp.top).offset(16)
+            make.size.equalTo(CGSize(width: 56, height: 56))
+        }
     }
     
     
