@@ -6,9 +6,12 @@
 //
 import UIKit
 import SnapKit
-import FirebaseAuth
+
 class MainTabView: UITabBarController {
     // MARK: - Properties
+    
+    let viewModel: MainTabViewModel = MainTabViewModel()
+    
     private lazy var actionButton: UIButton = { [weak self] in
         let button = UIButton()
         button.tintColor = .white
@@ -23,41 +26,36 @@ class MainTabView: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        logUserOut()
+        //        logUserOut()
         view.backgroundColor = .twitterBlue
         authenticateUserAndConfigureUI()
-        
     }
     
     // MARK: - API
-
-    func authenticateUserAndConfigureUI() {
-        if Auth.auth().currentUser == nil  {
-            print("DEBUG - 사용자가 로그인 하지 않음.")
-            DispatchQueue.main.async {
-                let navigationController = UINavigationController(rootViewController: LoginView())
-                navigationController.modalPresentationStyle = .fullScreen
-                self.present(navigationController, animated: true)
-            }
-        } else {
-            configureView()
-            configureUI()
-        }
-        
-    }
     
-    func logUserOut() {
-        do {
-            try Auth.auth().signOut()
-        } catch let error {
-            print("DEBUG - \(error.localizedDescription)")
+    func authenticateUserAndConfigureUI() {
+        viewModel.authenticateUserAndConfigureUI { bool in
+            if false == bool {
+                print("DEBUG - 사용자가 로그인 하지 않음.")
+                DispatchQueue.main.async {
+                    let navigationController = UINavigationController(rootViewController: LoginView())
+                    navigationController.modalPresentationStyle = .fullScreen
+                    self.present(navigationController, animated: true)
+                }
+            } else {
+                self.configureView()
+                self.configureUI()
+            }
         }
+    }
+    func logUserOut() {
+        viewModel.logUserOut()
     }
     // MARK: - Selectors
     @objc func handleActionButtonTapped() {
         print("touch")
     }
-
+    
     // MARK: - Methods
     func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: rootViewController)
