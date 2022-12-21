@@ -26,7 +26,7 @@ class MainTabView: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //        logUserOut()
+                logUserOut()
         view.backgroundColor = .twitterBlue
         authenticateUserAndConfigureUI()
     }
@@ -38,7 +38,7 @@ class MainTabView: UITabBarController {
             if false == bool {
                 print("DEBUG - 사용자가 로그인 하지 않음.")
                 DispatchQueue.main.async {
-                    let navigationController = UINavigationController(rootViewController: LoginView())
+                    let navigationController = UINavigationController(rootViewController: LoginViewController())
                     navigationController.modalPresentationStyle = .fullScreen
                     self.present(navigationController, animated: true)
                 }

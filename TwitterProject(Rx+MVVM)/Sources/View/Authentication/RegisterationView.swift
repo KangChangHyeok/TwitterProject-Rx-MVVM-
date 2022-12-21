@@ -7,7 +7,6 @@
 
 
 import UIKit
-import Firebase
 
 class RegisterationView: UIViewController {
     // MARK: - Properties

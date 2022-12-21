@@ -6,15 +6,28 @@
 //
 
 import Foundation
-import Firebase
 import FirebaseStorage
+import FirebaseAuth
+import FirebaseDatabase
+import RxSwift
 import UIKit
+
 struct AuthService {
     
     static let shared = AuthService()
     
-    func logInUser(email: String, password: String, completion: @escaping (AuthDataResult?, Error?) -> Void) {
-        Auth.auth().signIn(withEmail: email, password: password, completion: completion)
+    func logInUser(email: String, password: String) -> Observable<Void> {
+        Observable.create { observer in
+            Auth.auth().signIn(withEmail: email, password: password) { result, error in
+                if let error = error {
+                    observer.onError(error)
+                }
+                observer.onNext(())
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+        
     }
     
     func signUpUser(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage, completion: @escaping(Error?, DatabaseReference) -> Void) {
