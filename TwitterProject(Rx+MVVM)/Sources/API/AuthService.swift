@@ -26,9 +26,7 @@ struct AuthService {
             }
             return Disposables.create()
         }
-        
     }
-    
     func signUpUser(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage, completion: @escaping (Error?, DatabaseReference) -> Void) {
         guard let email = email else { return }
         guard let password = password else { return }

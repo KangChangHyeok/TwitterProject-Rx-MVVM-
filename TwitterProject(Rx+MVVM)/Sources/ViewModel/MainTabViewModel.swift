@@ -8,29 +8,46 @@
 import Foundation
 import RxSwift
 import FirebaseAuth
+import RxCocoa
 
-class MainTabViewModel {
+class MainTabViewModel: ViewModelType {
     
     struct Input {
-        
+        let viewWillAppear = PublishRelay<Bool>()
     }
     struct Output {
-        
+        let authenticationResult: Driver<Bool>
     }
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        return Output()
+        
+        let viewWillAppear = input.viewWillAppear
+            .map { _ in
+                ()
+            }
+        let authenticationResult = viewWillAppear
+            .flatMap { _ in
+                self.authenticateUserAndConfigureUIRx()
+                
+            }
+            .asDriver(onErrorJustReturn: false)
+        
+        return Output(authenticationResult: authenticationResult)
     }
     
-    
-    func authenticateUserAndConfigureUI(completion: @escaping (Bool) -> ()) {
-        if Auth.auth().currentUser == nil  {
-            completion(false)
-        } else {
-            completion(true)
+    func authenticateUserAndConfigureUIRx() -> Observable<Bool> {
+        Observable<Bool>.create { observer in
+            guard Auth.auth().currentUser != nil else {
+                observer.onNext(false)
+                observer.onCompleted()
+                return Disposables.create()
+            }
+            observer.onNext(true)
+            observer.onCompleted()
+            return Disposables.create()
         }
     }
     

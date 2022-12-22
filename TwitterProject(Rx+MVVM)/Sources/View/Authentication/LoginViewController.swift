@@ -12,7 +12,7 @@ import RxViewController
 
 class LoginViewController: UIViewController {
     
-    let viewModel = LoginViewModel()
+    var viewModel = LoginViewModel()
     var disposeBag = DisposeBag()
     // MARK: - Properties
     private let logoImageView: UIImageView = {
@@ -92,16 +92,14 @@ class LoginViewController: UIViewController {
         
         signUpButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
-                let registerView = RegisterationViewController()
-                self?.navigationController?.pushViewController(registerView, animated: true)
+                let registerViewController = RegisterationViewController()
+                self?.navigationController?.pushViewController(registerViewController, animated: true)
             })
             .disposed(by: disposeBag)
         viewModel.output.finishLogin
             .drive(onNext: { _ in
                 print("DEBUG - 로그인 성공!")
-                guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else { return }
-                guard let mainTabView = window.rootViewController as? MainTabView else { return }
-                mainTabView.authenticateUserAndConfigureUI()
+
                 self.dismiss(animated: true)
             })
             .disposed(by: disposeBag)

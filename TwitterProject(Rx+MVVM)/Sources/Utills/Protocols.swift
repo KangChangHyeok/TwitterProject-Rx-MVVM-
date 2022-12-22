@@ -8,7 +8,11 @@
 import Foundation
 import RxSwift
 import UIKit
-
+protocol ViewModelBindable {
+    associatedtype ViewModelType
+    var disposeBag: DisposeBag { get set }
+    var viewModel: ViewModelType! { get set }
+}
 protocol ViewModelType {
     associatedtype Input
     associatedtype Output

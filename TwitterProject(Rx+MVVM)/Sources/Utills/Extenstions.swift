@@ -76,7 +76,7 @@ extension UIColor {
     
     static let twitterBlue = UIColor.rgb(red: 29, green: 161, blue: 242)
 }
-// ImagePickerController Rx
+// ImagePickerController RxExtension
 
 final class RxImagePickerDelegateProxy: DelegateProxy<UIImagePickerController, UINavigationControllerDelegate & UIImagePickerControllerDelegate>, DelegateProxyType, UINavigationControllerDelegate & UIImagePickerControllerDelegate {
 

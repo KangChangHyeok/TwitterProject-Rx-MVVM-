@@ -11,8 +11,9 @@ import RxSwift
 import RxCocoa
 
 class RegisterationViewController: UIViewController {
+    
     // MARK: - Properties
-    let viewModel = RegisterationViewModel()
+    var viewModel = RegisterationViewModel()
     var disposeBag = DisposeBag()
     
     private let imagePicker = UIImagePickerController()
@@ -97,20 +98,24 @@ class RegisterationViewController: UIViewController {
     func bindUI() {
         
         plusPhotoButton.rx.tap
-            .subscribe(onNext: { _ in
-                self.present(self.imagePicker, animated: true)
+            .withUnretained(self)
+            .subscribe(onNext: { weakSelf, _ in
+                weakSelf.present(weakSelf.imagePicker, animated: true)
             })
             .disposed(by: disposeBag)
         
-        imagePicker.rx.didFinishPickingMediaWithInfo
-            .map { info in
-                info[.editedImage] as? UIImage
+        let didFinishPicking = imagePicker.rx.didFinishPickingMediaWithInfo
+            .share()
+        
+        didFinishPicking
+            .map { information in
+                information[.editedImage] as? UIImage
             }
             .share()
             .bind(to: viewModel.input.profileImage)
             .disposed(by: disposeBag)
         
-        imagePicker.rx.didFinishPickingMediaWithInfo
+        didFinishPicking
             .subscribe(onNext: { info in
                 guard let profileImage = info[.editedImage] as? UIImage else { return }
                 self.plusPhotoButton.layer.cornerRadius = 128 / 2
@@ -123,26 +128,33 @@ class RegisterationViewController: UIViewController {
                 self.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
+        
         emailTextField.rx.text.orEmpty
             .bind(to: viewModel.input.email)
             .disposed(by: disposeBag)
+        
         passwordTextField.rx.text.orEmpty
             .bind(to: viewModel.input.password)
             .disposed(by: disposeBag)
+        
         fullNameTextField.rx.text.orEmpty
             .bind(to: viewModel.input.fullName)
             .disposed(by: disposeBag)
+        
         userNameTextField.rx.text.orEmpty
             .bind(to: viewModel.input.userName)
             .disposed(by: disposeBag)
+        
         logInButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
                 self?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
+        
         signUpButton.rx.tap
             .bind(to: viewModel.input.signUpButtonTapped)
             .disposed(by: disposeBag)
+        
         viewModel.output.userInformation
             .drive(onNext: { _ in
                 //                //이미지 등록 안했을때
@@ -150,12 +162,8 @@ class RegisterationViewController: UIViewController {
                 //                    print("DEBUG - 프로필 이미지를 선택해주세요..")
                 //                    return
                 //                }
-                //이미지 등록 했으면 회원가입 관련 API 처리
-                print("DEBUG - 유저 정보 DB에 저장 완료.")
-                // 다 완료되면 화면 전환 로직
-                guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else { return }
-                guard let mainTabView = window.rootViewController as? MainTabView else { return }
-                mainTabView.authenticateUserAndConfigureUI()
+                
+                
                 print("DEBUG - 로그인 성공!")
                 self.dismiss(animated: true)
             })

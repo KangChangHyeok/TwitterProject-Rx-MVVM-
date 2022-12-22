@@ -14,9 +14,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
+        let mainTabViewController = MainTabViewController()
+
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-        window?.rootViewController = MainTabView()
+        window?.rootViewController = mainTabViewController
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()

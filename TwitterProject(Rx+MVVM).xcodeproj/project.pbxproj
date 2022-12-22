@@ -10,7 +10,7 @@
 		639031A229407901000D4795 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031A129407901000D4795 /* AppDelegate.swift */; };
 		639031AB29407902000D4795 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 639031AA29407902000D4795 /* Assets.xcassets */; };
 		639031AE29407902000D4795 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 639031AC29407902000D4795 /* LaunchScreen.storyboard */; };
-		639031B629407987000D4795 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031B529407987000D4795 /* MainTabView.swift */; };
+		639031B629407987000D4795 /* MainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031B529407987000D4795 /* MainTabViewController.swift */; };
 		639031BD29407F07000D4795 /* FeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031BC29407F07000D4795 /* FeedView.swift */; };
 		639031BF29408146000D4795 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031BE29408146000D4795 /* ExploreView.swift */; };
 		639031C1294081BA000D4795 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C0294081BA000D4795 /* NotificationView.swift */; };
@@ -36,7 +36,7 @@
 		639031AA29407902000D4795 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		639031AD29407902000D4795 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		639031AF29407902000D4795 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		639031B529407987000D4795 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		639031B529407987000D4795 /* MainTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabViewController.swift; sourceTree = "<group>"; };
 		639031BC29407F07000D4795 /* FeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedView.swift; sourceTree = "<group>"; };
 		639031BE29408146000D4795 /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
 		639031C0294081BA000D4795 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
@@ -116,7 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				639031C62940BB8D000D4795 /* Authentication */,
-				639031B529407987000D4795 /* MainTabView.swift */,
+				639031B529407987000D4795 /* MainTabViewController.swift */,
 				639031BC29407F07000D4795 /* FeedView.swift */,
 				639031BE29408146000D4795 /* ExploreView.swift */,
 				639031C0294081BA000D4795 /* NotificationView.swift */,
@@ -324,7 +324,7 @@
 				639031BD29407F07000D4795 /* FeedView.swift in Sources */,
 				639031C52940A449000D4795 /* Extenstions.swift in Sources */,
 				639031BF29408146000D4795 /* ExploreView.swift in Sources */,
-				639031B629407987000D4795 /* MainTabView.swift in Sources */,
+				639031B629407987000D4795 /* MainTabViewController.swift in Sources */,
 				63FB3A5329485A7C00E7EAD2 /* LoginViewModel.swift in Sources */,
 				639031C82940BBA0000D4795 /* LoginViewController.swift in Sources */,
 				639031CA2940BC45000D4795 /* RegisterationViewController.swift in Sources */,

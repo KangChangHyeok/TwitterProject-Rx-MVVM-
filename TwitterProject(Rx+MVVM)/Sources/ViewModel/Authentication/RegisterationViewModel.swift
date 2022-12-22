@@ -11,6 +11,8 @@ import RxCocoa
 
 class RegisterationViewModel: ViewModelType {
     
+    var disposeBag = DisposeBag()
+    
     struct Input {
         let profileImage = PublishRelay<UIImage?>()
         let email = PublishRelay<String>()
@@ -22,7 +24,7 @@ class RegisterationViewModel: ViewModelType {
     struct Output {
         let userInformation: Driver<Void>
     }
-    var disposeBag = DisposeBag()
+    
     let input = Input()
     lazy var output = transform(input: input)
     

@@ -6,11 +6,16 @@
 //
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
+import RxViewController
 
-class MainTabView: UITabBarController {
-    // MARK: - Properties
+class MainTabViewController: UITabBarController {
     
-    let viewModel: MainTabViewModel = MainTabViewModel()
+
+    // MARK: - Properties
+    var viewModel = MainTabViewModel()
+    var disposeBag = DisposeBag()
     
     private lazy var actionButton: UIButton = { [weak self] in
         let button = UIButton()
@@ -26,28 +31,12 @@ class MainTabView: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                logUserOut()
+//                logUserOut()
         view.backgroundColor = .twitterBlue
-        authenticateUserAndConfigureUI()
+        bindUI()
     }
     
     // MARK: - API
-    
-    func authenticateUserAndConfigureUI() {
-        viewModel.authenticateUserAndConfigureUI { bool in
-            if false == bool {
-                print("DEBUG - 사용자가 로그인 하지 않음.")
-                DispatchQueue.main.async {
-                    let navigationController = UINavigationController(rootViewController: LoginViewController())
-                    navigationController.modalPresentationStyle = .fullScreen
-                    self.present(navigationController, animated: true)
-                }
-            } else {
-                self.configureView()
-                self.configureUI()
-            }
-        }
-    }
     func logUserOut() {
         viewModel.logUserOut()
     }
@@ -57,6 +46,26 @@ class MainTabView: UITabBarController {
     }
     
     // MARK: - Methods
+    func bindUI() {
+        self.rx.viewWillAppear
+            .bind(to: viewModel.input.viewWillAppear)
+            .disposed(by: disposeBag)
+        
+        viewModel.output.authenticationResult
+            .drive(onNext: { result in
+                guard result else {
+                    DispatchQueue.main.async {
+                        let navigationController = UINavigationController(rootViewController: LoginViewController())
+                        navigationController.modalPresentationStyle = .fullScreen
+                        self.present(navigationController, animated: true)
+                    }
+                    return
+                }
+                self.configureView()
+                self.configureUI()
+            })
+            .disposed(by: disposeBag)
+    }
     func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.tabBarItem.image = image

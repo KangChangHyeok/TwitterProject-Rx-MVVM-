@@ -10,7 +10,8 @@ import RxSwift
 import RxCocoa
 
 
-class LoginViewModel {
+class LoginViewModel: ViewModelType {
+    
     var disposeBag = DisposeBag()
     
     struct Input {
@@ -21,7 +22,6 @@ class LoginViewModel {
     struct Output {
         let finishLogin: Driver<Void>
     }
-    
     let input = Input()
     lazy var output = transform(input: input)
     
@@ -32,7 +32,6 @@ class LoginViewModel {
                 AuthService.shared.logInUser(email: email, password: password)
             }
             .asDriver(onErrorJustReturn: ())
-        
         return Output(finishLogin: finishLogin)
     }
 }
