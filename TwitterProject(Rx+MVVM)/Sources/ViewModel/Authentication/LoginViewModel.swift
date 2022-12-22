@@ -19,20 +19,20 @@ class LoginViewModel {
         let loginButtonTapped = PublishRelay<Void>()
     }
     struct Output {
-        let loginResult: Driver<Void>
+        let finishLogin: Driver<Void>
     }
     
     let input = Input()
     lazy var output = transform(input: input)
     
     func transform(input: Input) -> Output {
-        let loginResult = input.loginButtonTapped
+        let finishLogin = input.loginButtonTapped
             .withLatestFrom(Observable.combineLatest (input.email, input.password))
             .flatMap { email, password in
                 AuthService.shared.logInUser(email: email, password: password)
             }
             .asDriver(onErrorJustReturn: ())
         
-        return Output(loginResult: loginResult)
+        return Output(finishLogin: finishLogin)
     }
 }

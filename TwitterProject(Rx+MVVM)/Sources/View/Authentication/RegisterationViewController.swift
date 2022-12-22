@@ -7,18 +7,20 @@
 
 
 import UIKit
+import RxSwift
+import RxCocoa
 
-class RegisterationView: UIViewController {
+class RegisterationViewController: UIViewController {
     // MARK: - Properties
+    let viewModel = RegisterationViewModel()
+    var disposeBag = DisposeBag()
     
     private let imagePicker = UIImagePickerController()
-    private var profileImage: UIImage?
     
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "plus_photo"), for: .normal)
         button.tintColor = .white
-        button.addTarget(self, action: #selector(plusPhtoButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -71,7 +73,6 @@ class RegisterationView: UIViewController {
     }()
     private let signUpButton: UIButton = {
         let button = Utilites().makeButton(buttonTitle: "Sign Up")
-        button.addTarget(self, action: #selector(signUpButtonTapped), for: .touchUpInside)
         return button
     }()
     private lazy var stackView: UIStackView = {
@@ -83,7 +84,6 @@ class RegisterationView: UIViewController {
     }()
     private let logInButton: UIButton = {
         let button = Utilites().attributedButton(firstPart: "Already have an account?", secondPart: " Log In")
-        button.addTarget(self, action: #selector(logInButtonTapped), for: .touchUpInside)
         return button
     }()
     // MARK: - Lifecycle
@@ -91,42 +91,78 @@ class RegisterationView: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-    }
-    // MARK: - Selectros
-    @objc func logInButtonTapped() {
-        navigationController?.popViewController(animated: true)
-    }
-    @objc func plusPhtoButtonTapped() {
-        present(imagePicker, animated: true)
-    }
-    @objc func signUpButtonTapped() {
-        guard let profileImage = profileImage else {
-            print("DEBUG - 프로필 이미지를 선택해주세요..")
-            return
-        }
-        AuthService.shared.signUpUser(email: emailTextField.text,
-                                      password: passwordTextField.text,
-                                      fullName: fullNameTextField.text,
-                                      userName: userNameTextField.text,
-                                      profileImage: profileImage) { error, databaseReference in
-            if let error = error {
-                print(error.localizedDescription)
-            }
-            print("DEBUG - 유저 정보 DB에 저장 완료.")
-            
-            guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else { return }
-            guard let mainTabView = window.rootViewController as? MainTabView else { return }
-            mainTabView.authenticateUserAndConfigureUI()
-            print("DEBUG - 로그인 성공!")
-            self.dismiss(animated: true)
-        }
+        bindUI()
     }
     // MARK: - Methods
-    
+    func bindUI() {
+        
+        plusPhotoButton.rx.tap
+            .subscribe(onNext: { _ in
+                self.present(self.imagePicker, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        imagePicker.rx.didFinishPickingMediaWithInfo
+            .map { info in
+                info[.editedImage] as? UIImage
+            }
+            .share()
+            .bind(to: viewModel.input.profileImage)
+            .disposed(by: disposeBag)
+        
+        imagePicker.rx.didFinishPickingMediaWithInfo
+            .subscribe(onNext: { info in
+                guard let profileImage = info[.editedImage] as? UIImage else { return }
+                self.plusPhotoButton.layer.cornerRadius = 128 / 2
+                self.plusPhotoButton.layer.masksToBounds = true
+                self.plusPhotoButton.imageView?.contentMode = .scaleAspectFill
+                self.plusPhotoButton.imageView?.clipsToBounds = true
+                self.plusPhotoButton.layer.borderColor = UIColor.white.cgColor
+                self.plusPhotoButton.layer.borderWidth = 3
+                self.plusPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
+                self.dismiss(animated: true)
+            })
+            .disposed(by: disposeBag)
+        emailTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.email)
+            .disposed(by: disposeBag)
+        passwordTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.password)
+            .disposed(by: disposeBag)
+        fullNameTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.fullName)
+            .disposed(by: disposeBag)
+        userNameTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.userName)
+            .disposed(by: disposeBag)
+        logInButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
+        signUpButton.rx.tap
+            .bind(to: viewModel.input.signUpButtonTapped)
+            .disposed(by: disposeBag)
+        viewModel.output.userInformation
+            .drive(onNext: { _ in
+                //                //이미지 등록 안했을때
+                //                guard let profileImage = profileImage else {
+                //                    print("DEBUG - 프로필 이미지를 선택해주세요..")
+                //                    return
+                //                }
+                //이미지 등록 했으면 회원가입 관련 API 처리
+                print("DEBUG - 유저 정보 DB에 저장 완료.")
+                // 다 완료되면 화면 전환 로직
+                guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else { return }
+                guard let mainTabView = window.rootViewController as? MainTabView else { return }
+                mainTabView.authenticateUserAndConfigureUI()
+                print("DEBUG - 로그인 성공!")
+                self.dismiss(animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
     func configureUI() {
         view.backgroundColor = .twitterBlue
-        
-        imagePicker.delegate = self
         imagePicker.allowsEditing = true
         
         view.addSubview(plusPhotoButton)
@@ -145,24 +181,5 @@ class RegisterationView: UIViewController {
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 40, bottom: 16, right: 40))
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-    }
-}
-// MARK: - UIImagePickerControllerDelegate
-
-extension RegisterationView: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let profileImage = info[.editedImage] as? UIImage else { return }
-        self.profileImage = profileImage
-        plusPhotoButton.layer.cornerRadius = 128 / 2
-        plusPhotoButton.layer.masksToBounds = true
-        plusPhotoButton.imageView?.contentMode = .scaleAspectFill
-        plusPhotoButton.imageView?.clipsToBounds = true
-        plusPhotoButton.layer.borderColor = UIColor.white.cgColor
-        plusPhotoButton.layer.borderWidth = 3
-        
-        self.plusPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
-        
-        dismiss(animated: true)
     }
 }

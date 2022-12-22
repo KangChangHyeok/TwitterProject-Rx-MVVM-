@@ -92,11 +92,11 @@ class LoginViewController: UIViewController {
         
         signUpButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
-                let registerView = RegisterationView()
+                let registerView = RegisterationViewController()
                 self?.navigationController?.pushViewController(registerView, animated: true)
             })
             .disposed(by: disposeBag)
-        viewModel.output.loginResult
+        viewModel.output.finishLogin
             .drive(onNext: { _ in
                 print("DEBUG - 로그인 성공!")
                 guard let window = UIApplication.shared.windows.first(where: {$0.isKeyWindow}) else { return }

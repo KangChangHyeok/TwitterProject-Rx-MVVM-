@@ -10,7 +10,6 @@ import FirebaseStorage
 import FirebaseAuth
 import FirebaseDatabase
 import RxSwift
-import UIKit
 
 struct AuthService {
     
@@ -30,17 +29,19 @@ struct AuthService {
         
     }
     
-    func signUpUser(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage, completion: @escaping(Error?, DatabaseReference) -> Void) {
+    func signUpUser(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage, completion: @escaping (Error?, DatabaseReference) -> Void) {
         guard let email = email else { return }
         guard let password = password else { return }
         guard let fullName = fullName else { return }
         guard let userName = userName else { return }
         
         guard let imageData = profileImage.jpegData(compressionQuality: 0.3) else { return }
+        
         let fileName = NSUUID().uuidString
         let stroageReference = profileImagesStorage.child(fileName)
+        
         // storage에 profileImage 저장
-        stroageReference.putData(imageData) { data, error in
+        stroageReference.putData(imageData) { _, error in
             if let error = error {
                 print("DEBUG - \(error.localizedDescription)")
             }
@@ -51,6 +52,7 @@ struct AuthService {
                 }
                 guard let profileImageUrl = url?.absoluteString else { return }
                 // 생성된 Url과 입력받은 정보를 바탕으로 DB에 유저 정보 저장
+                
                 Auth.auth().createUser(withEmail: email, password: password) { result, error in
                     if let error = error {
                         print("DEBUG - \(error.localizedDescription)")
@@ -67,6 +69,18 @@ struct AuthService {
                     userIdReference.updateChildValues(userValues, withCompletionBlock: completion)
                 }
             }
+        }
+    }
+    func signUpUserRx(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage) -> Observable<Void> {
+        Observable.create { observer in
+            signUpUser(email: email, password: password, fullName: fullName, userName: userName, profileImage: profileImage) { error, _ in
+                if let error = error {
+                    observer.onError(error)
+                }
+                observer.onNext(())
+                observer.onCompleted()
+            }
+            return Disposables.create()
         }
     }
 }
