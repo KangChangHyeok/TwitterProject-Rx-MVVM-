@@ -50,9 +50,10 @@ class MainTabViewController: UITabBarController {
         self.rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
-        
+        //유저 로그인 여부 확인
         viewModel.output.authenticationResult
             .drive(onNext: { result in
+                // 로그인 안되어있으면 로그인 화면 보여주기
                 guard result else {
                     DispatchQueue.main.async {
                         let navigationController = UINavigationController(rootViewController: LoginViewController())
@@ -61,8 +62,18 @@ class MainTabViewController: UITabBarController {
                     }
                     return
                 }
+                //기존 로그인 되어있을 경우
                 self.configureView()
                 self.configureUI()
+//                self.fetchUser()
+            })
+            .disposed(by: disposeBag)
+        //user 정보 가져오면 각 viewModel input으로 넣어주기
+        viewModel.output.userData
+            .subscribe(onNext: { user in
+                guard let navigationController = self.viewControllers?[0] as? UINavigationController else { return }
+                guard let feed = navigationController.viewControllers.first as? FeedViewController else { return }
+                feed.viewModel.input.userData.accept(user)
             })
             .disposed(by: disposeBag)
     }
@@ -73,11 +84,12 @@ class MainTabViewController: UITabBarController {
     }
     func configureView() {
         tabBar.backgroundColor = .white
-        let feedView = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: FeedView())
+        let feedViewController = FeedViewController()
+        let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
         let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreView())
         let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationView())
         let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsView())
-        viewControllers = [feedView, exploreView, notificationsView, conversationsView]
+        viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
     func configureUI() {
         view.addSubview(actionButton)

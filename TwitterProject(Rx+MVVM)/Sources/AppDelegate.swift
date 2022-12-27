@@ -23,10 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = .white
-
-        let appearance2 = UINavigationBarAppearance()
-        appearance2.configureWithOpaqueBackground()
-        appearance2.backgroundColor = .purple
         
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance

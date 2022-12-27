@@ -14,7 +14,7 @@ import RxSwift
 struct AuthService {
     
     static let shared = AuthService()
-    
+    // 유저 로그인
     func logInUser(email: String, password: String) -> Observable<Void> {
         Observable.create { observer in
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
@@ -27,6 +27,20 @@ struct AuthService {
             return Disposables.create()
         }
     }
+    // 로그인 여부 확인
+    func authenticateUserAndConfigureUIRx() -> Observable<Bool> {
+        Observable<Bool>.create { observer in
+            guard Auth.auth().currentUser != nil else {
+                observer.onNext(false)
+                observer.onCompleted()
+                return Disposables.create()
+            }
+            observer.onNext(true)
+            observer.onCompleted()
+            return Disposables.create()
+        }
+    }
+    //회원가입
     func signUpUser(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage, completion: @escaping (Error?, DatabaseReference) -> Void) {
         guard let email = email else { return }
         guard let password = password else { return }
@@ -69,6 +83,7 @@ struct AuthService {
             }
         }
     }
+    // 회원가입 - rx
     func signUpUserRx(email: String?, password: String?, fullName: String?, userName: String?, profileImage: UIImage) -> Observable<Void> {
         Observable.create { observer in
             signUpUser(email: email, password: password, fullName: fullName, userName: userName, profileImage: profileImage) { error, _ in

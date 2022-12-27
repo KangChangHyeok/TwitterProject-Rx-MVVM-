@@ -37,6 +37,15 @@
 - 뷰 드로잉 관련
 	- NSLayoutAchor -> SnapKit으로 수정
 </details>
+<details>
+<summary>12월 26일 진행내용</summary>
+
+- 리팩토링
+	- 기능 단위나 화면 단위 구현시 마다 RxSwift 적용하여 리팩토링
+- 커밋 관련
+	- 커밋 메세지 규칙 적용.
+		- 작성 언어는 한글로 설정.
+</details>
 
 ## 문제 해결
 <details>

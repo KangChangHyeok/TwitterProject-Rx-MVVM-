@@ -17,6 +17,7 @@ class MainTabViewModel: ViewModelType {
     }
     struct Output {
         let authenticationResult: Driver<Bool>
+        let userData: PublishSubject<User>
     }
     let input = Input()
     lazy var output = transform(input: input)
@@ -30,25 +31,16 @@ class MainTabViewModel: ViewModelType {
             }
         let authenticationResult = viewWillAppear
             .flatMap { _ in
-                self.authenticateUserAndConfigureUIRx()
-                
+                AuthService.shared.authenticateUserAndConfigureUIRx()
             }
             .asDriver(onErrorJustReturn: false)
-        
-        return Output(authenticationResult: authenticationResult)
-    }
-    
-    func authenticateUserAndConfigureUIRx() -> Observable<Bool> {
-        Observable<Bool>.create { observer in
-            guard Auth.auth().currentUser != nil else {
-                observer.onNext(false)
-                observer.onCompleted()
-                return Disposables.create()
-            }
-            observer.onNext(true)
-            observer.onCompleted()
-            return Disposables.create()
-        }
+        let userData = PublishSubject<User>()
+        UserService.shared.fetchUserRx()
+            .subscribe(onNext: { user in
+                userData.onNext(user)
+            })
+            .disposed(by: disposeBag)
+        return Output(authenticationResult: authenticationResult, userData: userData)
     }
     
     func logUserOut() {
