@@ -58,6 +58,9 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
                         let navigationController = UINavigationController(rootViewController: LoginViewController())
                         navigationController.modalPresentationStyle = .fullScreen
                         self.present(navigationController, animated: true)
+                        print("AAA")
+                        print("AAA")
+                        print("AAA")
                     }
                     return
                 }
