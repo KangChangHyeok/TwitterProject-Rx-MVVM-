@@ -19,10 +19,12 @@ class FeedViewController: UIViewController, ViewModelBindable {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(#function)
         configureUI()
     }
     // MARK: - Methods
     func configureUI() {
+        print(#function)
         view.backgroundColor = .white
         let titleImageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
         titleImageView.contentMode = .scaleAspectFit
@@ -30,6 +32,8 @@ class FeedViewController: UIViewController, ViewModelBindable {
     }
     
     func bindViewModel() {
+        print(#function)
+        print(self.isViewLoaded)
         viewModel.output.user
             .drive(onNext: { user in
                 let profileImageView = UIImageView()

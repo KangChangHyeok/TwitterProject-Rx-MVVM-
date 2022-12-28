@@ -10,10 +10,10 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class RegisterationViewController: UIViewController {
+class RegisterationViewController: UIViewController, ViewModelBindable {
     
     // MARK: - Properties
-    var viewModel = RegisterationViewModel()
+    var viewModel: RegisterationViewModel!
     var disposeBag = DisposeBag()
     
     private let imagePicker = UIImagePickerController()
@@ -92,11 +92,9 @@ class RegisterationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        bindUI()
     }
     // MARK: - Methods
-    func bindUI() {
-        
+    func bindViewModel() {
         plusPhotoButton.rx.tap
             .withUnretained(self)
             .subscribe(onNext: { weakSelf, _ in
@@ -109,7 +107,7 @@ class RegisterationViewController: UIViewController {
         
         didFinishPicking
             .map { information in
-                information[.editedImage] as? UIImage
+                information[.editedImage] as! UIImage
             }
             .share()
             .bind(to: viewModel.input.profileImage)
@@ -155,16 +153,14 @@ class RegisterationViewController: UIViewController {
             .bind(to: viewModel.input.signUpButtonTapped)
             .disposed(by: disposeBag)
         
-        viewModel.output.userInformation
+        viewModel.output.signUpRequest
             .drive(onNext: { _ in
                 //                //이미지 등록 안했을때
                 //                guard let profileImage = profileImage else {
                 //                    print("DEBUG - 프로필 이미지를 선택해주세요..")
                 //                    return
                 //                }
-                
-                
-                print("DEBUG - 로그인 성공!")
+                print("DEBUG - 회원가입 완료!")
                 self.dismiss(animated: true)
             })
             .disposed(by: disposeBag)

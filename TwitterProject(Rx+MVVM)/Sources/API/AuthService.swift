@@ -15,13 +15,14 @@ struct AuthService {
     
     static let shared = AuthService()
     // 유저 로그인
-    func logInUser(email: String, password: String) -> Observable<Void> {
+    func logInUser(email: String, password: String) -> Observable<Bool> {
         Observable.create { observer in
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
                 if let error = error {
-                    observer.onError(error)
+                    observer.onNext(false)
+                    observer.onCompleted()
                 }
-                observer.onNext(())
+                observer.onNext(true)
                 observer.onCompleted()
             }
             return Disposables.create()
