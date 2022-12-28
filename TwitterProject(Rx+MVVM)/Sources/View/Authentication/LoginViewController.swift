@@ -10,9 +10,9 @@ import RxSwift
 import SnapKit
 import RxViewController
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, ViewModelBindable {
     
-    var viewModel = LoginViewModel()
+    var viewModel: LoginViewModel!
     var disposeBag = DisposeBag()
     // MARK: - Properties
     private let logoImageView: UIImageView = {
@@ -70,13 +70,12 @@ class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        bindUI()
     }
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.barStyle = .black
     }
     // MARK: - Methods
-    func bindUI() {
+    func bindViewModel() {
         //input
         emailTextField.rx.text.orEmpty
             .bind(to: viewModel.input.email)
@@ -92,18 +91,23 @@ class LoginViewController: UIViewController {
         
         signUpButton.rx.tap
             .subscribe(onNext: { [weak self] _ in
-                let registerViewController = RegisterationViewController()
+                var registerViewController = RegisterationViewController()
+                let registerViewModel = RegisterationViewModel()
+                registerViewController.bind(viewModel: registerViewModel)
                 self?.navigationController?.pushViewController(registerViewController, animated: true)
             })
             .disposed(by: disposeBag)
-        viewModel.output.finishLogin
+        viewModel.output.successLogin
             .drive(onNext: { _ in
-                print("DEBUG - 로그인 성공!")
-
                 self.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
-        
+        viewModel.output.failureLogin
+            .debug()
+            .drive(onNext: { _ in
+                print("DEBUG - 로그인 실패")
+            })
+            .disposed(by: disposeBag)
     }
     func configureUI() {
         view.backgroundColor = .twitterBlue

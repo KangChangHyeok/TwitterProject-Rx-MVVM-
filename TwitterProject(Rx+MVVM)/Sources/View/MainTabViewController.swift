@@ -31,8 +31,6 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //                logUserOut()
-        view.backgroundColor = .twitterBlue
     }
     
     // MARK: - API
@@ -46,25 +44,28 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     
     // MARK: - Methods
     func bindViewModel() {
-        self.rx.viewWillAppear
-            .bind(to: viewModel.input.viewWillAppear)
+        logUserOut()
+        self.rx.viewDidAppear
+            .bind(to: viewModel.input.viewDidAppear)
             .disposed(by: disposeBag)
-        //유저 로그인 여부 확인
-        viewModel.output.authenticationResult
-            .drive(onNext: { result in
-                // 로그인 안되어있으면 로그인 화면 보여주기
-                guard result else {
-                    DispatchQueue.main.async {
-                        let navigationController = UINavigationController(rootViewController: LoginViewController())
-                        navigationController.modalPresentationStyle = .fullScreen
-                        self.present(navigationController, animated: true)
-                    }
-                    return
-                }
-                //기존 로그인 되어있을 경우
+        
+        viewModel.output.authenticationSuccess
+            .drive(onNext: { _ in
                 self.configureView()
                 self.configureUI()
-                //                self.fetchUser()
+            })
+            .disposed(by: disposeBag)
+        viewModel.output.authenticationFailure
+            .drive(onNext: { _ in
+                self.view.backgroundColor = .twitterBlue
+                self.tabBar.barTintColor = .twitterBlue
+                self.tabBar.isTranslucent = false
+                let navigationController = UINavigationController(rootViewController: LoginViewController())
+                guard var loginViewController = navigationController.viewControllers.first as? LoginViewController else { return }
+                let loginViewModel = LoginViewModel()
+                loginViewController.bind(viewModel: loginViewModel)
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
         //user 정보 가져오면 각 viewModel input으로 넣어주기
@@ -86,6 +87,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     func configureView() {
         tabBar.backgroundColor = .white
         let feedViewController = FeedViewController()
+        print(feedViewController.isViewLoaded)
         let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
         let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreView())
         let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationView())

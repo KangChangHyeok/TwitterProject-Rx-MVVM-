@@ -28,9 +28,10 @@ class FeedViewModel: ViewModelType {
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        let user = input.userData
+    
+        let userData = Observable.just(self.user)
             .asDriver(onErrorDriveWith: .empty())
         
-        return Output(user: user)
+        return Output(user: userData)
     }
 }
