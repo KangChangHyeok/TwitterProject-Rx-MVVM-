@@ -63,6 +63,9 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
                         print("AAA")
                         print("AAA")
                         print("AAA")
+                        print("AAA")
+                        print("AAA")
+                        
                     }
                     return
                 }
