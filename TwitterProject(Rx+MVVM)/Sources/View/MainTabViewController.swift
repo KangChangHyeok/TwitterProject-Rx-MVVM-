@@ -10,11 +10,11 @@ import RxSwift
 import RxCocoa
 import RxViewController
 
-class MainTabViewController: UITabBarController {
+class MainTabViewController: UITabBarController, ViewModelBindable {
     
-
+    
     // MARK: - Properties
-    var viewModel = MainTabViewModel()
+    var viewModel: MainTabViewModel!
     var disposeBag = DisposeBag()
     
     private lazy var actionButton: UIButton = { [weak self] in
@@ -31,9 +31,8 @@ class MainTabViewController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//                logUserOut()
+        //                logUserOut()
         view.backgroundColor = .twitterBlue
-        bindUI()
     }
     
     // MARK: - API
@@ -46,7 +45,7 @@ class MainTabViewController: UITabBarController {
     }
     
     // MARK: - Methods
-    func bindUI() {
+    func bindViewModel() {
         self.rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
@@ -65,7 +64,7 @@ class MainTabViewController: UITabBarController {
                 //기존 로그인 되어있을 경우
                 self.configureView()
                 self.configureUI()
-//                self.fetchUser()
+                //                self.fetchUser()
             })
             .disposed(by: disposeBag)
         //user 정보 가져오면 각 viewModel input으로 넣어주기
@@ -77,6 +76,7 @@ class MainTabViewController: UITabBarController {
             })
             .disposed(by: disposeBag)
     }
+    
     func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.tabBarItem.image = image

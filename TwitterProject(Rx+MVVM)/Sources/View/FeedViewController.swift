@@ -11,16 +11,15 @@ import SnapKit
 import SDWebImage
 import RxSwift
 
-class FeedViewController: UIViewController {
+class FeedViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
 
-    var viewModel = FeedViewModel()
+    var viewModel: FeedViewModel!
     var disposeBag = DisposeBag()
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        bindUI()
     }
     // MARK: - Methods
     func configureUI() {
@@ -28,10 +27,9 @@ class FeedViewController: UIViewController {
         let titleImageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
         titleImageView.contentMode = .scaleAspectFit
         navigationItem.titleView = titleImageView
-        
-        
     }
-    func bindUI() {
+    
+    func bindViewModel() {
         viewModel.output.user
             .drive(onNext: { user in
                 let profileImageView = UIImageView()
