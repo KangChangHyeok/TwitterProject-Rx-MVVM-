@@ -11,7 +11,6 @@ import FirebaseAuth
 import RxCocoa
 
 class MainTabViewModel: ViewModelType {
-    
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
     }

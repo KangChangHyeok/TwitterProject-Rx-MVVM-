@@ -11,6 +11,12 @@ import RxCocoa
 
 class FeedViewModel: ViewModelType {
     
+    let user: User
+    
+    init(user: User) {
+        self.user = user
+    }
+    
     struct Input {
         let userData = PublishRelay<User>()
     }
@@ -20,7 +26,6 @@ class FeedViewModel: ViewModelType {
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
-    
     
     func transform(input: Input) -> Output {
         let user = input.userData

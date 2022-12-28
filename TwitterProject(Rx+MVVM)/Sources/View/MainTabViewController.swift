@@ -71,8 +71,9 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         viewModel.output.userData
             .subscribe(onNext: { user in
                 guard let navigationController = self.viewControllers?[0] as? UINavigationController else { return }
-                guard let feed = navigationController.viewControllers.first as? FeedViewController else { return }
-                feed.viewModel.input.userData.accept(user)
+                guard var feed = navigationController.viewControllers.first as? FeedViewController else { return }
+                let feedViewModel = FeedViewModel(user: user)
+                feed.bind(viewModel: feedViewModel)
             })
             .disposed(by: disposeBag)
     }
