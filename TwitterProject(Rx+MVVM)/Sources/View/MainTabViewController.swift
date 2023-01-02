@@ -102,6 +102,4 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             make.size.equalTo(CGSize(width: 56, height: 56))
         }
     }
-    
-    
 }

@@ -24,12 +24,12 @@ class MainTabViewModel: ViewModelType {
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        let viewDidAppear = input.viewDidAppear.map { _ in ()}
-        
+        let viewDidAppear = input.viewDidAppear.map { _ in ()}.share()
         let authenticationResult = viewDidAppear
             .flatMap { _ in
                 AuthService.shared.authenticateUserAndConfigureUIRx()
             }
+            .share()
             .debug()
         
         let authenticationSuccess = authenticationResult
@@ -37,12 +37,17 @@ class MainTabViewModel: ViewModelType {
             .map({ _ in
                 ()
             })
+            .share()
+            .debug()
+        
         let authenticationFailure = authenticationResult
             .filter { $0 == false }
             .map({ _ in
                 ()
             })
+            .debug()
             .asDriver(onErrorDriveWith: .empty())
+        
         //로그인 성공 한 경우에만 유저 정보 가져오기.
         let userData = authenticationSuccess
             .flatMap { _ in
