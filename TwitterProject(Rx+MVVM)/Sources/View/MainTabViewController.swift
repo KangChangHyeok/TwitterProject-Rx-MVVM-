@@ -85,6 +85,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             .drive(onNext: { user in
                 let viewModel = UploadTweetViewModel(user: user)
                 var uploadTweetViewController = UploadTweetViewController()
+                
                 uploadTweetViewController.bind(viewModel: viewModel)
                 let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
                 navigationController.modalPresentationStyle = .fullScreen
