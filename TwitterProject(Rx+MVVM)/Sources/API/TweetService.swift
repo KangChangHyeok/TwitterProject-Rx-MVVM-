@@ -37,4 +37,26 @@ struct TweetService {
             return Disposables.create()
         }
     }
+    
+    func fetchTweets(completion: @escaping([Tweet]) -> Void) {
+        var tweets = [Tweet]()
+        
+        tweetsReference.observe(.childAdded) { snapshot in
+            guard let dictionary = snapshot.value as? [String: Any] else { return }
+            
+            let tweetID = snapshot.key
+            let tweet = Tweet(tweetID: tweetID, dictionary: dictionary)
+            tweets.append(tweet)
+            completion(tweets)
+        }
+    }
+    
+    func fetchTweetsRx() -> Observable<[Tweet]> {
+        Observable.create { observer in
+            fetchTweets { tweets in
+                observer.onNext(tweets)
+            }
+            return Disposables.create()
+        }
+    }
 }

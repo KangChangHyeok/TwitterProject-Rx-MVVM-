@@ -50,6 +50,7 @@ class UploadTweetViewModel: ViewModelType {
             .flatMap { caption in
                 TweetService.shared.uploadTweetRx(caption: caption)
             }
+            .share()
             .asDriver(onErrorDriveWith: .empty())
         
         return Output(userData: userData, showCaptionTextView: showCaptionTextView, hideCaptionTextView: hideCaptionTextView, successUploadTweet: UploadTweet)

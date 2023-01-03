@@ -22,6 +22,7 @@ class FeedViewModel: ViewModelType {
     }
     struct Output {
         let user: Driver<User>
+        let userTweets: Observable<[Tweet]>
     }
     let input = Input()
     lazy var output = transform(input: input)
@@ -31,8 +32,8 @@ class FeedViewModel: ViewModelType {
     
         let userData = Observable.just(self.user)
             .asDriver(onErrorDriveWith: .empty())
-        
-        
-        return Output(user: userData)
+        let userTweets = TweetService.shared.fetchTweetsRx()
+            
+        return Output(user: userData, userTweets: userTweets)
     }
 }
