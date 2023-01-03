@@ -32,6 +32,7 @@ class FeedViewModel: ViewModelType {
         let userData = Observable.just(self.user)
             .asDriver(onErrorDriveWith: .empty())
         
+        
         return Output(user: userData)
     }
 }

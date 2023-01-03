@@ -19,23 +19,22 @@ class FeedViewController: UIViewController, ViewModelBindable {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(#function)
         configureUI()
     }
     // MARK: - Methods
     func configureUI() {
-        print(#function)
         view.backgroundColor = .white
         let titleImageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
         titleImageView.contentMode = .scaleAspectFit
+        titleImageView.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 44, height: 44))
+        }
         navigationItem.titleView = titleImageView
     }
     
     func bindViewModel() {
-        print(#function)
-        print(self.isViewLoaded)
         viewModel.output.user
-            .drive(onNext: { user in
+            .drive(onNext: { [weak self] user in
                 let profileImageView = UIImageView()
                 profileImageView.backgroundColor = .twitterBlue
                 profileImageView.snp.makeConstraints { make in
@@ -47,7 +46,7 @@ class FeedViewController: UIViewController, ViewModelBindable {
                 guard let profileImageUrl = user.profileImageUrl else { return }
                 profileImageView.sd_setImage(with: profileImageUrl)
                 
-                self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
+                self?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
             })
             .disposed(by: disposeBag)
     }
