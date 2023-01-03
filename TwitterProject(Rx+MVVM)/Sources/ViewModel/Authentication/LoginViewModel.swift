@@ -31,7 +31,9 @@ class LoginViewModel: ViewModelType {
             .withLatestFrom(Observable.combineLatest (input.email, input.password))
             .flatMap { email, password in
                 AuthService.shared.logInUser(email: email, password: password)
-            }
+            }.share()
+        
+        
         let successLogin = loginResult
             .filter { $0 == true}
             .map { _ in

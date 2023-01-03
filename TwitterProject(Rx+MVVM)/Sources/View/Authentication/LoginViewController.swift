@@ -103,7 +103,6 @@ class LoginViewController: UIViewController, ViewModelBindable {
             })
             .disposed(by: disposeBag)
         viewModel.output.failureLogin
-            .debug()
             .drive(onNext: { _ in
                 print("DEBUG - 로그인 실패")
             })

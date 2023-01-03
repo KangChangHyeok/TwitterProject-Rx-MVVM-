@@ -17,14 +17,13 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     var viewModel: MainTabViewModel!
     var disposeBag = DisposeBag()
     
-    private lazy var actionButton: UIButton = { [weak self] in
+    private lazy var addTweetButton: UIButton = { [weak self] in
         let button = UIButton()
         button.tintColor = .white
         button.backgroundColor = .twitterBlue
         button.setImage(UIImage(named: "new_tweet"), for: .normal)
         button.layer.cornerRadius = 28
         button.layer.masksToBounds = true
-        button.addTarget(self, action: #selector(handleActionButtonTapped), for: .touchUpInside)
         return button
     }()
     // MARK: - Lifecycle
@@ -37,18 +36,23 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     func logUserOut() {
         viewModel.logUserOut()
     }
-    // MARK: - Selectors
-    @objc func handleActionButtonTapped() {
-        print("touch")
-    }
     
     // MARK: - Methods
     func bindViewModel() {
-        logUserOut()
+        //        logUserOut()
+        // MARK: - Input
+        self.rx.viewDidLoad
+            .subscribe(onNext: { _ in
+                print("viewdidload!")
+            })
+            .disposed(by: disposeBag)
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)
             .disposed(by: disposeBag)
-        
+        addTweetButton.rx.tap
+            .bind(to: viewModel.input.addTweetButtonTapped)
+            .disposed(by: disposeBag)
+        // MARK: - Output
         viewModel.output.authenticationSuccess
             .drive(onNext: { _ in
                 self.configureView()
@@ -77,6 +81,16 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
                 feed.bind(viewModel: feedViewModel)
             })
             .disposed(by: disposeBag)
+        viewModel.output.showUploadTweetViewController
+            .drive(onNext: { user in
+                let viewModel = UploadTweetViewModel(user: user)
+                var uploadTweetViewController = UploadTweetViewController()
+                uploadTweetViewController.bind(viewModel: viewModel)
+                let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
     
     func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
@@ -87,7 +101,6 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     func configureView() {
         tabBar.backgroundColor = .white
         let feedViewController = FeedViewController()
-        print(feedViewController.isViewLoaded)
         let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
         let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreView())
         let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationView())
@@ -95,13 +108,11 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
     func configureUI() {
-        view.addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        view.addSubview(addTweetButton)
+        addTweetButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
             make.bottom.equalTo(tabBar.snp.top).offset(-16)
             make.size.equalTo(CGSize(width: 56, height: 56))
         }
     }
-    
-    
 }

@@ -22,6 +22,10 @@
 		63954A6129599BD500EF7E77 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63954A6029599BD500EF7E77 /* UserService.swift */; };
 		63954A632959A0F000EF7E77 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63954A622959A0F000EF7E77 /* User.swift */; };
 		63954AA52959F60700EF7E77 /* FeedViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63954AA42959F60700EF7E77 /* FeedViewModel.swift */; };
+		63A44CC22962DA6E005B1F2A /* UploadTweetController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A44CC12962DA6E005B1F2A /* UploadTweetController.swift */; };
+		63A44CC429630EC3005B1F2A /* UploadTweetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A44CC329630EC3005B1F2A /* UploadTweetViewModel.swift */; };
+		63A44CC7296409AB005B1F2A /* CaptionTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A44CC6296409AB005B1F2A /* CaptionTextView.swift */; };
+		63A44CC929641299005B1F2A /* TweetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A44CC829641299005B1F2A /* TweetService.swift */; };
 		63FB3A3D2947087600E7EAD2 /* Utilites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FB3A3C2947087600E7EAD2 /* Utilites.swift */; };
 		63FB3A3F2947398500E7EAD2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63FB3A3E2947398500E7EAD2 /* GoogleService-Info.plist */; };
 		63FB3A4A29474E5300E7EAD2 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FB3A4929474E5300E7EAD2 /* Constants.swift */; };
@@ -51,6 +55,10 @@
 		63954A6029599BD500EF7E77 /* UserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
 		63954A622959A0F000EF7E77 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		63954AA42959F60700EF7E77 /* FeedViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewModel.swift; sourceTree = "<group>"; };
+		63A44CC12962DA6E005B1F2A /* UploadTweetController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadTweetController.swift; sourceTree = "<group>"; };
+		63A44CC329630EC3005B1F2A /* UploadTweetViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadTweetViewModel.swift; sourceTree = "<group>"; };
+		63A44CC6296409AB005B1F2A /* CaptionTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptionTextView.swift; sourceTree = "<group>"; };
+		63A44CC829641299005B1F2A /* TweetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetService.swift; sourceTree = "<group>"; };
 		63FB3A3C2947087600E7EAD2 /* Utilites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilites.swift; sourceTree = "<group>"; };
 		63FB3A3E2947398500E7EAD2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		63FB3A4929474E5300E7EAD2 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -122,12 +130,14 @@
 		639031B829407E6B000D4795 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				63A44CC529640999005B1F2A /* CustomView */,
 				639031C62940BB8D000D4795 /* Authentication */,
 				639031B529407987000D4795 /* MainTabViewController.swift */,
 				639031BC29407F07000D4795 /* FeedViewController.swift */,
 				639031BE29408146000D4795 /* ExploreView.swift */,
 				639031C0294081BA000D4795 /* NotificationView.swift */,
 				639031C2294081D3000D4795 /* ConversationsView.swift */,
+				63A44CC12962DA6E005B1F2A /* UploadTweetController.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -138,6 +148,7 @@
 				63954A34295308CD00EF7E77 /* Authentication */,
 				63FB3A7D2948A66400E7EAD2 /* MainTabViewModel.swift */,
 				63954AA42959F60700EF7E77 /* FeedViewModel.swift */,
+				63A44CC329630EC3005B1F2A /* UploadTweetViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -147,6 +158,7 @@
 			children = (
 				63FB3A4B294765DB00E7EAD2 /* AuthService.swift */,
 				63954A6029599BD500EF7E77 /* UserService.swift */,
+				63A44CC829641299005B1F2A /* TweetService.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -178,6 +190,14 @@
 				63FB3A5429485A8700E7EAD2 /* RegisterationViewModel.swift */,
 			);
 			path = Authentication;
+			sourceTree = "<group>";
+		};
+		63A44CC529640999005B1F2A /* CustomView */ = {
+			isa = PBXGroup;
+			children = (
+				63A44CC6296409AB005B1F2A /* CaptionTextView.swift */,
+			);
+			path = CustomView;
 			sourceTree = "<group>";
 		};
 		63FB3A4729474D6C00E7EAD2 /* Sources */ = {
@@ -328,8 +348,10 @@
 			files = (
 				63954AA52959F60700EF7E77 /* FeedViewModel.swift in Sources */,
 				63FB3A3D2947087600E7EAD2 /* Utilites.swift in Sources */,
+				63A44CC429630EC3005B1F2A /* UploadTweetViewModel.swift in Sources */,
 				63FB3A4A29474E5300E7EAD2 /* Constants.swift in Sources */,
 				639031A229407901000D4795 /* AppDelegate.swift in Sources */,
+				63A44CC929641299005B1F2A /* TweetService.swift in Sources */,
 				63FB3A4C294765DB00E7EAD2 /* AuthService.swift in Sources */,
 				639031BD29407F07000D4795 /* FeedViewController.swift in Sources */,
 				639031C52940A449000D4795 /* Extenstions.swift in Sources */,
@@ -342,8 +364,10 @@
 				63FB3A7E2948A66400E7EAD2 /* MainTabViewModel.swift in Sources */,
 				63FB3A5529485A8700E7EAD2 /* RegisterationViewModel.swift in Sources */,
 				63954A632959A0F000EF7E77 /* User.swift in Sources */,
+				63A44CC22962DA6E005B1F2A /* UploadTweetController.swift in Sources */,
 				639031C1294081BA000D4795 /* NotificationView.swift in Sources */,
 				639031C3294081D3000D4795 /* ConversationsView.swift in Sources */,
+				63A44CC7296409AB005B1F2A /* CaptionTextView.swift in Sources */,
 				63954A382953098900EF7E77 /* Protocols.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
