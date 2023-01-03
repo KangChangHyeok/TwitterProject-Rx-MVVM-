@@ -17,54 +17,59 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     var viewModel: MainTabViewModel!
     var disposeBag = DisposeBag()
     
-    private lazy var actionButton: UIButton = { [weak self] in
+    private lazy var addTweetButton: UIButton = { [weak self] in
         let button = UIButton()
         button.tintColor = .white
         button.backgroundColor = .twitterBlue
         button.setImage(UIImage(named: "new_tweet"), for: .normal)
         button.layer.cornerRadius = 28
         button.layer.masksToBounds = true
-        button.addTarget(self, action: #selector(handleActionButtonTapped), for: .touchUpInside)
         return button
     }()
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //                logUserOut()
-        view.backgroundColor = .twitterBlue
     }
     
     // MARK: - API
     func logUserOut() {
         viewModel.logUserOut()
     }
-    // MARK: - Selectors
-    @objc func handleActionButtonTapped() {
-        print("touch")
-    }
     
     // MARK: - Methods
     func bindViewModel() {
-        self.rx.viewWillAppear
-            .bind(to: viewModel.input.viewWillAppear)
+        //        logUserOut()
+        // MARK: - Input
+        self.rx.viewDidLoad
+            .subscribe(onNext: { _ in
+                print("viewdidload!")
+            })
             .disposed(by: disposeBag)
-        //유저 로그인 여부 확인
-        viewModel.output.authenticationResult
-            .drive(onNext: { result in
-                // 로그인 안되어있으면 로그인 화면 보여주기
-                guard result else {
-                    DispatchQueue.main.async {
-                        let navigationController = UINavigationController(rootViewController: LoginViewController())
-                        navigationController.modalPresentationStyle = .fullScreen
-                        self.present(navigationController, animated: true)
-                    }
-                    return
-                }
-                //기존 로그인 되어있을 경우
+        self.rx.viewDidAppear
+            .bind(to: viewModel.input.viewDidAppear)
+            .disposed(by: disposeBag)
+        addTweetButton.rx.tap
+            .bind(to: viewModel.input.addTweetButtonTapped)
+            .disposed(by: disposeBag)
+        // MARK: - Output
+        viewModel.output.authenticationSuccess
+            .drive(onNext: { _ in
                 self.configureView()
                 self.configureUI()
-                //                self.fetchUser()
+            })
+            .disposed(by: disposeBag)
+        viewModel.output.authenticationFailure
+            .drive(onNext: { _ in
+                self.view.backgroundColor = .twitterBlue
+                self.tabBar.barTintColor = .twitterBlue
+                self.tabBar.isTranslucent = false
+                let navigationController = UINavigationController(rootViewController: LoginViewController())
+                guard var loginViewController = navigationController.viewControllers.first as? LoginViewController else { return }
+                let loginViewModel = LoginViewModel()
+                loginViewController.bind(viewModel: loginViewModel)
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
         //user 정보 가져오면 각 viewModel input으로 넣어주기
@@ -74,6 +79,16 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
                 guard var feed = navigationController.viewControllers.first as? FeedViewController else { return }
                 let feedViewModel = FeedViewModel(user: user)
                 feed.bind(viewModel: feedViewModel)
+            })
+            .disposed(by: disposeBag)
+        viewModel.output.showUploadTweetViewController
+            .drive(onNext: { user in
+                let viewModel = UploadTweetViewModel(user: user)
+                var uploadTweetViewController = UploadTweetViewController()
+                uploadTweetViewController.bind(viewModel: viewModel)
+                let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -93,13 +108,11 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
     func configureUI() {
-        view.addSubview(actionButton)
-        actionButton.snp.makeConstraints { make in
+        view.addSubview(addTweetButton)
+        addTweetButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().offset(-16)
             make.bottom.equalTo(tabBar.snp.top).offset(-16)
             make.size.equalTo(CGSize(width: 56, height: 56))
         }
     }
-    
-    
 }

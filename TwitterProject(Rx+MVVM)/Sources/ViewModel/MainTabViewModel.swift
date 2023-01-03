@@ -11,35 +11,56 @@ import FirebaseAuth
 import RxCocoa
 
 class MainTabViewModel: ViewModelType {
+    
     struct Input {
-        let viewWillAppear = PublishRelay<Bool>()
+        let viewDidAppear = PublishRelay<Bool>()
+        let addTweetButtonTapped = PublishRelay<Void>()
     }
     struct Output {
-        let authenticationResult: Driver<Bool>
-        let userData: PublishSubject<User>
+        let authenticationSuccess: Driver<Void>
+        let authenticationFailure: Driver<Void>
+        let userData: Observable<User>
+        let showUploadTweetViewController: Driver<User>
     }
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        
-        let viewWillAppear = input.viewWillAppear
-            .map { _ in
-                ()
-            }
-        let authenticationResult = viewWillAppear
+        let viewDidAppear = input.viewDidAppear.map { _ in ()}
+        let authenticationResult = viewDidAppear
             .flatMap { _ in
                 AuthService.shared.authenticateUserAndConfigureUIRx()
             }
-            .asDriver(onErrorJustReturn: false)
-        let userData = PublishSubject<User>()
-        UserService.shared.fetchUserRx()
-            .subscribe(onNext: { user in
-                userData.onNext(user)
+            .share()
+        
+        let authenticationSuccess = authenticationResult
+            .filter { $0 == true }
+            .map({ _ in
+                ()
             })
-            .disposed(by: disposeBag)
-        return Output(authenticationResult: authenticationResult, userData: userData)
+            .share()
+        
+        let authenticationFailure = authenticationResult
+            .filter { $0 == false }
+            .map({ _ in
+                ()
+            })
+            .asDriver(onErrorDriveWith: .empty())
+        
+        //로그인 성공 한 경우에만 유저 정보 가져오기.
+        let userData = authenticationSuccess
+            .flatMap { _ in
+                UserService.shared.fetchUserRx()
+            }
+            .share()
+        let showUploadTweetViewController = input.addTweetButtonTapped
+            .flatMap { _ in
+                UserService.shared.fetchUserRx()
+            }
+            .asDriver(onErrorDriveWith: .empty())
+            
+        return Output(authenticationSuccess: authenticationSuccess.asDriver(onErrorDriveWith: .empty()), authenticationFailure: authenticationFailure, userData: userData, showUploadTweetViewController: showUploadTweetViewController)
     }
     
     func logUserOut() {
