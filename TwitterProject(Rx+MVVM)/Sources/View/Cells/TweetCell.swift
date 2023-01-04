@@ -24,7 +24,7 @@ class TweetCell: UICollectionViewCell {
         return imageView
     }()
 
-    private let captionLabel: UILabel = {
+    let captionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
@@ -32,7 +32,7 @@ class TweetCell: UICollectionViewCell {
         return label
     }()
     
-    private let informationLabel = UILabel()
+    let informationLabel = UILabel()
     
     private lazy var commentButton: UIButton = {
         let button = UIButton(type: .system)
@@ -117,9 +117,6 @@ class TweetCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Selectors
-    
-    // MARK: - Helpers
 }
 
 
