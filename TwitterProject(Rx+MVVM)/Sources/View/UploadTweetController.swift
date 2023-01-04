@@ -26,7 +26,6 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         button.setTitleColor(.white, for: .normal)
         button.frame = CGRect(x: 0, y: 0, width: 64, height: 32)
         button.layer.cornerRadius = 32 / 2
-        button.addTarget(self, action: #selector(handleUploadTweet), for: .touchUpInside)
         return button
     }()
     private let profileImageView: UIImageView = {
@@ -51,12 +50,6 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
     // MARK: - Selectors
     @objc func handleCancel() {
         self.dismiss(animated: true)
-    }
-    @objc func handleUploadTweet() {
-        guard let caption = captionTextView.text else { return }
-        TweetService.shared.uploadTweet(caption: caption) { error, ref in
-            print("DEBUG - upload...")
-        }
     }
     // MARK: - Methods
     func bindViewModel() {
