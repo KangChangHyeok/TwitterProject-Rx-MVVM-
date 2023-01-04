@@ -46,7 +46,7 @@ struct AuthService {
         guard let email = email else { return }
         guard let password = password else { return }
         guard let fullName = fullName else { return }
-        guard let userName = userName else { return }
+        guard let userName = userName?.lowercased() else { return }
         
         guard let imageData = profileImage.jpegData(compressionQuality: 0.3) else { return }
         

@@ -43,7 +43,7 @@ class FeedViewController: UIViewController, ViewModelBindable {
     }
     
     func bindViewModel() {
-        viewModel.output.user
+        viewModel.output.userData
             .drive(onNext: { [weak self] user in
                 let profileImageView = UIImageView()
                 profileImageView.backgroundColor = .twitterBlue
@@ -62,8 +62,9 @@ class FeedViewController: UIViewController, ViewModelBindable {
         collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
         viewModel.output.userTweets
-            .debug()
-            .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweets, cell in
+            .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweet, cell in
+                let tweetCellModel = TweetCellModel(tweet: tweet)
+                cell.cellModel = tweetCellModel
             }
             .disposed(by: disposeBag)
     }

@@ -24,6 +24,16 @@ struct UserService {
             completion(user)
         }
     }
+    func fetchUser(uid: String, completion: @escaping(User) -> Void) {
+        
+        userReference.child(uid).observeSingleEvent(of: .value) { snapshot in
+            guard let dictionary = snapshot.value as? [String: AnyObject] else { return }
+            
+            let user = User(uid: uid, dictionary: dictionary)
+            
+            completion(user)
+        }
+    }
     func fetchUserRx() -> Observable<User> {
         Observable.create { observer in
             fetchUser { user in

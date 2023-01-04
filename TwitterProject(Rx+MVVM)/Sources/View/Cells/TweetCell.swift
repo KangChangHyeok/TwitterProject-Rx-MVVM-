@@ -7,10 +7,13 @@
 
 import UIKit
 import SnapKit
+import RxSwift
 
 class TweetCell: UICollectionViewCell {
     
     // MARK: - Properties
+    var cellModel: TweetCellModel!
+    var disposeBag = DisposeBag()
     
     let profileImageView: UIImageView = {
        let imageView = UIImageView()
@@ -28,7 +31,6 @@ class TweetCell: UICollectionViewCell {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
-        label.text = "tweet Contents"
         return label
     }()
     
@@ -99,7 +101,6 @@ class TweetCell: UICollectionViewCell {
             make.height.equalTo(1)
         }
         
-        informationLabel.text = "인포메이션 레이블"
         informationLabel.font = UIFont.systemFont(ofSize: 14)
         
         let actionStackView = UIStackView(arrangedSubviews: [commentButton, retweetButton, likeButton, shareButton])
@@ -115,6 +116,20 @@ class TweetCell: UICollectionViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func didMoveToSuperview() {
+        cellModel.output.captionLabelText
+            .bind(to: captionLabel.rx.text)
+            .disposed(by: disposeBag)
+        cellModel.output.profileImageUrl
+            .drive(onNext: { imageUrl in
+                self.profileImageView.sd_setImage(with: imageUrl)
+            })
+            .disposed(by: disposeBag)
+        cellModel.output.informationText
+            .bind(to: informationLabel.rx.attributedText)
+            .disposed(by: disposeBag)
     }
     
 }
