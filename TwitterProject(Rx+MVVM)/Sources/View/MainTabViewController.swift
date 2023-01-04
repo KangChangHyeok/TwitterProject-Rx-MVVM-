@@ -17,7 +17,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     var viewModel: MainTabViewModel!
     var disposeBag = DisposeBag()
     
-    private lazy var addTweetButton: UIButton = { [weak self] in
+    private lazy var addTweetButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
         button.backgroundColor = .twitterBlue
@@ -41,11 +41,6 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     func bindViewModel() {
         //        logUserOut()
         // MARK: - Input
-        self.rx.viewDidLoad
-            .subscribe(onNext: { _ in
-                print("viewdidload!")
-            })
-            .disposed(by: disposeBag)
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)
             .disposed(by: disposeBag)
@@ -54,41 +49,41 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             .disposed(by: disposeBag)
         // MARK: - Output
         viewModel.output.authenticationSuccess
-            .drive(onNext: { _ in
-                self.configureView()
-                self.configureUI()
+            .drive(onNext: { [weak self] _ in
+                self?.configureView()
+                self?.configureUI()
             })
             .disposed(by: disposeBag)
         viewModel.output.authenticationFailure
-            .drive(onNext: { _ in
-                self.view.backgroundColor = .twitterBlue
-                self.tabBar.barTintColor = .twitterBlue
-                self.tabBar.isTranslucent = false
+            .drive(onNext: { [weak self] _ in
+                self?.view.backgroundColor = .twitterBlue
+                self?.tabBar.barTintColor = .twitterBlue
+                self?.tabBar.isTranslucent = false
                 let navigationController = UINavigationController(rootViewController: LoginViewController())
                 guard var loginViewController = navigationController.viewControllers.first as? LoginViewController else { return }
                 let loginViewModel = LoginViewModel()
                 loginViewController.bind(viewModel: loginViewModel)
                 navigationController.modalPresentationStyle = .fullScreen
-                self.present(navigationController, animated: true)
+                self?.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
         //user 정보 가져오면 각 viewModel input으로 넣어주기
         viewModel.output.userData
-            .subscribe(onNext: { user in
-                guard let navigationController = self.viewControllers?[0] as? UINavigationController else { return }
+            .subscribe(onNext: { [weak self] user in
+                guard let navigationController = self?.viewControllers?[0] as? UINavigationController else { return }
                 guard var feed = navigationController.viewControllers.first as? FeedViewController else { return }
                 let feedViewModel = FeedViewModel(user: user)
                 feed.bind(viewModel: feedViewModel)
             })
             .disposed(by: disposeBag)
         viewModel.output.showUploadTweetViewController
-            .drive(onNext: { user in
+            .drive(onNext: { [weak self] user in
                 let viewModel = UploadTweetViewModel(user: user)
                 var uploadTweetViewController = UploadTweetViewController()
                 uploadTweetViewController.bind(viewModel: viewModel)
                 let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
                 navigationController.modalPresentationStyle = .fullScreen
-                self.present(navigationController, animated: true)
+                self?.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
     }

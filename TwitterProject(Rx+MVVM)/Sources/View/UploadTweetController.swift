@@ -65,24 +65,24 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         // MARK: - Output
 
         viewModel.output.userData
-            .drive(onNext: { user in
+            .drive(onNext: { [weak self] user in
                 guard let imageUrl = user.profileImageUrl else { return }
-                self.profileImageView.sd_setImage(with: imageUrl)
+                self?.profileImageView.sd_setImage(with: imageUrl)
             })
             .disposed(by: disposeBag)
         viewModel.output.showCaptionTextView
-            .drive(onNext: { _ in
-                self.captionTextView.placeholderLabel.isHidden = false
+            .drive(onNext: { [weak self] _ in
+                self?.captionTextView.placeholderLabel.isHidden = false
             })
             .disposed(by: disposeBag)
         viewModel.output.hideCaptionTextView
-            .drive(onNext: { _ in
-                self.captionTextView.placeholderLabel.isHidden = true
+            .drive(onNext: { [weak self] _ in
+                self?.captionTextView.placeholderLabel.isHidden = true
             })
             .disposed(by: disposeBag)
         viewModel.output.successUploadTweet
-            .drive(onNext: { _ in
-                self.dismiss(animated: true)
+            .drive(onNext: { [weak self] _ in
+                self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
     }
