@@ -119,17 +119,9 @@ class TweetCell: UICollectionViewCell {
     }
     
     override func didMoveToSuperview() {
-        cellModel.output.captionLabelText
-            .bind(to: captionLabel.rx.text)
-            .disposed(by: disposeBag)
-        cellModel.output.profileImageUrl
-            .drive(onNext: { imageUrl in
-                self.profileImageView.sd_setImage(with: imageUrl)
-            })
-            .disposed(by: disposeBag)
-        cellModel.output.informationText
-            .bind(to: informationLabel.rx.attributedText)
-            .disposed(by: disposeBag)
+        profileImageView.sd_setImage(with: cellModel.profileImageUrl)
+        captionLabel.text = cellModel.captionLabelText
+        informationLabel.attributedText = cellModel.informationText
     }
     
 }
