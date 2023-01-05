@@ -21,7 +21,7 @@ class FeedViewModel: ViewModelType {
         let userData = PublishRelay<User>()
     }
     struct Output {
-        let user: Driver<User>
+        let userData: Driver<User>
         let userTweets: Observable<[Tweet]>
     }
     let input = Input()
@@ -29,11 +29,10 @@ class FeedViewModel: ViewModelType {
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-    
         let userData = Observable.just(self.user)
             .asDriver(onErrorDriveWith: .empty())
         let userTweets = TweetService.shared.fetchTweetsRx()
             
-        return Output(user: userData, userTweets: userTweets)
+        return Output(userData: userData, userTweets: userTweets)
     }
 }

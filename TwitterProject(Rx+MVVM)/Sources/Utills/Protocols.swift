@@ -8,21 +8,6 @@
 import Foundation
 import RxSwift
 import UIKit
-protocol ViewModelBindable {
-    associatedtype ViewModelType
-    var disposeBag: DisposeBag { get set }
-    var viewModel: ViewModelType! { get set }
-    
-    func bindViewModel()
-}
-
-extension ViewModelBindable where Self: UIViewController {
-    mutating func bind(viewModel: ViewModelType) {
-        self.viewModel = viewModel
-        loadViewIfNeeded()
-        bindViewModel()
-    }
-}
 
 protocol ViewModelType {
     associatedtype Input
@@ -32,3 +17,21 @@ protocol ViewModelType {
     
     func transform(input: Input) -> Output
 }
+protocol ViewModelBindable {
+    associatedtype ViewModelType
+    var disposeBag: DisposeBag { get set }
+    var viewModel: ViewModelType! { get set }
+    
+    func bindViewModel()
+}
+extension ViewModelBindable where Self: UIViewController {
+    mutating func bind(viewModel: ViewModelType) {
+        self.viewModel = viewModel
+        loadViewIfNeeded()
+        bindViewModel()
+    }
+}
+
+
+
+
