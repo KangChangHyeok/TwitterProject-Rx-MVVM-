@@ -98,8 +98,8 @@ class LoginViewController: UIViewController, ViewModelBindable {
             })
             .disposed(by: disposeBag)
         viewModel.output.successLogin
-            .drive(onNext: { _ in
-                self.dismiss(animated: true)
+            .drive(onNext: { [weak self] _ in
+                self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
         viewModel.output.failureLogin

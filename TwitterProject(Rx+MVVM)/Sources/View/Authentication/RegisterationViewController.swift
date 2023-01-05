@@ -114,16 +114,16 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         
         didFinishPicking
-            .subscribe(onNext: { info in
-                guard let profileImage = info[.editedImage] as? UIImage else { return }
-                self.plusPhotoButton.layer.cornerRadius = 128 / 2
-                self.plusPhotoButton.layer.masksToBounds = true
-                self.plusPhotoButton.imageView?.contentMode = .scaleAspectFill
-                self.plusPhotoButton.imageView?.clipsToBounds = true
-                self.plusPhotoButton.layer.borderColor = UIColor.white.cgColor
-                self.plusPhotoButton.layer.borderWidth = 3
-                self.plusPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
-                self.dismiss(animated: true)
+            .subscribe(onNext: { [weak self] information in
+                guard let profileImage = information[.editedImage] as? UIImage else { return }
+                self?.plusPhotoButton.layer.cornerRadius = 128 / 2
+                self?.plusPhotoButton.layer.masksToBounds = true
+                self?.plusPhotoButton.imageView?.contentMode = .scaleAspectFill
+                self?.plusPhotoButton.imageView?.clipsToBounds = true
+                self?.plusPhotoButton.layer.borderColor = UIColor.white.cgColor
+                self?.plusPhotoButton.layer.borderWidth = 3
+                self?.plusPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
+                self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
         
@@ -154,14 +154,14 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         
         viewModel.output.signUpRequest
-            .drive(onNext: { _ in
+            .drive(onNext: { [ weak self] _ in
                 //                //이미지 등록 안했을때
                 //                guard let profileImage = profileImage else {
                 //                    print("DEBUG - 프로필 이미지를 선택해주세요..")
                 //                    return
                 //                }
                 print("DEBUG - 회원가입 완료!")
-                self.dismiss(animated: true)
+                self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
     }
