@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import RxSwift
+import RxGesture
 
 class TweetCell: UICollectionViewCell {
     
@@ -16,7 +17,7 @@ class TweetCell: UICollectionViewCell {
     var disposeBag = DisposeBag()
     
     let profileImageView: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.snp.makeConstraints { make in
@@ -26,7 +27,7 @@ class TweetCell: UICollectionViewCell {
         imageView.backgroundColor = .twitterBlue
         return imageView
     }()
-
+    
     let captionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
@@ -73,7 +74,7 @@ class TweetCell: UICollectionViewCell {
         return button
     }()
     // MARK: - Lifecycle
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -120,6 +121,19 @@ class TweetCell: UICollectionViewCell {
     
     override func didMoveToSuperview() {
         profileImageView.sd_setImage(with: cellModel.profileImageUrl)
+        profileImageView.rx
+            .tapGesture()
+            .when(.recognized)
+            .map({ _ in
+                ()
+            })
+            .withUnretained(self)
+            .subscribe(onNext: { owner, _ in
+                guard let feedViewController = owner.superViewController as? FeedViewController else { return }
+                feedViewController.viewModel.input.cellProfileImageTapped.accept(())
+            })
+            .disposed(by: disposeBag)
+        
         captionLabel.text = cellModel.captionLabelText
         informationLabel.attributedText = cellModel.informationText
     }
