@@ -9,6 +9,8 @@ import UIKit
 
 class ProfileHeader: UICollectionReusableView {
     
+    private let filterBar = ProfileFilterView()
+    
     private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .twitterBlue
@@ -101,6 +103,12 @@ class ProfileHeader: UICollectionReusableView {
         userDetailsStackView.snp.makeConstraints { make in
             make.top.equalTo(profileImageView.snp.bottom).offset(8)
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12))
+        }
+        
+        addSubview(filterBar)
+        filterBar.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(50)
         }
     }
     

@@ -18,3 +18,4 @@ let tweetsReference = dataBaseReference.child("tweets")
 
 let reuseIdentifier = "tweetCell"
 let headerIdentifier = "ProfileHeader"
+let profileFilterCellIdentifier = "ProfileFilterCell"
