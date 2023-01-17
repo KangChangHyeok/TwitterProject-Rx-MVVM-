@@ -120,7 +120,7 @@ class TweetCell: UICollectionViewCell {
     }
     
     override func didMoveToSuperview() {
-        profileImageView.sd_setImage(with: cellModel.profileImageUrl)
+//        profileImageView.sd_setImage(with: cellModel.profileImageUrl)
         profileImageView.rx
             .tapGesture()
             .when(.recognized)
@@ -134,8 +134,8 @@ class TweetCell: UICollectionViewCell {
             })
             .disposed(by: disposeBag)
         
-        captionLabel.text = cellModel.captionLabelText
-        informationLabel.attributedText = cellModel.informationText
+//        captionLabel.text = cellModel.captionLabelText
+//        informationLabel.attributedText = cellModel.informationText
     }
     
 }

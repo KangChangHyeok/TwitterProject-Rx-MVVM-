@@ -12,7 +12,7 @@ import SDWebImage
 import RxSwift
 import RxCocoa
 
-private let reuseIdentifier = "tweetCell"
+
 
 class FeedViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
@@ -70,7 +70,9 @@ class FeedViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         viewModel.output.pushProfileViewController
             .drive(onNext: { [weak self] _ in
-                let profileViewController = ProfileViewController()
+                let profileViewModel = ProfileViewModel()
+                var profileViewController = ProfileViewController()
+                profileViewController.bind(viewModel: profileViewModel)
                 self?.navigationController?.pushViewController(profileViewController, animated: true)
             })
             .disposed(by: disposeBag)

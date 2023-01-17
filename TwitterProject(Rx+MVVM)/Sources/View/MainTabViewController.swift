@@ -26,6 +26,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         button.layer.masksToBounds = true
         return button
     }()
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -39,7 +40,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     
     // MARK: - Methods
     func bindViewModel() {
-        //        logUserOut()
+        logUserOut()
         // MARK: - Input
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)

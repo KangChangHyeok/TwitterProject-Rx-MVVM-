@@ -15,3 +15,6 @@ let profileImagesStorage = storageReference.child("profileImages")
 let dataBaseReference = Database.database().reference()
 let userReference = dataBaseReference.child("users")
 let tweetsReference = dataBaseReference.child("tweets")
+
+let reuseIdentifier = "tweetCell"
+let headerIdentifier = "ProfileHeader"
