@@ -6,9 +6,13 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ProfileFilterView: UIView {
     
+    var viewModel: ProfileFilterViewModel!
+    var disposeBag = DisposeBag()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -17,9 +21,12 @@ class ProfileFilterView: UIView {
         collectionView.dataSource = self
         return collectionView
     }()
+    
     override init(frame: CGRect) {
+        let profileFilterViewModel = ProfileFilterViewModel()
+        viewModel = profileFilterViewModel
         super.init(frame: frame)
-        
+        bindViewModel()
         collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: profileFilterCellIdentifier)
         addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
@@ -29,6 +36,19 @@ class ProfileFilterView: UIView {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func bindViewModel() {
+        let profileFilterCell = collectionView.rx.itemSelected
+            .map { indexPath in
+                if let profileFilterCell = self.collectionView.cellForItem(at: indexPath) as? ProfileFilterCell {
+                    return profileFilterCell
+                }
+                return ProfileFilterCell()
+            }
+        profileFilterCell
+            .bind(to: viewModel.input.profileFilterCell)
+            .disposed(by: disposeBag)
     }
 }
 
@@ -49,8 +69,4 @@ extension ProfileFilterView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
-}
-
-extension ProfileFilterView: UICollectionViewDelegate {
-
 }

@@ -6,9 +6,13 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ProfileHeader: UICollectionReusableView {
     
+    var viewModel: ProfileHeaderViewModel!
+    var disposeBag = DisposeBag()
     private let filterBar = ProfileFilterView()
     
     private lazy var containerView: UIView = {
@@ -70,8 +74,17 @@ class ProfileHeader: UICollectionReusableView {
         label.text = "This is a user bio that will span more than on line for test purposes"
         return label
     }()
+    
+    private let underlineView: UIView = {
+      let view = UIView()
+        view.backgroundColor = .twitterBlue
+        return view
+    }()
     override init(frame: CGRect) {
+        let profileHeaderViewModel = ProfileHeaderViewModel()
+        viewModel = profileHeaderViewModel
         super.init(frame: frame)
+        bindViewModel()
         
         addSubview(containerView)
         containerView.snp.makeConstraints { make in
@@ -110,9 +123,30 @@ class ProfileHeader: UICollectionReusableView {
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(50)
         }
+        
+        addSubview(underlineView)
+        underlineView.snp.makeConstraints { make in
+            make.leading.bottom.equalToSuperview()
+            make.size.equalTo(CGSize(width: frame.width / 3, height: 2))
+        }
+        
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func bindViewModel() {
+        filterBar.viewModel.input.profileFilterCell
+            .bind(to: viewModel.input.profileFilterCell)
+            .disposed(by: disposeBag)
+        viewModel.output.animateUnderBar
+            .drive(onNext: { profileFilterCell in
+                let xPosition = profileFilterCell.frame.origin.x
+                UIView.animate(withDuration: 0.3) {
+                    self.underlineView.frame.origin.x = xPosition
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
