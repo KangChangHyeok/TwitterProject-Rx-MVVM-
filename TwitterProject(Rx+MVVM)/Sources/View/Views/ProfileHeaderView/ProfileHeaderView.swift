@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ProfileHeader: UICollectionReusableView {
+class ProfileHeaderView: UICollectionReusableView {
     
     private let filterBar = ProfileFilterView()
     private lazy var containerView: UIView = {
