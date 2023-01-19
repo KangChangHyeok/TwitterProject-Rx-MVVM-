@@ -11,6 +11,20 @@ import RxCocoa
 
 class ProfileFilterView: UIView {
     
+    enum ProfileFilterOptions: Int, CaseIterable {
+    case tweets
+    case replies
+    case likes
+    
+        var description: String {
+            switch self {
+            case .tweets: return "Tweets"
+            case .replies: return "Tweets & Replies"
+            case .likes: return "Likes"
+            }
+        }
+    }
+    
     var disposeBag = DisposeBag()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -29,6 +43,8 @@ class ProfileFilterView: UIView {
         super.init(frame: frame)
         bind()
         collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: profileFilterCellIdentifier)
+        let selectedIndexPath = IndexPath(row: 0, section: 0)
+        collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
     }
     
     required init?(coder: NSCoder) {
@@ -69,6 +85,7 @@ extension ProfileFilterView: UICollectionViewDataSource {
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: profileFilterCellIdentifier, for: indexPath) as! ProfileFilterCell
+        cell.titleLabel.text = ProfileFilterOptions(rawValue: indexPath.row)?.description
         return cell
     }
 }

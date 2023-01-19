@@ -11,7 +11,6 @@
 		631493172974F7B80041D426 /* ProfileHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631493162974F7B80041D426 /* ProfileHeaderView.swift */; };
 		63149319297680130041D426 /* ProfileFilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63149318297680130041D426 /* ProfileFilterView.swift */; };
 		6314931B297682B90041D426 /* ProfileFilterCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6314931A297682B90041D426 /* ProfileFilterCell.swift */; };
-		631493212978207C0041D426 /* ProfileHeaderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 631493202978207C0041D426 /* ProfileHeaderViewModel.swift */; };
 		634FE3CD2966D45900A5B62F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634FE3CC2966D45800A5B62F /* ProfileViewController.swift */; };
 		639031A229407901000D4795 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031A129407901000D4795 /* AppDelegate.swift */; };
 		639031AB29407902000D4795 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 639031AA29407902000D4795 /* Assets.xcassets */; };
@@ -51,7 +50,6 @@
 		631493162974F7B80041D426 /* ProfileHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderView.swift; sourceTree = "<group>"; };
 		63149318297680130041D426 /* ProfileFilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFilterView.swift; sourceTree = "<group>"; };
 		6314931A297682B90041D426 /* ProfileFilterCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileFilterCell.swift; sourceTree = "<group>"; };
-		631493202978207C0041D426 /* ProfileHeaderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileHeaderViewModel.swift; sourceTree = "<group>"; };
 		634FE3CC2966D45800A5B62F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		6390319E29407901000D4795 /* TwitterProject(Rx+MVVM).app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "TwitterProject(Rx+MVVM).app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		639031A129407901000D4795 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -111,9 +109,9 @@
 		63149322297982B90041D426 /* ProfileHeaderView */ = {
 			isa = PBXGroup;
 			children = (
+				631493162974F7B80041D426 /* ProfileHeaderView.swift */,
 				63149318297680130041D426 /* ProfileFilterView.swift */,
 				6314931A297682B90041D426 /* ProfileFilterCell.swift */,
-				631493162974F7B80041D426 /* ProfileHeaderView.swift */,
 			);
 			path = ProfileHeaderView;
 			sourceTree = "<group>";
@@ -183,9 +181,9 @@
 		639031B829407E6B000D4795 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				63149324297983240041D426 /* ViewControllers */,
 				631493232979830C0041D426 /* Views */,
 				63E535F1296571240055C065 /* Cells */,
-				63149324297983240041D426 /* ViewControllers */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -198,7 +196,6 @@
 				63954AA42959F60700EF7E77 /* FeedViewModel.swift */,
 				63A44CC329630EC3005B1F2A /* UploadTweetViewModel.swift */,
 				631493142974ED810041D426 /* ProfileViewModel.swift */,
-				631493202978207C0041D426 /* ProfileHeaderViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -413,7 +410,6 @@
 				63A44CC929641299005B1F2A /* TweetService.swift in Sources */,
 				631493152974ED810041D426 /* ProfileViewModel.swift in Sources */,
 				634FE3CD2966D45900A5B62F /* ProfileViewController.swift in Sources */,
-				631493212978207C0041D426 /* ProfileHeaderViewModel.swift in Sources */,
 				63FB3A4C294765DB00E7EAD2 /* AuthService.swift in Sources */,
 				639031BD29407F07000D4795 /* FeedViewController.swift in Sources */,
 				639031C52940A449000D4795 /* Extenstions.swift in Sources */,
