@@ -11,7 +11,7 @@ import RxCocoa
 
 class ProfileFilterView: UIView {
     
-    var viewModel: ProfileFilterViewModel!
+    
     var disposeBag = DisposeBag()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -21,17 +21,16 @@ class ProfileFilterView: UIView {
         collectionView.dataSource = self
         return collectionView
     }()
-    
+    private let underlineView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .twitterBlue
+        return view
+    }()
     override init(frame: CGRect) {
-        let profileFilterViewModel = ProfileFilterViewModel()
-        viewModel = profileFilterViewModel
         super.init(frame: frame)
         bindViewModel()
         collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: profileFilterCellIdentifier)
-        addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
-        }
+        print(frame)
     }
     
     required init?(coder: NSCoder) {
@@ -39,16 +38,30 @@ class ProfileFilterView: UIView {
     }
     
     func bindViewModel() {
-        let profileFilterCell = collectionView.rx.itemSelected
-            .map { indexPath in
-                if let profileFilterCell = self.collectionView.cellForItem(at: indexPath) as? ProfileFilterCell {
-                    return profileFilterCell
+        collectionView.rx.itemSelected
+            .asDriver()
+            .drive(onNext: { indexPath in
+                guard let profileFilterCell = self.collectionView.cellForItem(at: indexPath) as? ProfileFilterCell else { return }
+                let xPosition = profileFilterCell.frame.origin.x
+                UIView.animate(withDuration: 0.3) {
+                    self.underlineView.frame.origin.x = xPosition
                 }
-                return ProfileFilterCell()
-            }
-        profileFilterCell
-            .bind(to: viewModel.input.profileFilterCell)
+            })
             .disposed(by: disposeBag)
+    }
+    //frame이 생긴이후에 실행 함수
+    override func layoutSubviews() {
+        addSubview(collectionView)
+                collectionView.snp.makeConstraints { make in
+                    make.top.left.right.equalToSuperview()
+                    make.height.equalTo(50)
+                }
+                addSubview(underlineView)
+                underlineView.snp.makeConstraints { make in
+                    make.bottom.leading.equalToSuperview()
+                    make.height.equalTo(2)
+                    make.width.equalTo(frame.width / 3)
+                }
     }
 }
 

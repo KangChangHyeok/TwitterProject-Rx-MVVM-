@@ -26,7 +26,7 @@ class ProfileHeader: UICollectionReusableView {
         return view
     }()
     
-    private lazy var backButton: UIButton = {
+    lazy var backButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "baseline_arrow_back_white_24dp")?.withRenderingMode(.alwaysOriginal), for: .normal)
         return button
@@ -75,11 +75,7 @@ class ProfileHeader: UICollectionReusableView {
         return label
     }()
     
-    private let underlineView: UIView = {
-      let view = UIView()
-        view.backgroundColor = .twitterBlue
-        return view
-    }()
+
     override init(frame: CGRect) {
         let profileHeaderViewModel = ProfileHeaderViewModel()
         viewModel = profileHeaderViewModel
@@ -121,14 +117,9 @@ class ProfileHeader: UICollectionReusableView {
         addSubview(filterBar)
         filterBar.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(50)
+            make.height.equalTo(52)
         }
-        
-        addSubview(underlineView)
-        underlineView.snp.makeConstraints { make in
-            make.leading.bottom.equalToSuperview()
-            make.size.equalTo(CGSize(width: frame.width / 3, height: 2))
-        }
+
         
     }
     
@@ -137,16 +128,13 @@ class ProfileHeader: UICollectionReusableView {
     }
     
     func bindViewModel() {
-        filterBar.viewModel.input.profileFilterCell
-            .bind(to: viewModel.input.profileFilterCell)
-            .disposed(by: disposeBag)
-        viewModel.output.animateUnderBar
-            .drive(onNext: { profileFilterCell in
-                let xPosition = profileFilterCell.frame.origin.x
-                UIView.animate(withDuration: 0.3) {
-                    self.underlineView.frame.origin.x = xPosition
-                }
-            })
-            .disposed(by: disposeBag)
+//        viewModel.output.animateUnderBar
+//            .drive(onNext: { profileFilterCell in
+//                let xPosition = profileFilterCell.frame.origin.x
+//                UIView.animate(withDuration: 0.3) {
+//                    self.underlineView.frame.origin.x = xPosition
+//                }
+//            })
+//            .disposed(by: disposeBag)
     }
 }

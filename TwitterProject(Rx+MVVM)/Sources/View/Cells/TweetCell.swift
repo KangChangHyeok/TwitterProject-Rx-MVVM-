@@ -13,7 +13,7 @@ import RxGesture
 class TweetCell: UICollectionViewCell {
     
     // MARK: - Properties
-    var cellModel: TweetCellModel!
+//    var cellModel: TweetCellModel!
     var disposeBag = DisposeBag()
     
     let profileImageView: UIImageView = {
@@ -136,6 +136,9 @@ class TweetCell: UICollectionViewCell {
         
 //        captionLabel.text = cellModel.captionLabelText
 //        informationLabel.attributedText = cellModel.informationText
+    }
+    
+    func bind(cellModel: TweetCellModel) {
     }
     
 }
