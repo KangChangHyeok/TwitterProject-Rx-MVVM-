@@ -11,7 +11,6 @@ import RxCocoa
 
 class ProfileFilterView: UIView {
     
-    
     var disposeBag = DisposeBag()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -28,20 +27,20 @@ class ProfileFilterView: UIView {
     }()
     override init(frame: CGRect) {
         super.init(frame: frame)
-        bindViewModel()
+        bind()
         collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: profileFilterCellIdentifier)
-        print(frame)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func bindViewModel() {
+    func bind() {
         collectionView.rx.itemSelected
-            .asDriver()
-            .drive(onNext: { indexPath in
-                guard let profileFilterCell = self.collectionView.cellForItem(at: indexPath) as? ProfileFilterCell else { return }
+            .withUnretained(self)
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { owner, indexPath in
+                guard let profileFilterCell = owner.collectionView.cellForItem(at: indexPath) as? ProfileFilterCell else { return }
                 let xPosition = profileFilterCell.frame.origin.x
                 UIView.animate(withDuration: 0.3) {
                     self.underlineView.frame.origin.x = xPosition
@@ -49,19 +48,18 @@ class ProfileFilterView: UIView {
             })
             .disposed(by: disposeBag)
     }
-    //frame이 생긴이후에 실행 함수
     override func layoutSubviews() {
         addSubview(collectionView)
-                collectionView.snp.makeConstraints { make in
-                    make.top.left.right.equalToSuperview()
-                    make.height.equalTo(50)
-                }
-                addSubview(underlineView)
-                underlineView.snp.makeConstraints { make in
-                    make.bottom.leading.equalToSuperview()
-                    make.height.equalTo(2)
-                    make.width.equalTo(frame.width / 3)
-                }
+        collectionView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            make.height.equalTo(50)
+        }
+        addSubview(underlineView)
+        underlineView.snp.makeConstraints { make in
+            make.bottom.leading.equalToSuperview()
+            make.height.equalTo(2)
+            make.width.equalTo(frame.width / 3)
+        }
     }
 }
 

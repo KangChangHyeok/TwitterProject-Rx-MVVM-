@@ -45,9 +45,9 @@ class ProfileViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         collectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
+        
     }
 }
-
 extension ProfileViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return 3
@@ -58,7 +58,7 @@ extension ProfileViewController: UICollectionViewDataSource {
     }
 }
 
-    
+
 extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
@@ -69,8 +69,8 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeader
-//        header.backButton.rx.tap
-//            .bind(to: viewModel.input)
+        //        header.backButton.rx.tap
+        //            .bind(to: viewModel.input)
         return header
     }
 }
