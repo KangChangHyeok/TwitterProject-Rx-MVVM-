@@ -111,3 +111,19 @@ func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
 
     return returnValue
 }
+// MARK: - UIResponder
+
+extension UIResponder {
+    
+    var superViewController: UIViewController? {
+        var responder = self
+        while let nextResponder = responder.next {
+            responder = nextResponder
+            if let superViewCOntroller = responder as? UIViewController {
+                return superViewCOntroller
+            }
+        }
+        return nil
+    }
+}
+

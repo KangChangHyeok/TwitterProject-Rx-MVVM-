@@ -12,6 +12,7 @@ target 'TwitterProject(Rx+MVVM)' do
 	pod 'FirebaseStorage'
 	pod 'FirebaseDatabase'
 	pod 'SDWebImage', '~> 5.0'
+	pod 'RxGesture'
   # Pods for TwitterProject(Rx+MVVM)
 
 end

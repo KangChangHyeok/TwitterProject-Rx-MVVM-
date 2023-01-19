@@ -19,10 +19,12 @@ class FeedViewModel: ViewModelType {
     
     struct Input {
         let userData = PublishRelay<User>()
+        let cellProfileImageTapped = PublishRelay<Void>()
     }
     struct Output {
         let userData: Driver<User>
         let userTweets: Observable<[Tweet]>
+        let pushProfileViewController: Driver<Void>
     }
     let input = Input()
     lazy var output = transform(input: input)
@@ -32,7 +34,10 @@ class FeedViewModel: ViewModelType {
         let userData = Observable.just(self.user)
             .asDriver(onErrorDriveWith: .empty())
         let userTweets = TweetService.shared.fetchTweetsRx()
+        
+        let pushProfileViewController = input.cellProfileImageTapped
+            .asDriver(onErrorDriveWith: .empty())
             
-        return Output(userData: userData, userTweets: userTweets)
+        return Output(userData: userData, userTweets: userTweets, pushProfileViewController: pushProfileViewController)
     }
 }
