@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ConversationsView: UIViewController {
+class ConversationsViewController: UIViewController {
     // MARK: - Properties
     // MARK: - Lifecycle
     

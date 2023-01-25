@@ -28,7 +28,6 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     }()
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -37,7 +36,6 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     func logUserOut() {
         viewModel.logUserOut()
     }
-    
     // MARK: - Methods
     func bindViewModel() {
 //        logUserOut()
@@ -45,12 +43,15 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)
             .disposed(by: disposeBag)
+        
         addTweetButton.rx.tap
             .bind(to: viewModel.input.addTweetButtonTapped)
             .disposed(by: disposeBag)
+        
         // MARK: - Output
         viewModel.output.authenticationSuccess
             .drive(onNext: { [weak self] _ in
+                
                 self?.configureView()
                 self?.configureUI()
             })
@@ -69,6 +70,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             })
             .disposed(by: disposeBag)
         //user 정보 가져오면 각 viewModel input으로 넣어주기
+        // issue : viewdidAppeaer 될때마다 userData가 계속 넘어오면서 계속 새로운 화면 생성(feedViewController)
         viewModel.output.userData
             .subscribe(onNext: { [weak self] user in
                 guard let navigationController = self?.viewControllers?[0] as? UINavigationController else { return }
@@ -98,9 +100,9 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         tabBar.backgroundColor = .white
         let feedViewController = FeedViewController()
         let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
-        let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreView())
-        let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationView())
-        let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsView())
+        let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
+        let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
+        let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
     func configureUI() {

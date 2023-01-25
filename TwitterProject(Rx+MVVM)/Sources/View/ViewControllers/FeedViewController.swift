@@ -11,7 +11,7 @@ import SnapKit
 import SDWebImage
 import RxSwift
 import RxCocoa
-
+import RxViewController
 
 
 class FeedViewController: UIViewController, ViewModelBindable {
@@ -44,6 +44,12 @@ class FeedViewController: UIViewController, ViewModelBindable {
     }
     
     func bindViewModel() {
+        
+        self.rx.viewDidAppear
+            .subscribe(onNext: { _ in
+                print("viewDidAppear")
+            })
+            .disposed(by: disposeBag)
         viewModel.output.userData
             .drive(onNext: { [weak self] user in
                 let profileImageView = UIImageView()

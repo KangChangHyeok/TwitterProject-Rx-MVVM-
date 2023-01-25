@@ -21,7 +21,6 @@ class CaptionTextView: UITextView {
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         
-        backgroundColor = .twitterBlue
         font = UIFont.systemFont(ofSize: 16)
         isScrollEnabled = false
     }
