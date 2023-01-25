@@ -26,14 +26,15 @@ class ProfileFilterCell: UICollectionViewCell {
     }
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = .white
         
+    }
+    override func layoutSubviews() {
+        backgroundColor = .white
         addSubview(titleLabel)
         titleLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
     }
-    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

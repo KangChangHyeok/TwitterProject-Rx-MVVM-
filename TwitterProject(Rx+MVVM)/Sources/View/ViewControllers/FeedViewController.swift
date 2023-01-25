@@ -65,7 +65,8 @@ class FeedViewController: UIViewController, ViewModelBindable {
         viewModel.output.userTweets
             .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweet, cell in
                 let tweetCellModel = TweetCellModel(tweet: tweet)
-                cell.cellModel = tweetCellModel
+//                cell.cellModel = tweetCellModel
+                cell.bind(cellModel: tweetCellModel)
             }
             .disposed(by: disposeBag)
         viewModel.output.pushProfileViewController

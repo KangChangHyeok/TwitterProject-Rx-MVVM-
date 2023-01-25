@@ -10,11 +10,10 @@ import RxSwift
 import RxCocoa
 
 class ProfileViewModel: ViewModelType {
+    
     struct Input {
-        
     }
     struct Output {
-        
     }
     let input = Input()
     lazy var output = transform(input: input)

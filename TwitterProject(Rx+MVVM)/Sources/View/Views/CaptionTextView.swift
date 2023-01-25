@@ -21,15 +21,16 @@ class CaptionTextView: UITextView {
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         
-        addSubview(placeholderLabel)
-        placeholderLabel.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 4, bottom: 0, right: 0))
-        }
         backgroundColor = .twitterBlue
         font = UIFont.systemFont(ofSize: 16)
         isScrollEnabled = false
     }
-    
+    override func layoutSubviews() {
+        addSubview(placeholderLabel)
+        placeholderLabel.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 4, bottom: 0, right: 0))
+        }
+    }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
