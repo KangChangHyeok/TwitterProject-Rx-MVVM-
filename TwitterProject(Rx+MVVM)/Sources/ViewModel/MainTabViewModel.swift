@@ -21,6 +21,7 @@ class MainTabViewModel: ViewModelType {
         let authenticationFailure: Driver<Void>
         let userData: Observable<User>
         let showUploadTweetViewController: Driver<User>
+        let configureUI: Driver<Void>
     }
     let input = Input()
     lazy var output = transform(input: input)
@@ -48,6 +49,10 @@ class MainTabViewModel: ViewModelType {
             })
             .asDriver(onErrorDriveWith: .empty())
         
+        // 로그인 성공시 기본화면 설정(addTweetButton, 탭바 아이템 누를시 나오는 각 화면 설정) , 최초 1회만 실행
+        
+        let configureUI = authenticationSuccess.take(1).asDriver(onErrorDriveWith: .empty())
+        
         //로그인 성공 한 경우에만 유저 정보 가져오기.
         let userData = authenticationSuccess
             .flatMap { _ in
@@ -60,7 +65,7 @@ class MainTabViewModel: ViewModelType {
             }
             .asDriver(onErrorDriveWith: .empty())
             
-        return Output(authenticationSuccess: authenticationSuccess.asDriver(onErrorDriveWith: .empty()), authenticationFailure: authenticationFailure, userData: userData, showUploadTweetViewController: showUploadTweetViewController)
+        return Output(authenticationSuccess: authenticationSuccess.asDriver(onErrorDriveWith: .empty()), authenticationFailure: authenticationFailure, userData: userData, showUploadTweetViewController: showUploadTweetViewController, configureUI: configureUI)
     }
     
     func logUserOut() {

@@ -44,10 +44,9 @@ class FeedViewController: UIViewController, ViewModelBindable {
     }
     
     func bindViewModel() {
-        
-        self.rx.viewDidAppear
-            .subscribe(onNext: { _ in
-                print("viewDidAppear")
+        self.rx.viewWillAppear.asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.navigationController?.navigationBar.isHidden = false
             })
             .disposed(by: disposeBag)
         viewModel.output.userData
@@ -71,13 +70,14 @@ class FeedViewController: UIViewController, ViewModelBindable {
         viewModel.output.userTweets
             .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweet, cell in
                 let tweetCellModel = TweetCellModel(tweet: tweet)
-//                cell.cellModel = tweetCellModel
+                cell.cellModel = tweetCellModel
                 cell.bind(cellModel: tweetCellModel)
             }
             .disposed(by: disposeBag)
         viewModel.output.pushProfileViewController
-            .drive(onNext: { [weak self] _ in
-                let profileViewModel = ProfileViewModel()
+            .drive(onNext: { [weak self] user in
+                let profileViewModel = ProfileViewModel.shared
+                profileViewModel.user = user
                 var profileViewController = ProfileViewController()
                 profileViewController.bind(viewModel: profileViewModel)
                 self?.navigationController?.pushViewController(profileViewController, animated: true)

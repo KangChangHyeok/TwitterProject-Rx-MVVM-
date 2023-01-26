@@ -6,9 +6,14 @@
 //
 
 import UIKit
+import SDWebImage
+import RxCocoa
+import RxSwift
 
 class ProfileHeaderView: UICollectionReusableView {
-
+    
+    var viewModel: ProfileViewModel!
+    var disposeBag = DisposeBag()
     let filterBar = ProfileFilterView()
     private lazy var containerView: UIView = {
         let view = UIView()
@@ -58,6 +63,20 @@ class ProfileHeaderView: UICollectionReusableView {
         label.text = "This is a user bio that will span more than on line for test purposes"
         return label
     }()
+    
+    private let followingLabel: UILabel = {
+        let label = UILabel()
+        label.isUserInteractionEnabled = true
+        
+        return label
+    }()
+    
+    private let followersLabel: UILabel = {
+        let label = UILabel()
+        label.isUserInteractionEnabled = true
+        
+        return label
+    }()
     override init(frame: CGRect) {
         super.init(frame: frame)
     }
@@ -104,10 +123,52 @@ class ProfileHeaderView: UICollectionReusableView {
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 12))
         }
         
+        let followStack = UIStackView(arrangedSubviews: [followingLabel, followersLabel])
+        followStack.axis = .horizontal
+        followStack.spacing = 8
+        followStack.distribution = .fillEqually
+        
+        addSubview(followStack)
+        followStack.snp.makeConstraints { make in
+            make.top.equalTo(userDetailsStackView.snp.bottom).offset(8)
+            make.left.equalToSuperview().offset(12)
+        }
+        
         addSubview(filterBar)
         filterBar.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(52)
         }
+    }
+    func bindViewModel() {
+        viewModel.output.userProfileImageUrl
+            .drive(onNext: { [weak self] url in
+                self?.profileImageView.sd_setImage(with: url)
+            })
+            .disposed(by: disposeBag)
+        viewModel.output.followingString
+            .bind(to: followingLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        viewModel.output.followersString
+            .bind(to: followersLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        viewModel.output.userFullName
+            .bind(to: fullNameLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel.output.userName
+            .bind(to: userNameLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel.output.editProfileButtonTitle
+            .bind(to: editProfileFollowButton.rx.title())
+            .disposed(by: disposeBag)
+        viewModel.output.followButtonTitle
+            .bind(to: editProfileFollowButton.rx.title())
+            .disposed(by: disposeBag)
+        backButton.rx.tap.asDriver()
+            .drive(onNext: { [weak self] _ in
+                let profileViewController = self?.superViewController as? ProfileViewController
+                profileViewController?.navigationController?.popViewController(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }

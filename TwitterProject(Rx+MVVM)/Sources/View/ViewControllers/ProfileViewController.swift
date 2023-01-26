@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import SnapKit
+import RxViewController
 
 class ProfileViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
@@ -17,7 +18,6 @@ class ProfileViewController: UIViewController, ViewModelBindable {
     var disposeBag = DisposeBag()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
@@ -45,7 +45,6 @@ class ProfileViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         collectionView.rx.setDataSource(self)
             .disposed(by: disposeBag)
-        
     }
 }
 extension ProfileViewController: UICollectionViewDataSource {
@@ -69,8 +68,8 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeaderView
-        //        header.backButton.rx.tap
-        //            .bind(to: viewModel.input)
+        header.viewModel = ProfileViewModel.shared
+        header.bindViewModel()
         return header
     }
 }
