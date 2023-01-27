@@ -30,8 +30,6 @@ class ProfileFilterView: UIView {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
-        collectionView.delegate = self
-        collectionView.dataSource = self
         return collectionView
     }()
     private let underlineView: UIView = {
@@ -52,6 +50,10 @@ class ProfileFilterView: UIView {
     }
     
     func bind() {
+        collectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+        collectionView.rx.setDataSource(self)
+            .disposed(by: disposeBag)
         collectionView.rx.itemSelected
             .withUnretained(self)
             .asDriver(onErrorDriveWith: .empty())
@@ -81,7 +83,7 @@ class ProfileFilterView: UIView {
 
 extension ProfileFilterView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 3
+        return ProfileFilterOptions.allCases.count
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: profileFilterCellIdentifier, for: indexPath) as! ProfileFilterCell

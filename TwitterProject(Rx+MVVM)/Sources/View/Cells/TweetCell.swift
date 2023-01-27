@@ -13,7 +13,6 @@ import RxGesture
 class TweetCell: UICollectionViewCell {
     
     // MARK: - Properties
-//    var cellModel: TweetCellModel!
     var disposeBag = DisposeBag()
     
     let profileImageView: UIImageView = {
@@ -119,28 +118,24 @@ class TweetCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func didMoveToSuperview() {
-//        profileImageView.sd_setImage(with: cellModel.profileImageUrl)
-        profileImageView.rx
-            .tapGesture()
-            .when(.recognized)
-            .map({ _ in
-                ()
-            })
-            .withUnretained(self)
-            .subscribe(onNext: { owner, _ in
-                guard let feedViewController = owner.superViewController as? FeedViewController else { return }
-                feedViewController.viewModel.input.cellProfileImageTapped.accept(())
-            })
-            .disposed(by: disposeBag)
-        
-//        captionLabel.text = cellModel.captionLabelText
-//        informationLabel.attributedText = cellModel.informationText
-    }
-    
     func bind(cellModel: TweetCellModel) {
+        //        profileImageView.sd_setImage(with: cellModel.profileImageUrl)
+                profileImageView.rx
+                    .tapGesture()
+                    .when(.recognized)
+                    .map({ _ in
+                        ()
+                    })
+                    .withUnretained(self)
+                    .subscribe(onNext: { owner, _ in
+                        guard let feedViewController = owner.superViewController as? FeedViewController else { return }
+                        feedViewController.viewModel.input.cellProfileImageTapped.accept(())
+                    })
+                    .disposed(by: disposeBag)
+                
+        //        captionLabel.text = cellModel.captionLabelText
+        //        informationLabel.attributedText = cellModel.informationText
     }
-    
 }
 
 

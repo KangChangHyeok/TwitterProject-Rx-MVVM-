@@ -17,9 +17,9 @@
 		639031AE29407902000D4795 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 639031AC29407902000D4795 /* LaunchScreen.storyboard */; };
 		639031B629407987000D4795 /* MainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031B529407987000D4795 /* MainTabViewController.swift */; };
 		639031BD29407F07000D4795 /* FeedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031BC29407F07000D4795 /* FeedViewController.swift */; };
-		639031BF29408146000D4795 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031BE29408146000D4795 /* ExploreView.swift */; };
-		639031C1294081BA000D4795 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C0294081BA000D4795 /* NotificationView.swift */; };
-		639031C3294081D3000D4795 /* ConversationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C2294081D3000D4795 /* ConversationsView.swift */; };
+		639031BF29408146000D4795 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031BE29408146000D4795 /* ExploreViewController.swift */; };
+		639031C1294081BA000D4795 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C0294081BA000D4795 /* NotificationViewController.swift */; };
+		639031C3294081D3000D4795 /* ConversationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C2294081D3000D4795 /* ConversationsViewController.swift */; };
 		639031C52940A449000D4795 /* Extenstions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C42940A449000D4795 /* Extenstions.swift */; };
 		639031C82940BBA0000D4795 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C72940BBA0000D4795 /* LoginViewController.swift */; };
 		639031CA2940BC45000D4795 /* RegisterationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 639031C92940BC45000D4795 /* RegisterationViewController.swift */; };
@@ -58,9 +58,9 @@
 		639031AF29407902000D4795 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		639031B529407987000D4795 /* MainTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabViewController.swift; sourceTree = "<group>"; };
 		639031BC29407F07000D4795 /* FeedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewController.swift; sourceTree = "<group>"; };
-		639031BE29408146000D4795 /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
-		639031C0294081BA000D4795 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
-		639031C2294081D3000D4795 /* ConversationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsView.swift; sourceTree = "<group>"; };
+		639031BE29408146000D4795 /* ExploreViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
+		639031C0294081BA000D4795 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
+		639031C2294081D3000D4795 /* ConversationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationsViewController.swift; sourceTree = "<group>"; };
 		639031C42940A449000D4795 /* Extenstions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extenstions.swift; sourceTree = "<group>"; };
 		639031C72940BBA0000D4795 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		639031C92940BC45000D4795 /* RegisterationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterationViewController.swift; sourceTree = "<group>"; };
@@ -131,9 +131,9 @@
 				639031C62940BB8D000D4795 /* Authentication */,
 				639031B529407987000D4795 /* MainTabViewController.swift */,
 				639031BC29407F07000D4795 /* FeedViewController.swift */,
-				639031BE29408146000D4795 /* ExploreView.swift */,
-				639031C0294081BA000D4795 /* NotificationView.swift */,
-				639031C2294081D3000D4795 /* ConversationsView.swift */,
+				639031BE29408146000D4795 /* ExploreViewController.swift */,
+				639031C0294081BA000D4795 /* NotificationViewController.swift */,
+				639031C2294081D3000D4795 /* ConversationsViewController.swift */,
 				63A44CC12962DA6E005B1F2A /* UploadTweetController.swift */,
 				634FE3CC2966D45800A5B62F /* ProfileViewController.swift */,
 			);
@@ -414,7 +414,7 @@
 				639031BD29407F07000D4795 /* FeedViewController.swift in Sources */,
 				639031C52940A449000D4795 /* Extenstions.swift in Sources */,
 				63954A6129599BD500EF7E77 /* UserService.swift in Sources */,
-				639031BF29408146000D4795 /* ExploreView.swift in Sources */,
+				639031BF29408146000D4795 /* ExploreViewController.swift in Sources */,
 				639031B629407987000D4795 /* MainTabViewController.swift in Sources */,
 				63149319297680130041D426 /* ProfileFilterView.swift in Sources */,
 				63A44CCD296434D0005B1F2A /* TweetCell.swift in Sources */,
@@ -428,8 +428,8 @@
 				63FB3A5529485A8700E7EAD2 /* RegisterationViewModel.swift in Sources */,
 				63954A632959A0F000EF7E77 /* User.swift in Sources */,
 				63A44CC22962DA6E005B1F2A /* UploadTweetController.swift in Sources */,
-				639031C1294081BA000D4795 /* NotificationView.swift in Sources */,
-				639031C3294081D3000D4795 /* ConversationsView.swift in Sources */,
+				639031C1294081BA000D4795 /* NotificationViewController.swift in Sources */,
+				639031C3294081D3000D4795 /* ConversationsViewController.swift in Sources */,
 				63A44CC7296409AB005B1F2A /* CaptionTextView.swift in Sources */,
 				631493172974F7B80041D426 /* ProfileHeaderView.swift in Sources */,
 				63954A382953098900EF7E77 /* Protocols.swift in Sources */,

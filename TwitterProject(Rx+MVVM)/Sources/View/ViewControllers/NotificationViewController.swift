@@ -8,7 +8,7 @@
 
 import UIKit
 
-class NotificationView: UIViewController {
+class NotificationViewController: UIViewController {
     // MARK: - Properties
     // MARK: - Lifecycle
     

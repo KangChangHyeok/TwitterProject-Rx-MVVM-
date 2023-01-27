@@ -8,7 +8,6 @@ import UIKit
 import SnapKit
 import RxSwift
 import RxCocoa
-import RxViewController
 
 class MainTabViewController: UITabBarController, ViewModelBindable {
     
@@ -28,7 +27,6 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     }()
     
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -37,7 +35,6 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     func logUserOut() {
         viewModel.logUserOut()
     }
-    
     // MARK: - Methods
     func bindViewModel() {
 //        logUserOut()
@@ -48,13 +45,17 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         addTweetButton.rx.tap
             .bind(to: viewModel.input.addTweetButtonTapped)
             .disposed(by: disposeBag)
+        
         // MARK: - Output
-        viewModel.output.authenticationSuccess
+        
+        // 유저 인증 성공시 화면 구성하기
+        viewModel.output.configureUI
             .drive(onNext: { [weak self] _ in
                 self?.configureView()
                 self?.configureUI()
             })
             .disposed(by: disposeBag)
+        // 유저 인증 실패(현재 로그인한 유저가 없을 경우)시 로그인 화면으로 이동
         viewModel.output.authenticationFailure
             .drive(onNext: { [weak self] _ in
                 self?.view.backgroundColor = .twitterBlue
@@ -73,6 +74,8 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             .subscribe(onNext: { [weak self] user in
                 guard let navigationController = self?.viewControllers?[0] as? UINavigationController else { return }
                 guard var feed = navigationController.viewControllers.first as? FeedViewController else { return }
+                feed.collectionView.dataSource = nil
+                feed.collectionView.delegate = nil
                 let feedViewModel = FeedViewModel(user: user)
                 feed.bind(viewModel: feedViewModel)
             })
@@ -94,13 +97,16 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         navigationController.tabBarItem.image = image
         return navigationController
     }
+    //앱 실행시 초기 한번만 실행 - (take(1))
     func configureView() {
+        self.view.backgroundColor = .white
+        self.tabBar.barTintColor = .white
         tabBar.backgroundColor = .white
         let feedViewController = FeedViewController()
         let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
-        let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreView())
-        let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationView())
-        let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsView())
+        let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
+        let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
+        let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
     func configureUI() {

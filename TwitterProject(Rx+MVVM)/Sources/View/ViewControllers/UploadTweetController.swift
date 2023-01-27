@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import SDWebImage
+import RxViewController
 
 class UploadTweetViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
@@ -17,7 +18,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
     var viewModel: UploadTweetViewModel!
     var disposeBag = DisposeBag()
     
-    private lazy var uploadTweetButton: UIButton = {
+    private var uploadTweetButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .twitterBlue
         button.setTitle("Tweet", for: .normal)
@@ -26,6 +27,13 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         button.setTitleColor(.white, for: .normal)
         button.frame = CGRect(x: 0, y: 0, width: 64, height: 32)
         button.layer.cornerRadius = 32 / 2
+        return button
+    }()
+    private var cancelButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Cancel", for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
+        button.titleLabel?.tintColor = .twitterBlue
         return button
     }()
     private let profileImageView: UIImageView = {
@@ -47,10 +55,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         super.viewDidLoad()
         configureUI()
     }
-    // MARK: - Selectors
-    @objc func handleCancel() {
-        self.dismiss(animated: true)
-    }
+    
     // MARK: - Methods
     func bindViewModel() {
         // MARK: - Input
@@ -60,6 +65,11 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         uploadTweetButton.rx.tap
             .bind(to: viewModel.input.uploadTweetButtonTapped)
+            .disposed(by: disposeBag)
+        cancelButton.rx.tap
+            .subscribe(onNext: { [ weak self] _ in
+                self?.dismiss(animated: true)
+            })
             .disposed(by: disposeBag)
         
         // MARK: - Output
@@ -85,6 +95,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
                 self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
+        
     }
     
     func configureUI() {
@@ -92,7 +103,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.isTranslucent = false
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(handleCancel))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: uploadTweetButton)
         
         let stackView = UIStackView(arrangedSubviews: [profileImageView, captionTextView])

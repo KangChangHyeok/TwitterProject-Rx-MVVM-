@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ExploreView: UIViewController {
+class ExploreViewController: UIViewController {
     // MARK: - Properties
     // MARK: - Lifecycle
     

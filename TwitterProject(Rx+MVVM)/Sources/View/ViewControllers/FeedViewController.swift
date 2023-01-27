@@ -11,7 +11,7 @@ import SnapKit
 import SDWebImage
 import RxSwift
 import RxCocoa
-
+import RxViewController
 
 
 class FeedViewController: UIViewController, ViewModelBindable {
@@ -44,6 +44,11 @@ class FeedViewController: UIViewController, ViewModelBindable {
     }
     
     func bindViewModel() {
+        self.rx.viewWillAppear.asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.navigationController?.navigationBar.isHidden = false
+            })
+            .disposed(by: disposeBag)
         viewModel.output.userData
             .drive(onNext: { [weak self] user in
                 let profileImageView = UIImageView()
@@ -65,13 +70,13 @@ class FeedViewController: UIViewController, ViewModelBindable {
         viewModel.output.userTweets
             .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweet, cell in
                 let tweetCellModel = TweetCellModel(tweet: tweet)
-//                cell.cellModel = tweetCellModel
                 cell.bind(cellModel: tweetCellModel)
             }
             .disposed(by: disposeBag)
         viewModel.output.pushProfileViewController
-            .drive(onNext: { [weak self] _ in
+            .drive(onNext: { [weak self] user in
                 let profileViewModel = ProfileViewModel()
+                profileViewModel.user = user
                 var profileViewController = ProfileViewController()
                 profileViewController.bind(viewModel: profileViewModel)
                 self?.navigationController?.pushViewController(profileViewController, animated: true)
