@@ -36,7 +36,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         button.titleLabel?.tintColor = .twitterBlue
         return button
     }()
-    private let profileImageView: UIImageView = {
+    private var profileImageView: UIImageView = {
        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -58,8 +58,10 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
     
     // MARK: - Methods
     func bindViewModel() {
-        // MARK: - Input
 
+        self.rx.viewWillAppear
+            .bind(to: viewModel.input.viewWillAppear)
+            .disposed(by: disposeBag)
         captionTextView.rx.text.orEmpty
             .bind(to: viewModel.input.text)
             .disposed(by: disposeBag)
@@ -72,12 +74,10 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
             })
             .disposed(by: disposeBag)
         
-        // MARK: - Output
 
-        viewModel.output.userData
-            .drive(onNext: { [weak self] user in
-                guard let imageUrl = user.profileImageUrl else { return }
-                self?.profileImageView.sd_setImage(with: imageUrl)
+        viewModel.output.userProfileImageUrl.asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] url in
+                self?.profileImageView.sd_setImage(with: url)
             })
             .disposed(by: disposeBag)
         viewModel.output.showCaptionTextView

@@ -6,42 +6,53 @@
 //
 
 import Foundation
+import SDWebImage
 import RxSwift
 import RxCocoa
 
 class FeedViewModel: ViewModelType {
     
-    let user: User
-    
-    init(user: User) {
-        self.user = user
-    }
-    
     struct Input {
-        let userData = PublishRelay<User>()
+        let viewWillAppear = PublishRelay<Bool>()
         let cellProfileImageTapped = PublishRelay<Void>()
     }
     struct Output {
-        let userData: Driver<User>
+        let userProfileImageView: Driver<UIImageView>
         let userTweets: Observable<[Tweet]>
-        let pushProfileViewController: Driver<User>
+        let pushProfileViewController: Driver<Void>
     }
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        let userData = Observable.just(self.user)
-            .asDriver(onErrorDriveWith: .empty())
-        let userTweets = TweetService.shared.fetchTweetsRx()
         
-        let pushProfileViewController = input.cellProfileImageTapped
-            .withUnretained(self)
-            .map({ weakself, _ in
-                return weakself.user
-            })
-            .asDriver(onErrorDriveWith: .empty())
-            
-        return Output(userData: userData, userTweets: userTweets, pushProfileViewController: pushProfileViewController)
+        let viewWillAppear = input.viewWillAppear.map { _ in () }.share()
+        
+        let userProfileImageView = viewWillAppear
+            .flatMap { _ in
+                UserService.shared.fetchUserRx()
+            }
+            .map { user in
+                let profileImageView = UIImageView()
+                profileImageView.snp.makeConstraints { make in
+                    make.size.equalTo(CGSize(width: 32, height: 32))
+                }
+                profileImageView.layer.cornerRadius = 32 / 2
+                profileImageView.layer.masksToBounds = true
+                
+                guard let profileImageUrl = user.profileImageUrl else { return UIImageView() }
+                profileImageView.sd_setImage(with: profileImageUrl)
+                return profileImageView
+            }.asDriver(onErrorDriveWith: .empty())
+        
+        let userTweets = viewWillAppear.flatMap { _ in
+            TweetService.shared.fetchTweetsRx()
+        }
+        
+        let pushProfileViewController = input.cellProfileImageTapped.asDriver(onErrorDriveWith: .empty())
+        
+        
+        return Output(userProfileImageView: userProfileImageView, userTweets: userTweets, pushProfileViewController: pushProfileViewController)
     }
 }

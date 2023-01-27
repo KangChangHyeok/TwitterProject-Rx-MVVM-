@@ -31,13 +31,9 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         super.viewDidLoad()
     }
     
-    // MARK: - API
-    func logUserOut() {
-        viewModel.logUserOut()
-    }
     // MARK: - Methods
     func bindViewModel() {
-//        logUserOut()
+//        viewModel.logUserOut()
         // MARK: - Input
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)
@@ -48,13 +44,14 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         
         // MARK: - Output
         
-        // 유저 인증 성공시 화면 구성하기
+        // 유저 인증 성공시 화면 구성하기(최초 1회만)
         viewModel.output.configureUI
             .drive(onNext: { [weak self] _ in
-                self?.configureView()
+                self?.configureViewController()
                 self?.configureUI()
             })
             .disposed(by: disposeBag)
+        
         // 유저 인증 실패(현재 로그인한 유저가 없을 경우)시 로그인 화면으로 이동
         viewModel.output.authenticationFailure
             .drive(onNext: { [weak self] _ in
@@ -69,20 +66,10 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
                 self?.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
-        //user 정보 가져오면 각 viewModel input으로 넣어주기
-        viewModel.output.userData
-            .subscribe(onNext: { [weak self] user in
-                guard let navigationController = self?.viewControllers?[0] as? UINavigationController else { return }
-                guard var feed = navigationController.viewControllers.first as? FeedViewController else { return }
-                feed.collectionView.dataSource = nil
-                feed.collectionView.delegate = nil
-                let feedViewModel = FeedViewModel(user: user)
-                feed.bind(viewModel: feedViewModel)
-            })
-            .disposed(by: disposeBag)
-        viewModel.output.showUploadTweetViewController
-            .drive(onNext: { [weak self] user in
-                let viewModel = UploadTweetViewModel(user: user)
+        //우측 하단 버튼 누를 경우 uploadTweetViewController화면으로 이동
+        addTweetButton.rx.tap.asDriver()
+            .drive(onNext: { [weak self] _ in
+                let viewModel = UploadTweetViewModel()
                 var uploadTweetViewController = UploadTweetViewController()
                 uploadTweetViewController.bind(viewModel: viewModel)
                 let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
@@ -92,23 +79,22 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             .disposed(by: disposeBag)
     }
     
-    func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        navigationController.tabBarItem.image = image
-        return navigationController
-    }
-    //앱 실행시 초기 한번만 실행 - (take(1))
-    func configureView() {
+    func configureViewController() {
         self.view.backgroundColor = .white
         self.tabBar.barTintColor = .white
         tabBar.backgroundColor = .white
-        let feedViewController = FeedViewController()
+        // tabBar viewcontrollers에 들어가는 각 ViewController viewModel binding
+        var feedViewController = FeedViewController()
+        let feedViewModel = FeedViewModel()
+        feedViewController.bind(viewModel: feedViewModel)
         let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
+        
         let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
         let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
         let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
+    
     func configureUI() {
         view.addSubview(addTweetButton)
         addTweetButton.snp.makeConstraints { make in
@@ -116,5 +102,11 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             make.bottom.equalTo(tabBar.snp.top).offset(-16)
             make.size.equalTo(CGSize(width: 56, height: 56))
         }
+    }
+    
+    fileprivate func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
+        let navigationController = UINavigationController(rootViewController: rootViewController)
+        navigationController.tabBarItem.image = image
+        return navigationController
     }
 }

@@ -6,17 +6,18 @@
 //
 
 import Foundation
-import RxSwift
-import RxCocoa
 import SDWebImage
 import FirebaseAuth
+import RxSwift
+import RxCocoa
+
 
 class ProfileViewModel: ViewModelType {
     
     var user: User?
     
     struct Input {
-        let viewWillAppear = PublishRelay<Void>()
+        let viewWillAppear = PublishRelay<Bool>()
     }
     struct Output {
         let userProfileImageUrl: Driver<URL?>

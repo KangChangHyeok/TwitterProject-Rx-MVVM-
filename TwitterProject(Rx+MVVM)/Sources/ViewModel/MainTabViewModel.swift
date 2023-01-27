@@ -17,10 +17,7 @@ class MainTabViewModel: ViewModelType {
         let addTweetButtonTapped = PublishRelay<Void>()
     }
     struct Output {
-        let authenticationSuccess: Driver<Void>
         let authenticationFailure: Driver<Void>
-        let userData: Observable<User>
-        let showUploadTweetViewController: Driver<User>
         let configureUI: Driver<Void>
     }
     let input = Input()
@@ -28,19 +25,22 @@ class MainTabViewModel: ViewModelType {
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        let viewDidAppear = input.viewDidAppear.map { _ in ()}
-        let authenticationResult = viewDidAppear
+        
+        let authenticationResult = input.viewDidAppear.map { _ in ()}
             .flatMap { _ in
                 AuthService.shared.authenticateUserAndConfigureUIRx()
             }
             .share()
         
-        let authenticationSuccess = authenticationResult
+        // 로그인 성공시 기본화면 설정(addTweetButton, 탭바 아이템 누를시 나오는 각 화면 설정) , 최초 1회만 실행
+        
+        let configureUI = authenticationResult
             .filter { $0 == true }
             .map({ _ in
                 ()
             })
             .share()
+            .take(1).asDriver(onErrorDriveWith: .empty())
         
         let authenticationFailure = authenticationResult
             .filter { $0 == false }
@@ -49,23 +49,8 @@ class MainTabViewModel: ViewModelType {
             })
             .asDriver(onErrorDriveWith: .empty())
         
-        // 로그인 성공시 기본화면 설정(addTweetButton, 탭바 아이템 누를시 나오는 각 화면 설정) , 최초 1회만 실행
-        
-        let configureUI = authenticationSuccess.take(1).asDriver(onErrorDriveWith: .empty())
-        
-        //로그인 성공 한 경우에만 유저 정보 가져오기.
-        let userData = authenticationSuccess
-            .flatMap { _ in
-                UserService.shared.fetchUserRx()
-            }
-            .share()
-        let showUploadTweetViewController = input.addTweetButtonTapped
-            .flatMap { _ in
-                UserService.shared.fetchUserRx()
-            }
-            .asDriver(onErrorDriveWith: .empty())
-            
-        return Output(authenticationSuccess: authenticationSuccess.asDriver(onErrorDriveWith: .empty()), authenticationFailure: authenticationFailure, userData: userData, showUploadTweetViewController: showUploadTweetViewController, configureUI: configureUI)
+        return Output(authenticationFailure: authenticationFailure,
+                      configureUI: configureUI)
     }
     
     func logUserOut() {

@@ -67,14 +67,12 @@ class ProfileHeaderView: UICollectionReusableView {
     private let followingLabel: UILabel = {
         let label = UILabel()
         label.isUserInteractionEnabled = true
-        
         return label
     }()
     
     private let followersLabel: UILabel = {
         let label = UILabel()
         label.isUserInteractionEnabled = true
-        
         return label
     }()
     override init(frame: CGRect) {
