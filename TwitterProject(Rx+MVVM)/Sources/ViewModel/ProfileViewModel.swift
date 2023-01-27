@@ -13,10 +13,6 @@ import FirebaseAuth
 
 class ProfileViewModel: ViewModelType {
     
-    static let shared = ProfileViewModel()
-    
-    private init() {}
-    
     var user: User?
     
     struct Input {

@@ -75,7 +75,7 @@ class FeedViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         viewModel.output.pushProfileViewController
             .drive(onNext: { [weak self] user in
-                let profileViewModel = ProfileViewModel.shared
+                let profileViewModel = ProfileViewModel()
                 profileViewModel.user = user
                 var profileViewController = ProfileViewController()
                 profileViewController.bind(viewModel: profileViewModel)

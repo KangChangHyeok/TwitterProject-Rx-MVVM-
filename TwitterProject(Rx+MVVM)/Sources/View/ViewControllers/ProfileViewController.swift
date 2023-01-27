@@ -68,7 +68,7 @@ extension ProfileViewController: UICollectionViewDelegateFlowLayout {
     }
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeaderView
-        header.viewModel = ProfileViewModel.shared
+        header.viewModel = self.viewModel
         header.bindViewModel()
         return header
     }
