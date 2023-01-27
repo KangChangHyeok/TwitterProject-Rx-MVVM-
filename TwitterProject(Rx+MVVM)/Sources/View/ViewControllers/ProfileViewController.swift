@@ -25,13 +25,13 @@ class ProfileViewController: UIViewController, ViewModelBindable {
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.isHidden = true
     }
-    // MARK: - Selectros
     // MARK: - Methods
     
     func configureUI() {
         collectionView.contentInsetAdjustmentBehavior = .never
-        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.register(ProfileHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
+        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
@@ -41,9 +41,26 @@ class ProfileViewController: UIViewController, ViewModelBindable {
     }
     
     func bindViewModel() {
-        collectionView.rx.setDelegate(self)
+        
+//        collectionView.rx.setDataSource(self)
+//            .disposed(by: disposeBag)
+        // - input
+        self.rx.viewWillAppear
+            .map { _ in
+                ()
+            }
+            .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
-        collectionView.rx.setDataSource(self)
+        // - output
+        
+        viewModel.output.userTweets
+            .bind(to: collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweet, cell in
+                let tweetCellModel = TweetCellModel(tweet: tweet)
+                cell.cellModel = tweetCellModel
+                cell.bind(cellModel: tweetCellModel)
+            }
+            .disposed(by: disposeBag)
+        collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
     }
 }

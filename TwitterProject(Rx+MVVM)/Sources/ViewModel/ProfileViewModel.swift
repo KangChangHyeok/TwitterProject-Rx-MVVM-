@@ -20,7 +20,7 @@ class ProfileViewModel: ViewModelType {
     var user: User?
     
     struct Input {
-        
+        let viewWillAppear = PublishRelay<Void>()
     }
     struct Output {
         let userProfileImageUrl: Driver<URL?>
@@ -30,6 +30,7 @@ class ProfileViewModel: ViewModelType {
         let userName: Observable<String?>
         let editProfileButtonTitle: Observable<String>
         let followButtonTitle: Observable<String>
+        let userTweets: Observable<[Tweet]>
     }
     let input = Input()
     lazy var output = transform(input: input)
@@ -43,8 +44,6 @@ class ProfileViewModel: ViewModelType {
         let userFullName = Observable.just(user?.fullName)
         let userName = Observable.just(user?.userName)
         
-        let buttonTitle = PublishRelay<String>()
-        
         let currentUser = Observable<Bool>.create { [weak self] observer in
             if Auth.auth().currentUser?.uid == self?.user?.uid {
                 observer.onNext(true)
@@ -55,7 +54,7 @@ class ProfileViewModel: ViewModelType {
             }
             return Disposables.create()
         }
-        .share()
+            .share()
         let editProfileString = currentUser.filter { $0 == true }
             .map { _ in
                 return "Edit Profile"
@@ -65,13 +64,19 @@ class ProfileViewModel: ViewModelType {
             .map { _ in
                 return "Follow"
             }
+        
+        let userTweets = input.viewWillAppear
+            .flatMap { [ weak self] _ in
+                TweetService.shared.fetchTweetsRx(user: self?.user)
+            }
         return Output(userProfileImageUrl: userProfileImageUrl,
                       followersString: followersString,
                       followingString: followingString,
                       userFullName: userFullName,
                       userName: userName,
                       editProfileButtonTitle: editProfileString,
-                      followButtonTitle: followString)
+                      followButtonTitle: followString,
+                      userTweets: userTweets)
     }
     
     fileprivate func attributedText(withValue value: Int, text: String) -> NSAttributedString {

@@ -21,8 +21,14 @@ struct TweetService {
                       "likes": 0,
                       "retweets": 0,
                       "caption": caption] as [String: Any]
-        
-        tweetsReference.childByAutoId().updateChildValues(values, withCompletionBlock: completion)
+        //tweets에 해당 트윗에 대한 자동 생성 키로 구조 만들기
+        let ref = tweetsReference.childByAutoId()
+        //value값 update
+        ref.updateChildValues(values) { error, reference in
+            guard let tweetID = ref.key else { return }
+            //update 완료 후 현재 유저 아이디 값으로 ref생성후  tweet키를 저장 -> 각 유저가 생성한 모든 트윗을 추적하기 위함
+            userTweetsReference.child(uid).updateChildValues([tweetID: 1], withCompletionBlock: completion)
+        }
     }
     
     func uploadTweetRx(caption: String) -> Observable<Void> {
@@ -37,7 +43,7 @@ struct TweetService {
             return Disposables.create()
         }
     }
-    
+    // 서버에 저장되있는 모든 트윗 가져오기
     func fetchTweets(completion: @escaping([Tweet]) -> Void) {
         var tweets = [Tweet]()
         
@@ -53,10 +59,40 @@ struct TweetService {
             }
         }
     }
-    
+    // -rx
     func fetchTweetsRx() -> Observable<[Tweet]> {
         Observable.create { observer in
             fetchTweets { tweets in
+                observer.onNext(tweets)
+            }
+            return Disposables.create()
+        }
+    }
+    
+    // 해당 유저의 특정 트윗만 가져오기
+    func fetchTweets(forUser user: User?, completion: @escaping([Tweet]) -> Void) {
+        var tweets = [Tweet]()
+        guard let user = user else { return }
+        userTweetsReference.child(user.uid).observe(.childAdded) { snapshot in
+            let tweetID = snapshot.key
+            
+            tweetsReference.child(tweetID).observeSingleEvent(of: .value) { snapshot in
+                guard let dictionary = snapshot.value as? [String: Any] else { return }
+                guard let uid = dictionary["uid"] as? String else { return }
+                let tweetID = snapshot.key
+                
+                UserService.shared.fetchUser(uid: uid) { user in
+                    let tweet = Tweet(user: user, tweetID: tweetID, dictionary: dictionary)
+                    tweets.append(tweet)
+                    completion(tweets)
+                }
+            }
+        }
+    }
+    
+    func fetchTweetsRx(user: User?) -> Observable<[Tweet]> {
+        Observable.create { observer in
+            fetchTweets(forUser: user) { tweets in
                 observer.onNext(tweets)
             }
             return Disposables.create()
