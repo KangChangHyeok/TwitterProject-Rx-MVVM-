@@ -136,6 +136,9 @@ class TweetCell: UICollectionViewCell {
                 captionLabel.text = cellModel.captionLabelText
                 informationLabel.attributedText = cellModel.informationText
     }
+    override func prepareForReuse() {
+        disposeBag = DisposeBag()
+    }
 }
 
 
