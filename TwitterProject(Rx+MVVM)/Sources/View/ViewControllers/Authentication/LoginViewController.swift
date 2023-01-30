@@ -25,16 +25,10 @@ class LoginViewController: UIViewController, ViewModelBindable {
     
     private lazy var emailContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     private lazy var passwordContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     
@@ -69,14 +63,42 @@ class LoginViewController: UIViewController, ViewModelBindable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
     }
-    override func viewWillAppear(_ animated: Bool) {
-        navigationController?.navigationBar.barStyle = .black
+    override func viewDidLayoutSubviews() {
+        view.backgroundColor = .twitterBlue
+        navigationController?.navigationBar.isHidden = true
+        
+        view.addSubview(logoImageView)
+        logoImageView.snp.makeConstraints { make in
+            make.centerX.equalTo(view)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.size.equalTo(CGSize(width: 150, height: 150))
+        }
+        emailContainerView.snp.makeConstraints { make in
+            make.height.equalTo(50)
+        }
+        passwordContainerView.snp.makeConstraints { make in
+            make.height.equalTo(50)
+        }
+        view.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.top.equalTo(logoImageView.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32))
+        }
+        view.addSubview(signUpButton)
+        signUpButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 40, bottom: 16, right: 40))
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+
     }
     // MARK: - Methods
     func bindViewModel() {
-        //input
+        self.rx.viewWillAppear.asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.navigationController?.navigationBar.barStyle = .black
+            })
+            .disposed(by: disposeBag)
         emailTextField.rx.text.orEmpty
             .bind(to: viewModel.input.email)
             .disposed(by: disposeBag)
@@ -107,26 +129,5 @@ class LoginViewController: UIViewController, ViewModelBindable {
                 print("DEBUG - 로그인 실패")
             })
             .disposed(by: disposeBag)
-    }
-    func configureUI() {
-        view.backgroundColor = .twitterBlue
-        navigationController?.navigationBar.isHidden = true
-        
-        view.addSubview(logoImageView)
-        logoImageView.snp.makeConstraints { make in
-            make.centerX.equalTo(view)
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.size.equalTo(CGSize(width: 150, height: 150))
-        }
-        view.addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32))
-        }
-        view.addSubview(signUpButton)
-        signUpButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 40, bottom: 16, right: 40))
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
     }
 }

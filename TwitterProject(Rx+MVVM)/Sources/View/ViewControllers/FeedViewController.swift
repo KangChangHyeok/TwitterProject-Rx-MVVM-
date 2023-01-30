@@ -19,34 +19,39 @@ class FeedViewController: UIViewController, ViewModelBindable {
 
     var viewModel: FeedViewModel!
     var disposeBag = DisposeBag()
-    var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: view.frame.width, height: 120)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.backgroundColor = .white
+        return collectionView
+    }()
+    let titleImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
     }
-    // MARK: - Methods
-    func configureUI() {
+    override func viewDidLayoutSubviews() {
         view.backgroundColor = .white
-        let titleImageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
-        titleImageView.contentMode = .scaleAspectFit
+        
         titleImageView.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 44, height: 44))
         }
         navigationItem.titleView = titleImageView
-        collectionView.backgroundColor = .white
-        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }
-        
     }
+    // MARK: - Methods
     
     func bindViewModel() {
-        collectionView.rx.setDelegate(self)
-            .disposed(by: disposeBag)
-        
         let viewWillAppear = self.rx.viewWillAppear.share()
         
         viewWillAppear.asDriver(onErrorDriveWith: .empty())
@@ -78,10 +83,5 @@ class FeedViewController: UIViewController, ViewModelBindable {
                 self?.navigationController?.pushViewController(profileViewController, animated: true)
             })
             .disposed(by: disposeBag)
-    }
-}
-extension FeedViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 120)
     }
 }

@@ -36,16 +36,14 @@ class ProfileViewController: UIViewController, ViewModelBindable {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
     }
-    // MARK: - Methods
-    
-    func configureUI() {
+    override func viewDidLayoutSubviews() {
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }
     }
+    // MARK: - Methods
     
     func bindViewModel() {
         // dataSource

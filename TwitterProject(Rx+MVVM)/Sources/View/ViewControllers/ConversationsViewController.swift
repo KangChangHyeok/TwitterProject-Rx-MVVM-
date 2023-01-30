@@ -14,10 +14,8 @@ class ConversationsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
     }
-    // MARK: - Methods
-    func configureUI() {
+    override func viewWillLayoutSubviews() {
         view.backgroundColor = .white
         navigationItem.title = "Messages"
     }

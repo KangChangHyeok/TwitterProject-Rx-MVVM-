@@ -14,10 +14,8 @@ class NotificationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
     }
-    // MARK: - Methods
-    func configureUI() {
+    override func viewDidLayoutSubviews() {
         view.backgroundColor = .white
         navigationItem.title = "Messages"
     }

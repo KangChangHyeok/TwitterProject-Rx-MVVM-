@@ -30,10 +30,18 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    override func viewDidLayoutSubviews() {
+        view.addSubview(addTweetButton)
+        addTweetButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalTo(tabBar.snp.top).offset(-16)
+            make.size.equalTo(CGSize(width: 56, height: 56))
+        }
+    }
     
     // MARK: - Methods
     func bindViewModel() {
-        viewModel.logUserOut()
+//        viewModel.logUserOut()
         // MARK: - Input
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)
@@ -48,7 +56,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         viewModel.output.configureUI
             .drive(onNext: { [weak self] _ in
                 self?.configureViewController()
-                self?.configureUI()
+                self?.viewDidLayoutSubviews()
             })
             .disposed(by: disposeBag)
         
@@ -83,30 +91,14 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         self.view.backgroundColor = .white
         self.tabBar.barTintColor = .white
         tabBar.backgroundColor = .white
-        // tabBar viewcontrollers에 들어가는 각 ViewController viewModel binding
+        // tabBar viewcontrollers에 들어가는 각 ViewController에 viewModel binding
         var feedViewController = FeedViewController()
         let feedViewModel = FeedViewModel()
         feedViewController.bind(viewModel: feedViewModel)
-        let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
-        
-        let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
-        let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
-        let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
+        let feedNavigationController = viewModel.makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
+        let exploreView = viewModel.makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
+        let notificationsView = viewModel.makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
+        let conversationsView = viewModel.makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
-    }
-    
-    func configureUI() {
-        view.addSubview(addTweetButton)
-        addTweetButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
-            make.bottom.equalTo(tabBar.snp.top).offset(-16)
-            make.size.equalTo(CGSize(width: 56, height: 56))
-        }
-    }
-    
-    fileprivate func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        navigationController.tabBarItem.image = image
-        return navigationController
     }
 }

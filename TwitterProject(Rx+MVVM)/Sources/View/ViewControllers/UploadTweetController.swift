@@ -47,15 +47,33 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         imageView.backgroundColor = .twitterBlue
         return imageView
     }()
-    
     private let captionTextView = CaptionTextView()
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [profileImageView, captionTextView])
+        stackView.axis = .horizontal
+        stackView.spacing = 12
+        return stackView
+    }()
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
     }
-    
+    override func viewDidLayoutSubviews() {
+        view.backgroundColor = .white
+        navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.isTranslucent = false
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: uploadTweetButton)
+        
+        view.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0))
+            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
+        }
+    }
     // MARK: - Methods
     func bindViewModel() {
 
@@ -95,26 +113,5 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
                 self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
-        
     }
-    
-    func configureUI() {
-        view.backgroundColor = .white
-        navigationController?.navigationBar.barTintColor = .white
-        navigationController?.navigationBar.isTranslucent = false
-        
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: uploadTweetButton)
-        
-        let stackView = UIStackView(arrangedSubviews: [profileImageView, captionTextView])
-        stackView.axis = .horizontal
-        stackView.spacing = 12
-        
-        view.addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0))
-            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
-        }
-    }
-    
 }

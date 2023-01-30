@@ -60,4 +60,9 @@ class MainTabViewModel: ViewModelType {
             print("DEBUG - \(error.localizedDescription)")
         }
     }
+    func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
+        let navigationController = UINavigationController(rootViewController: rootViewController)
+        navigationController.tabBarItem.image = image
+        return navigationController
+    }
 }
