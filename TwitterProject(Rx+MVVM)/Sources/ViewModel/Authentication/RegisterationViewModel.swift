@@ -11,6 +11,8 @@ import RxCocoa
 
 class RegisterationViewModel: ViewModelType {
     
+    var disposeBag = DisposeBag()
+    
     struct Input {
         let profileImage = PublishRelay<UIImage>()
         let email = PublishRelay<String>()
@@ -25,7 +27,7 @@ class RegisterationViewModel: ViewModelType {
     
     let input = Input()
     lazy var output = transform(input: input)
-    var disposeBag = DisposeBag()
+    
     func transform(input: Input) -> Output {
         let userInformation = Observable.combineLatest(input.profileImage, input.email, input.password, input.fullName, input.userName)
         

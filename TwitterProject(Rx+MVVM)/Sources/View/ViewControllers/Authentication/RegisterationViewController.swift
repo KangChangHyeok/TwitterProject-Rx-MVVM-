@@ -27,30 +27,18 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
     
     private lazy var emailContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     private lazy var passwordContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     private lazy var fullNameContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"),textField: fullNameTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     private lazy var userNameContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"), textField: userNameTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     
@@ -155,11 +143,6 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
         
         viewModel.output.signUpRequest
             .drive(onNext: { [ weak self] _ in
-                //                //이미지 등록 안했을때
-                //                guard let profileImage = profileImage else {
-                //                    print("DEBUG - 프로필 이미지를 선택해주세요..")
-                //                    return
-                //                }
                 print("DEBUG - 회원가입 완료!")
                 self?.dismiss(animated: true)
             })
@@ -176,6 +159,11 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
             make.size.equalTo(CGSize(width: 150, height: 150))
         }
         view.addSubview(stackView)
+        stackView.arrangedSubviews.forEach { view in
+            view.snp.makeConstraints { make in
+                make.height.equalTo(50)
+            }
+        }
         stackView.snp.makeConstraints { make in
             make.top.equalTo(plusPhotoButton.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32))
