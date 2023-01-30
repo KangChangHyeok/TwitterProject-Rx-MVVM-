@@ -19,8 +19,10 @@ class FeedViewController: UIViewController, ViewModelBindable {
 
     var viewModel: FeedViewModel!
     var disposeBag = DisposeBag()
-    let collectionView: UICollectionView = {
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: view.frame.width, height: 120)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.backgroundColor = .white
         return collectionView
@@ -50,9 +52,6 @@ class FeedViewController: UIViewController, ViewModelBindable {
     // MARK: - Methods
     
     func bindViewModel() {
-        collectionView.rx.setDelegate(self)
-            .disposed(by: disposeBag)
-        
         let viewWillAppear = self.rx.viewWillAppear.share()
         
         viewWillAppear.asDriver(onErrorDriveWith: .empty())
@@ -84,10 +83,5 @@ class FeedViewController: UIViewController, ViewModelBindable {
                 self?.navigationController?.pushViewController(profileViewController, animated: true)
             })
             .disposed(by: disposeBag)
-    }
-}
-extension FeedViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.frame.width, height: 120)
     }
 }
