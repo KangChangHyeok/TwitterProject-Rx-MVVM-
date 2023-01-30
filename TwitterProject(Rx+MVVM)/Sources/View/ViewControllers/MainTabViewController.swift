@@ -83,15 +83,14 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         self.view.backgroundColor = .white
         self.tabBar.barTintColor = .white
         tabBar.backgroundColor = .white
-        // tabBar viewcontrollers에 들어가는 각 ViewController viewModel binding
+        // tabBar viewcontrollers에 들어가는 각 ViewController에 viewModel binding
         var feedViewController = FeedViewController()
         let feedViewModel = FeedViewModel()
         feedViewController.bind(viewModel: feedViewModel)
-        let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
-        
-        let exploreView = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
-        let notificationsView = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
-        let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
+        let feedNavigationController = viewModel.makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
+        let exploreView = viewModel.makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
+        let notificationsView = viewModel.makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
+        let conversationsView = viewModel.makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
     
@@ -104,9 +103,4 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         }
     }
     
-    fileprivate func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        navigationController.tabBarItem.image = image
-        return navigationController
-    }
 }
