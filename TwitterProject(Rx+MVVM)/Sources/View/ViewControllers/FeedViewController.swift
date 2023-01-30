@@ -19,29 +19,35 @@ class FeedViewController: UIViewController, ViewModelBindable {
 
     var viewModel: FeedViewModel!
     var disposeBag = DisposeBag()
-    var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let collectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.backgroundColor = .white
+        return collectionView
+    }()
+    let titleImageView: UIImageView = {
+        let imageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
+        imageView.contentMode = .scaleAspectFit
+        return imageView
+    }()
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
     }
-    // MARK: - Methods
-    func configureUI() {
+    override func viewDidLayoutSubviews() {
         view.backgroundColor = .white
-        let titleImageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
-        titleImageView.contentMode = .scaleAspectFit
+        
         titleImageView.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 44, height: 44))
         }
         navigationItem.titleView = titleImageView
-        collectionView.backgroundColor = .white
-        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        
         view.addSubview(collectionView)
         collectionView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }
-        
     }
+    // MARK: - Methods
     
     func bindViewModel() {
         collectionView.rx.setDelegate(self)

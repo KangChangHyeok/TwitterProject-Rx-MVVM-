@@ -63,7 +63,34 @@ class LoginViewController: UIViewController, ViewModelBindable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
+    }
+    override func viewDidLayoutSubviews() {
+        view.backgroundColor = .twitterBlue
+        navigationController?.navigationBar.isHidden = true
+        
+        view.addSubview(logoImageView)
+        logoImageView.snp.makeConstraints { make in
+            make.centerX.equalTo(view)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.size.equalTo(CGSize(width: 150, height: 150))
+        }
+        emailContainerView.snp.makeConstraints { make in
+            make.height.equalTo(50)
+        }
+        passwordContainerView.snp.makeConstraints { make in
+            make.height.equalTo(50)
+        }
+        view.addSubview(stackView)
+        stackView.snp.makeConstraints { make in
+            make.top.equalTo(logoImageView.snp.bottom)
+            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32))
+        }
+        view.addSubview(signUpButton)
+        signUpButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 40, bottom: 16, right: 40))
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+
     }
     // MARK: - Methods
     func bindViewModel() {
@@ -102,32 +129,5 @@ class LoginViewController: UIViewController, ViewModelBindable {
                 print("DEBUG - 로그인 실패")
             })
             .disposed(by: disposeBag)
-    }
-    func configureUI() {
-        view.backgroundColor = .twitterBlue
-        navigationController?.navigationBar.isHidden = true
-        
-        view.addSubview(logoImageView)
-        logoImageView.snp.makeConstraints { make in
-            make.centerX.equalTo(view)
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.size.equalTo(CGSize(width: 150, height: 150))
-        }
-        emailContainerView.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
-        passwordContainerView.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
-        view.addSubview(stackView)
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(logoImageView.snp.bottom)
-            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32))
-        }
-        view.addSubview(signUpButton)
-        signUpButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 40, bottom: 16, right: 40))
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
     }
 }

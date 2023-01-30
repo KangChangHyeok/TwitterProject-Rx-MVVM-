@@ -30,10 +30,18 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    override func viewDidLayoutSubviews() {
+        view.addSubview(addTweetButton)
+        addTweetButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalTo(tabBar.snp.top).offset(-16)
+            make.size.equalTo(CGSize(width: 56, height: 56))
+        }
+    }
     
     // MARK: - Methods
     func bindViewModel() {
-        viewModel.logUserOut()
+//        viewModel.logUserOut()
         // MARK: - Input
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)
@@ -48,7 +56,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         viewModel.output.configureUI
             .drive(onNext: { [weak self] _ in
                 self?.configureViewController()
-                self?.configureUI()
+                self?.viewDidLayoutSubviews()
             })
             .disposed(by: disposeBag)
         
@@ -93,14 +101,4 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         let conversationsView = viewModel.makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
     }
-    
-    func configureUI() {
-        view.addSubview(addTweetButton)
-        addTweetButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
-            make.bottom.equalTo(tabBar.snp.top).offset(-16)
-            make.size.equalTo(CGSize(width: 56, height: 56))
-        }
-    }
-    
 }
