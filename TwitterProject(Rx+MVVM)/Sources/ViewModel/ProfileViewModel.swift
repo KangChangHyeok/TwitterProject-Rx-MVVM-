@@ -14,6 +14,11 @@ import RxCocoa
 
 class ProfileViewModel: ViewModelType {
     
+    let user: User
+    
+    init(user: User) {
+        self.user = user
+    }
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
         let headerBindViewModel = PublishRelay<Void>()
@@ -22,7 +27,7 @@ class ProfileViewModel: ViewModelType {
         let userTweets: Observable<[Tweets]>
         let profileImageUrl: Driver<URL?>
         let userName: Observable<String>
-        let fullName: Observable<String>
+        let fullName: Observable<String?>
         let followersString: Observable<NSAttributedString?>
         let follwingString: Observable<NSAttributedString?>
         let buttonTitle: Observable<String>
@@ -35,9 +40,9 @@ class ProfileViewModel: ViewModelType {
         //input- viewWillAppear
         
         let userTweets = input.viewWillAppear
-            .flatMap { _ in
-                UserService.shared.fetchUserRx()
-            }
+            .map({ [weak self] _ in
+                return self?.user
+            })
             .flatMap { user in
                 TweetService.shared.fetchTweetsRx(user: user)
             }
@@ -45,22 +50,22 @@ class ProfileViewModel: ViewModelType {
                 return [Tweets(items: tweets)]
             }
         //input- headerBindViewModel
-        let user = input.headerBindViewModel.flatMap { _ in
-            UserService.shared.fetchUserRx()
-        }.share()
+        let user = input.headerBindViewModel.map { [weak self] _ in
+            return self?.user
+        }
         
         let profileImageUrl = user
             .map { user in
-                return user.profileImageUrl
+                return user?.profileImageUrl
             }
             .asDriver(onErrorDriveWith: .empty())
         let userName = user
             .map { user in
-                return "@\(user.userName)"
+                return "@" + "\(user?.userName ?? "")"
             }
         let fullName = user
             .map { user in
-                return user.fullName
+                return user?.fullName
             }
         let followersString = user
             .map { [weak self] user in
@@ -72,7 +77,7 @@ class ProfileViewModel: ViewModelType {
             }
         let actionButtonTitle = user
             .map { user in
-                if Auth.auth().currentUser?.uid == user.uid {
+                if Auth.auth().currentUser?.uid == user?.uid {
                     return "Edit Profile"
                 } else {
                     return "Follow"

@@ -129,7 +129,7 @@ class TweetCell: UICollectionViewCell {
                     .withUnretained(self)
                     .subscribe(onNext: { owner, _ in
                         guard let feedViewController = owner.superViewController as? FeedViewController else { return }
-                        feedViewController.viewModel.input.cellProfileImageTapped.accept(())
+                        feedViewController.viewModel.input.cellProfileImageTapped.accept(cellModel.tweet.user)
                     })
                     .disposed(by: disposeBag)
                 

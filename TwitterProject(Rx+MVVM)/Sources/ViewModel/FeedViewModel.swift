@@ -14,12 +14,12 @@ class FeedViewModel: ViewModelType {
     
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
-        let cellProfileImageTapped = PublishRelay<Void>()
+        let cellProfileImageTapped = PublishRelay<User>()
     }
     struct Output {
         let userProfileImageView: Driver<UIImageView>
         let userTweets: Observable<[Tweet]>
-        let cellProfileImageTapped: Driver<Void>
+        let cellProfileImageTapped: Driver<User>
     }
     let input = Input()
     lazy var output = transform(input: input)
