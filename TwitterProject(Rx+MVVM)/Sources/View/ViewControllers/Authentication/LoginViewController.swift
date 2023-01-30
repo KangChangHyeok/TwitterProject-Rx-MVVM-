@@ -25,16 +25,10 @@ class LoginViewController: UIViewController, ViewModelBindable {
     
     private lazy var emailContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     private lazy var passwordContainerView: UIView = {
         let view = Utilites().makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
-        view.snp.makeConstraints { make in
-            make.height.equalTo(50)
-        }
         return view
     }()
     
@@ -71,12 +65,13 @@ class LoginViewController: UIViewController, ViewModelBindable {
         super.viewDidLoad()
         configureUI()
     }
-    override func viewWillAppear(_ animated: Bool) {
-        navigationController?.navigationBar.barStyle = .black
-    }
     // MARK: - Methods
     func bindViewModel() {
-        //input
+        self.rx.viewWillAppear.asDriver()
+            .drive(onNext: { [weak self] _ in
+                self?.navigationController?.navigationBar.barStyle = .black
+            })
+            .disposed(by: disposeBag)
         emailTextField.rx.text.orEmpty
             .bind(to: viewModel.input.email)
             .disposed(by: disposeBag)
@@ -117,6 +112,12 @@ class LoginViewController: UIViewController, ViewModelBindable {
             make.centerX.equalTo(view)
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.size.equalTo(CGSize(width: 150, height: 150))
+        }
+        emailContainerView.snp.makeConstraints { make in
+            make.height.equalTo(50)
+        }
+        passwordContainerView.snp.makeConstraints { make in
+            make.height.equalTo(50)
         }
         view.addSubview(stackView)
         stackView.snp.makeConstraints { make in
