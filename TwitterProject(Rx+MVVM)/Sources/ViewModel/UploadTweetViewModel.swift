@@ -6,23 +6,19 @@
 //
 
 import Foundation
+import SDWebImage
 import RxSwift
 import RxCocoa
 
 class UploadTweetViewModel: ViewModelType {
     
-    let user: User
-    
-    init(user: User) {
-        self.user = user
-    }
-    
     struct Input {
+        let viewWillAppear = PublishRelay<Bool>()
         let text = PublishRelay<String>()
         let uploadTweetButtonTapped = PublishRelay<Void>()
     }
     struct Output {
-        let userData: Driver<User>
+        let userProfileImageUrl: Observable<URL?>
         let showCaptionTextView: Driver<Void>
         let hideCaptionTextView: Driver<Void>
         let successUploadTweet: Driver<Void>
@@ -32,8 +28,15 @@ class UploadTweetViewModel: ViewModelType {
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        let userData = Observable.just(self.user)
-            .asDriver(onErrorDriveWith: .empty())
+        
+        let userProfileImageUrl = input.viewWillAppear
+            .flatMap { _ in
+                UserService.shared.fetchUserRx()
+            }
+            .map { user in
+                user.profileImageUrl
+            }
+        
         let showCaptionTextView = input.text
             .filter { $0.isEmpty == true }
             .map { _ in
@@ -53,6 +56,9 @@ class UploadTweetViewModel: ViewModelType {
             .share()
             .asDriver(onErrorDriveWith: .empty())
         
-        return Output(userData: userData, showCaptionTextView: showCaptionTextView, hideCaptionTextView: hideCaptionTextView, successUploadTweet: UploadTweet)
+        return Output(userProfileImageUrl: userProfileImageUrl,
+                      showCaptionTextView: showCaptionTextView,
+                      hideCaptionTextView: hideCaptionTextView,
+                      successUploadTweet: UploadTweet)
     }
 }

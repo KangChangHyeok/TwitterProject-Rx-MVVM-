@@ -44,39 +44,35 @@ class FeedViewController: UIViewController, ViewModelBindable {
     }
     
     func bindViewModel() {
-        self.rx.viewWillAppear.asDriver()
+        collectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+        
+        let viewWillAppear = self.rx.viewWillAppear.share()
+        
+        viewWillAppear.asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] _ in
                 self?.navigationController?.navigationBar.isHidden = false
             })
             .disposed(by: disposeBag)
-        viewModel.output.userData
-            .drive(onNext: { [weak self] user in
-                let profileImageView = UIImageView()
-                profileImageView.backgroundColor = .twitterBlue
-                profileImageView.snp.makeConstraints { make in
-                    make.size.equalTo(CGSize(width: 32, height: 32))
-                }
-                profileImageView.layer.cornerRadius = 32 / 2
-                profileImageView.layer.masksToBounds = true
-                
-                guard let profileImageUrl = user.profileImageUrl else { return }
-                profileImageView.sd_setImage(with: profileImageUrl)
-                
+        viewWillAppear
+            .bind(to: viewModel.input.viewWillAppear)
+            .disposed(by: disposeBag)
+        
+        viewModel.output.userProfileImageView
+            .drive(onNext: { [weak self] profileImageView in
                 self?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
             })
             .disposed(by: disposeBag)
-        collectionView.rx.setDelegate(self)
-            .disposed(by: disposeBag)
+        
         viewModel.output.userTweets
             .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweet, cell in
                 let tweetCellModel = TweetCellModel(tweet: tweet)
                 cell.bind(cellModel: tweetCellModel)
             }
             .disposed(by: disposeBag)
-        viewModel.output.pushProfileViewController
+        viewModel.output.cellProfileImageTapped
             .drive(onNext: { [weak self] user in
-                let profileViewModel = ProfileViewModel()
-                profileViewModel.user = user
+                let profileViewModel = ProfileViewModel(user: user)
                 var profileViewController = ProfileViewController()
                 profileViewController.bind(viewModel: profileViewModel)
                 self?.navigationController?.pushViewController(profileViewController, animated: true)

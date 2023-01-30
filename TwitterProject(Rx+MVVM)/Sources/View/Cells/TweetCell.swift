@@ -119,7 +119,7 @@ class TweetCell: UICollectionViewCell {
     }
     
     func bind(cellModel: TweetCellModel) {
-        //        profileImageView.sd_setImage(with: cellModel.profileImageUrl)
+                profileImageView.sd_setImage(with: cellModel.profileImageUrl)
                 profileImageView.rx
                     .tapGesture()
                     .when(.recognized)
@@ -129,12 +129,15 @@ class TweetCell: UICollectionViewCell {
                     .withUnretained(self)
                     .subscribe(onNext: { owner, _ in
                         guard let feedViewController = owner.superViewController as? FeedViewController else { return }
-                        feedViewController.viewModel.input.cellProfileImageTapped.accept(())
+                        feedViewController.viewModel.input.cellProfileImageTapped.accept(cellModel.tweet.user)
                     })
                     .disposed(by: disposeBag)
                 
-        //        captionLabel.text = cellModel.captionLabelText
-        //        informationLabel.attributedText = cellModel.informationText
+                captionLabel.text = cellModel.captionLabelText
+                informationLabel.attributedText = cellModel.informationText
+    }
+    override func prepareForReuse() {
+        disposeBag = DisposeBag()
     }
 }
 

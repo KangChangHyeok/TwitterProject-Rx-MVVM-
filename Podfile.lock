@@ -1,4 +1,5 @@
 PODS:
+  - Differentiator (5.0.0)
   - FirebaseAppCheckInterop (10.4.0)
   - FirebaseAuth (10.4.0):
     - FirebaseCore (~> 10.0)
@@ -44,6 +45,10 @@ PODS:
   - RxCocoa (6.5.0):
     - RxRelay (= 6.5.0)
     - RxSwift (= 6.5.0)
+  - RxDataSources (5.0.0):
+    - Differentiator (~> 5.0)
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
   - RxGesture (4.0.4):
     - RxCocoa (~> 6.0)
     - RxSwift (~> 6.0)
@@ -63,6 +68,7 @@ DEPENDENCIES:
   - FirebaseDatabase
   - FirebaseStorage
   - RxCocoa (= 6.5.0)
+  - RxDataSources (~> 5.0)
   - RxGesture
   - RxSwift (= 6.5.0)
   - RxViewController
@@ -71,6 +77,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Differentiator
     - FirebaseAppCheckInterop
     - FirebaseAuth
     - FirebaseAuthInterop
@@ -84,6 +91,7 @@ SPEC REPOS:
     - leveldb-library
     - PromisesObjC
     - RxCocoa
+    - RxDataSources
     - RxGesture
     - RxRelay
     - RxSwift
@@ -92,6 +100,7 @@ SPEC REPOS:
     - SnapKit
 
 SPEC CHECKSUMS:
+  Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   FirebaseAppCheckInterop: ef074633831a90cf6c10e8f2c1e1f8b7842a446a
   FirebaseAuth: 5608282535d6f2dc902b2b88a379aaf6912fb837
   FirebaseAuthInterop: fef284922da3c350f846ff85cc0dfd5186448e49
@@ -105,6 +114,7 @@ SPEC CHECKSUMS:
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
+  RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
   RxGesture: f3efb47ed2d26a8082f7b660d4a59970e275a7f8
   RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
@@ -112,6 +122,6 @@ SPEC CHECKSUMS:
   SDWebImage: 9bec4c5cdd9579e1f57104735ee0c37df274d593
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 373cc7fb4b7c2b87fcefa7fd61db4aaecf552fdd
+PODFILE CHECKSUM: 0b3053e6a63f8cb16016791ccf84986a918ad5ba
 
 COCOAPODS: 1.11.3

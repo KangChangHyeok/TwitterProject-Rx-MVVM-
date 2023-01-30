@@ -131,11 +131,11 @@
 				639031C62940BB8D000D4795 /* Authentication */,
 				639031B529407987000D4795 /* MainTabViewController.swift */,
 				639031BC29407F07000D4795 /* FeedViewController.swift */,
+				634FE3CC2966D45800A5B62F /* ProfileViewController.swift */,
 				639031BE29408146000D4795 /* ExploreViewController.swift */,
 				639031C0294081BA000D4795 /* NotificationViewController.swift */,
 				639031C2294081D3000D4795 /* ConversationsViewController.swift */,
 				63A44CC12962DA6E005B1F2A /* UploadTweetController.swift */,
-				634FE3CC2966D45800A5B62F /* ProfileViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -194,8 +194,8 @@
 				63954A34295308CD00EF7E77 /* Authentication */,
 				63FB3A7D2948A66400E7EAD2 /* MainTabViewModel.swift */,
 				63954AA42959F60700EF7E77 /* FeedViewModel.swift */,
-				63A44CC329630EC3005B1F2A /* UploadTweetViewModel.swift */,
 				631493142974ED810041D426 /* ProfileViewModel.swift */,
+				63A44CC329630EC3005B1F2A /* UploadTweetViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";

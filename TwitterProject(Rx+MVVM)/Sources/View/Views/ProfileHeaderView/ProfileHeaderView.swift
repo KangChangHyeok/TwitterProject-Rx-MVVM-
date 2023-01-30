@@ -12,9 +12,9 @@ import RxSwift
 
 class ProfileHeaderView: UICollectionReusableView {
     
-    var viewModel: ProfileViewModel!
     var disposeBag = DisposeBag()
     let filterBar = ProfileFilterView()
+    
     private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .twitterBlue
@@ -36,7 +36,6 @@ class ProfileHeaderView: UICollectionReusableView {
     }()
     private lazy var editProfileFollowButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Loading", for: .normal)
         button.layer.borderColor = UIColor.twitterBlue.cgColor
         button.layer.borderWidth = 1.25
         button.setTitleColor(.twitterBlue, for: .normal)
@@ -46,14 +45,12 @@ class ProfileHeaderView: UICollectionReusableView {
     private let fullNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20)
-        label.text = "Joker"
         return label
     }()
     private let userNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 16)
         label.textColor = .lightGray
-        label.text = "@venom"
         return label
     }()
     private let bioLabel: UILabel = {
@@ -67,14 +64,12 @@ class ProfileHeaderView: UICollectionReusableView {
     private let followingLabel: UILabel = {
         let label = UILabel()
         label.isUserInteractionEnabled = true
-        
         return label
     }()
     
     private let followersLabel: UILabel = {
         let label = UILabel()
         label.isUserInteractionEnabled = true
-        
         return label
     }()
     override init(frame: CGRect) {
@@ -140,35 +135,32 @@ class ProfileHeaderView: UICollectionReusableView {
             make.height.equalTo(52)
         }
     }
-    func bindViewModel() {
-        viewModel.output.userProfileImageUrl
-            .drive(onNext: { [weak self] url in
-                self?.profileImageView.sd_setImage(with: url)
-            })
-            .disposed(by: disposeBag)
-        viewModel.output.followingString
-            .bind(to: followingLabel.rx.attributedText)
-            .disposed(by: disposeBag)
-        viewModel.output.followersString
-            .bind(to: followersLabel.rx.attributedText)
-            .disposed(by: disposeBag)
-        viewModel.output.userFullName
-            .bind(to: fullNameLabel.rx.text)
-            .disposed(by: disposeBag)
-        viewModel.output.userName
-            .bind(to: userNameLabel.rx.text)
-            .disposed(by: disposeBag)
-        viewModel.output.editProfileButtonTitle
-            .bind(to: editProfileFollowButton.rx.title())
-            .disposed(by: disposeBag)
-        viewModel.output.followButtonTitle
-            .bind(to: editProfileFollowButton.rx.title())
-            .disposed(by: disposeBag)
+    func bindViewModel(viewModel: ProfileViewModel?) {
         backButton.rx.tap.asDriver()
             .drive(onNext: { [weak self] _ in
                 let profileViewController = self?.superViewController as? ProfileViewController
                 profileViewController?.navigationController?.popViewController(animated: true)
             })
+            .disposed(by: disposeBag)
+        viewModel?.output.profileImageUrl
+            .drive(onNext: { [weak self] Url in
+                self?.profileImageView.sd_setImage(with: Url)
+            })
+            .disposed(by: disposeBag)
+        viewModel?.output.userName
+            .bind(to: userNameLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel?.output.fullName
+            .bind(to: fullNameLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel?.output.follwingString
+            .bind(to: followingLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        viewModel?.output.followersString
+            .bind(to: followersLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        viewModel?.output.buttonTitle
+            .bind(to: editProfileFollowButton.rx.title())
             .disposed(by: disposeBag)
     }
 }
