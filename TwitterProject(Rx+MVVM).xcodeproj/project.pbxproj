@@ -33,6 +33,8 @@
 		63A44CC929641299005B1F2A /* TweetService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A44CC829641299005B1F2A /* TweetService.swift */; };
 		63A44CCB29642D24005B1F2A /* Tweet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A44CCA29642D24005B1F2A /* Tweet.swift */; };
 		63A44CCD296434D0005B1F2A /* TweetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A44CCC296434D0005B1F2A /* TweetCell.swift */; };
+		63B365532987FA8C00621921 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63B365522987FA8C00621921 /* UserCell.swift */; };
+		63B36555298802B500621921 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63B36554298802B500621921 /* ExploreViewModel.swift */; };
 		63E535F4296571450055C065 /* TweetCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E535F3296571450055C065 /* TweetCellModel.swift */; };
 		63FB3A3D2947087600E7EAD2 /* Utilites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FB3A3C2947087600E7EAD2 /* Utilites.swift */; };
 		63FB3A3F2947398500E7EAD2 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 63FB3A3E2947398500E7EAD2 /* GoogleService-Info.plist */; };
@@ -74,6 +76,8 @@
 		63A44CC829641299005B1F2A /* TweetService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetService.swift; sourceTree = "<group>"; };
 		63A44CCA29642D24005B1F2A /* Tweet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tweet.swift; sourceTree = "<group>"; };
 		63A44CCC296434D0005B1F2A /* TweetCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetCell.swift; sourceTree = "<group>"; };
+		63B365522987FA8C00621921 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		63B36554298802B500621921 /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		63E535F3296571450055C065 /* TweetCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TweetCellModel.swift; sourceTree = "<group>"; };
 		63FB3A3C2947087600E7EAD2 /* Utilites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilites.swift; sourceTree = "<group>"; };
 		63FB3A3E2947398500E7EAD2 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
@@ -195,6 +199,7 @@
 				63FB3A7D2948A66400E7EAD2 /* MainTabViewModel.swift */,
 				63954AA42959F60700EF7E77 /* FeedViewModel.swift */,
 				631493142974ED810041D426 /* ProfileViewModel.swift */,
+				63B36554298802B500621921 /* ExploreViewModel.swift */,
 				63A44CC329630EC3005B1F2A /* UploadTweetViewModel.swift */,
 			);
 			path = ViewModel;
@@ -243,6 +248,7 @@
 			isa = PBXGroup;
 			children = (
 				63A44CCC296434D0005B1F2A /* TweetCell.swift */,
+				63B365522987FA8C00621921 /* UserCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -410,6 +416,7 @@
 				63A44CC929641299005B1F2A /* TweetService.swift in Sources */,
 				631493152974ED810041D426 /* ProfileViewModel.swift in Sources */,
 				634FE3CD2966D45900A5B62F /* ProfileViewController.swift in Sources */,
+				63B365532987FA8C00621921 /* UserCell.swift in Sources */,
 				63FB3A4C294765DB00E7EAD2 /* AuthService.swift in Sources */,
 				639031BD29407F07000D4795 /* FeedViewController.swift in Sources */,
 				639031C52940A449000D4795 /* Extenstions.swift in Sources */,
@@ -431,6 +438,7 @@
 				639031C1294081BA000D4795 /* NotificationViewController.swift in Sources */,
 				639031C3294081D3000D4795 /* ConversationsViewController.swift in Sources */,
 				63A44CC7296409AB005B1F2A /* CaptionTextView.swift in Sources */,
+				63B36555298802B500621921 /* ExploreViewModel.swift in Sources */,
 				631493172974F7B80041D426 /* ProfileHeaderView.swift in Sources */,
 				63954A382953098900EF7E77 /* Protocols.swift in Sources */,
 			);
