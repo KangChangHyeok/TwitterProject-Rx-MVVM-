@@ -19,7 +19,7 @@ class FeedViewModel: ViewModelType {
     struct Output {
         let userProfileImageView: Driver<UIImageView>
         let userTweets: Observable<[Tweet]>
-        let pushProfileViewController: Driver<Void>
+        let cellProfileImageTapped: Driver<Void>
     }
     let input = Input()
     lazy var output = transform(input: input)
@@ -29,10 +29,11 @@ class FeedViewModel: ViewModelType {
         
         let viewWillAppear = input.viewWillAppear.map { _ in () }.share()
         
-        let userProfileImageView = viewWillAppear
-            .flatMap { _ in
-                UserService.shared.fetchUserRx()
-            }
+        let user = viewWillAppear.flatMap { _ in
+            return UserService.shared.fetchUserRx()
+        }
+        
+        let userProfileImageView = user
             .map { user in
                 let profileImageView = UIImageView()
                 profileImageView.snp.makeConstraints { make in
@@ -50,9 +51,9 @@ class FeedViewModel: ViewModelType {
             TweetService.shared.fetchTweetsRx()
         }
         
-        let pushProfileViewController = input.cellProfileImageTapped.asDriver(onErrorDriveWith: .empty())
+        let cellProfileImageTapped = input.cellProfileImageTapped.asDriver(onErrorDriveWith: .empty())
         
         
-        return Output(userProfileImageView: userProfileImageView, userTweets: userTweets, pushProfileViewController: pushProfileViewController)
+        return Output(userProfileImageView: userProfileImageView, userTweets: userTweets, cellProfileImageTapped: cellProfileImageTapped)
     }
 }

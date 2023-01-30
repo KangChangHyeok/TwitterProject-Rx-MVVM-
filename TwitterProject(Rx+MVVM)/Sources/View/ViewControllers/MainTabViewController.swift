@@ -33,7 +33,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     
     // MARK: - Methods
     func bindViewModel() {
-//        viewModel.logUserOut()
+        viewModel.logUserOut()
         // MARK: - Input
         self.rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)

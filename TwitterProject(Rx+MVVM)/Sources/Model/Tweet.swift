@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import RxDataSources
 
 struct Tweet {
     let caption: String
@@ -29,3 +30,20 @@ struct Tweet {
         }
     }
 }
+
+
+
+struct Tweets {
+    var items: [Item]
+}
+extension Tweets: SectionModelType {
+    typealias Item = Tweet
+    init(original: Tweets, items: [Item]) {
+        self = original
+        self.items = items
+    }
+}
+
+
+
+

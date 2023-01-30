@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import RxDataSources
 
 struct User {
     let uid: String
@@ -30,5 +31,20 @@ struct User {
             guard let url = URL(string: profileImageUrlString) else { return }
             self.profileImageUrl = url
         }
+    }
+}
+
+
+struct Users {
+    var items: [Item]
+}
+
+extension Users: SectionModelType {
+    
+    typealias Item = User
+    
+    init(original: Users, items: [User]) {
+        self = original
+        self.items = items
     }
 }

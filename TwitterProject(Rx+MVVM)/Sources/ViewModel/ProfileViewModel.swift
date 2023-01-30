@@ -14,66 +14,77 @@ import RxCocoa
 
 class ProfileViewModel: ViewModelType {
     
-    var user: User?
-    
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
+        let headerBindViewModel = PublishRelay<Void>()
     }
     struct Output {
-        let userProfileImageUrl: Driver<URL?>
-        let followersString: Observable<NSAttributedString>
-        let followingString: Observable<NSAttributedString>
-        let userFullName: Observable<String?>
-        let userName: Observable<String?>
-        let editProfileButtonTitle: Observable<String>
-        let followButtonTitle: Observable<String>
-        let userTweets: Observable<[Tweet]>
+        let userTweets: Observable<[Tweets]>
+        let profileImageUrl: Driver<URL?>
+        let userName: Observable<String>
+        let fullName: Observable<String>
+        let followersString: Observable<NSAttributedString?>
+        let follwingString: Observable<NSAttributedString?>
+        let buttonTitle: Observable<String>
     }
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        
-        let userProfileImageUrl = Observable.just(user?.profileImageUrl).asDriver(onErrorDriveWith: .empty())
-        let followersString = Observable.just(attributedText(withValue: 0, text: "followers"))
-        let followingString = Observable.just(attributedText(withValue: 2, text: "following"))
-        let userFullName = Observable.just(user?.fullName)
-        let userName = Observable.just(user?.userName)
-        
-        let currentUser = Observable<Bool>.create { [weak self] observer in
-            if Auth.auth().currentUser?.uid == self?.user?.uid {
-                observer.onNext(true)
-                observer.onCompleted()
-            } else {
-                observer.onNext(false)
-                observer.onCompleted()
-            }
-            return Disposables.create()
-        }
-            .share()
-        let editProfileString = currentUser.filter { $0 == true }
-            .map { _ in
-                return "Edit Profile"
-            }
-        
-        let followString = currentUser.filter { $0 == false }
-            .map { _ in
-                return "Follow"
-            }
+        //input- viewWillAppear
         
         let userTweets = input.viewWillAppear
-            .flatMap { [ weak self] _ in
-                TweetService.shared.fetchTweetsRx(user: self?.user)
+            .flatMap { _ in
+                UserService.shared.fetchUserRx()
             }
-        return Output(userProfileImageUrl: userProfileImageUrl,
-                      followersString: followersString,
-                      followingString: followingString,
-                      userFullName: userFullName,
+            .flatMap { user in
+                TweetService.shared.fetchTweetsRx(user: user)
+            }
+            .map { tweets in
+                return [Tweets(items: tweets)]
+            }
+        //input- headerBindViewModel
+        let user = input.headerBindViewModel.flatMap { _ in
+            UserService.shared.fetchUserRx()
+        }.share()
+        
+        let profileImageUrl = user
+            .map { user in
+                return user.profileImageUrl
+            }
+            .asDriver(onErrorDriveWith: .empty())
+        let userName = user
+            .map { user in
+                return "@\(user.userName)"
+            }
+        let fullName = user
+            .map { user in
+                return user.fullName
+            }
+        let followersString = user
+            .map { [weak self] user in
+                return self?.attributedText(withValue: 0, text: "followers")
+            }
+        let followingString = user
+            .map { [weak self] user in
+                return self?.attributedText(withValue: 2, text: "following")
+            }
+        let actionButtonTitle = user
+            .map { user in
+                if Auth.auth().currentUser?.uid == user.uid {
+                    return "Edit Profile"
+                } else {
+                    return "Follow"
+                }
+            }
+        return Output(userTweets: userTweets,
+                      profileImageUrl: profileImageUrl,
                       userName: userName,
-                      editProfileButtonTitle: editProfileString,
-                      followButtonTitle: followString,
-                      userTweets: userTweets)
+                      fullName: fullName,
+                      followersString: followersString,
+                      follwingString: followingString,
+                      buttonTitle: actionButtonTitle)
     }
     
     fileprivate func attributedText(withValue value: Int, text: String) -> NSAttributedString {

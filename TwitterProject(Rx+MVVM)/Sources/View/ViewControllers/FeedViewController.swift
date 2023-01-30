@@ -70,7 +70,7 @@ class FeedViewController: UIViewController, ViewModelBindable {
                 cell.bind(cellModel: tweetCellModel)
             }
             .disposed(by: disposeBag)
-        viewModel.output.pushProfileViewController
+        viewModel.output.cellProfileImageTapped
             .drive(onNext: { [weak self] in
                 let profileViewModel = ProfileViewModel()
                 var profileViewController = ProfileViewController()
