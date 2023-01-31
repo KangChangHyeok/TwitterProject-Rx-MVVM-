@@ -20,4 +20,4 @@ let userTweetsReference = dataBaseReference.child("user-tweets")
 let reuseIdentifier = "tweetCell"
 let headerIdentifier = "ProfileHeader"
 let profileFilterCellIdentifier = "ProfileFilterCell"
-
+let userCellIdentifier = "UserCell"

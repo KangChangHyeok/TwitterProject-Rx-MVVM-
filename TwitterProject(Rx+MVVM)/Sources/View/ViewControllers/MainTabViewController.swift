@@ -96,9 +96,14 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         let feedViewModel = FeedViewModel()
         feedViewController.bind(viewModel: feedViewModel)
         let feedNavigationController = viewModel.makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
-        let exploreView = viewModel.makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: ExploreViewController())
+        
+        var exploreViewController = ExploreViewController()
+        let exploreViewModel = ExploreViewModel()
+        exploreViewController.bind(viewModel: exploreViewModel)
+        let exploreNavigationController = viewModel.makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: exploreViewController)
+        
         let notificationsView = viewModel.makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: NotificationViewController())
         let conversationsView = viewModel.makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
-        viewControllers = [feedNavigationController, exploreView, notificationsView, conversationsView]
+        viewControllers = [feedNavigationController, exploreNavigationController, notificationsView, conversationsView]
     }
 }
