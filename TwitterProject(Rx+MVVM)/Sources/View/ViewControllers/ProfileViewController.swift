@@ -20,9 +20,9 @@ class ProfileViewController: UIViewController, ViewModelBindable {
     var viewModel: ProfileViewModel!
     var disposeBag = DisposeBag()
     
+    lazy var profileHeaderView = ProfileHeaderView()
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.headerReferenceSize = CGSize(width: view.frame.width, height: 350)
         layout.itemSize = CGSize(width: view.frame.width, height: 120)
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -38,28 +38,22 @@ class ProfileViewController: UIViewController, ViewModelBindable {
         super.viewDidLoad()
     }
     override func viewDidLayoutSubviews() {
+        view.addSubview(profileHeaderView)
         view.addSubview(collectionView)
+        profileHeaderView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            make.height.equalTo(350)
+        }
         collectionView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
+            make.top.equalTo(profileHeaderView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
     // MARK: - Methods
     
     func bindViewModel() {
-        // dataSource
-        let dataSource = RxCollectionViewSectionedReloadDataSource<Tweets> { dataSource, collectionView, indexPath, tweet in
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TweetCell
-            let tweetCellModel = TweetCellModel(tweet: tweet)
-            cell.bind(cellModel: tweetCellModel)
-            return cell
-        } configureSupplementaryView: { [weak self] dataSource, collectionView, kind , indexPath in
-            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeaderView
-            header.bindViewModel(viewModel: self?.viewModel)
-            self?.viewModel.input.headerBindViewModel.accept(())
-            return header
-        }
-        
         // input
+        profileHeaderView.bind(viewModel: viewModel)
         let viewWillAppear = self.rx.viewWillAppear
         
         viewWillAppear.asDriver(onErrorDriveWith: .empty())
@@ -73,7 +67,10 @@ class ProfileViewController: UIViewController, ViewModelBindable {
         
         //output
         viewModel.output.userTweets
-            .bind(to: collectionView.rx.items(dataSource: dataSource))
+            .bind(to: collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
+                let tweetCellModel = TweetCellModel(tweet: tweet)
+                cell.bind(cellModel: tweetCellModel)
+            }
             .disposed(by: disposeBag)
     }
 }
