@@ -13,21 +13,40 @@ class ExploreViewModel: ViewModelType {
     
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
+        let searchBarText = PublishRelay<String>()
     }
     struct Output {
-        let usersData: Observable<[User]>
+        let usersData: PublishRelay<[User]>
     }
     var disposeBag = DisposeBag()
     let input = Input()
     lazy var output = transform(input: input)
     
     func transform(input: Input) -> Output {
+        var initalUsersData: [User] = []
+        let usersData = PublishRelay<[User]>()
         
-        let usersData = input.viewWillAppear
+        input.viewWillAppear
             .flatMap { _ in
                 UserService.shared.fetchUsersRx()
             }
-            .debug("----")
+            .bind { users in
+                initalUsersData = users
+                usersData.accept(users)
+            }
+            .disposed(by: disposeBag)
+        
+        input.searchBarText
+            .map { text -> [User] in
+                if text.isEmpty {
+                    return initalUsersData
+                } else {
+                    let result = initalUsersData.filter { $0.fullName.contains(text) }
+                    return result
+                }
+            }
+            .bind(to: usersData)
+            .disposed(by: disposeBag)
         
         return Output(usersData: usersData)
     }

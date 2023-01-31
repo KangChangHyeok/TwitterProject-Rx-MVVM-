@@ -24,6 +24,15 @@ class ExploreViewController: UIViewController, ViewModelBindable {
         tableView.separatorStyle = .none
         return tableView
     }()
+    
+    private let serachController: UISearchController = {
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.hidesNavigationBarDuringPresentation = false
+        searchController.searchBar.placeholder = "유저를 검색하세요"
+        return searchController
+    }()
+    
     // MARK: - override
     
     override func viewDidLoad() {
@@ -31,7 +40,9 @@ class ExploreViewController: UIViewController, ViewModelBindable {
     }
     override func viewDidLayoutSubviews() {
         view.backgroundColor = .white
-        navigationItem.title = "Messages"
+        navigationItem.title = "Explore"
+        navigationItem.searchController = serachController
+        definesPresentationContext = false
         view.addSubview(tableView)
         tableView.snp.makeConstraints { make in
             make.top.left.right.bottom.equalToSuperview()
@@ -43,6 +54,9 @@ class ExploreViewController: UIViewController, ViewModelBindable {
         self.rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
+        serachController.searchBar.rx.text.orEmpty
+            .bind(to: viewModel.input.searchBarText)
+            .disposed(by: disposeBag)
         
         viewModel.output.usersData
             .bind(to: tableView.rx.items(cellIdentifier: userCellIdentifier, cellType: UserCell.self)) { index, user, cell in
@@ -51,7 +65,5 @@ class ExploreViewController: UIViewController, ViewModelBindable {
                 cell.fullNameLabel.text = user.fullName
             }
             .disposed(by: disposeBag)
-        
-        
     }
 }
