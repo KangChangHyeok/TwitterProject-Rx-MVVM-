@@ -21,19 +21,21 @@ class ProfileViewModel: ViewModelType {
     }
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
+        let followButtonTapped = BehaviorRelay<Void>(value: ())
+        let buttonTitle = PublishRelay<String>()
     }
     struct Output {
         let userTweets: Observable<[Tweet]>
-        let buttonTitle: Observable<String>
+        let buttonTitle: BehaviorRelay<String>
     }
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
-        //input- viewWillAppear
+        let viewWillAppear = input.viewWillAppear.share()
         
-        let userTweets = input.viewWillAppear
+        let userTweets = viewWillAppear
             .map({ [weak self] _ in
                 return self?.user
             })
@@ -41,18 +43,46 @@ class ProfileViewModel: ViewModelType {
                 TweetService.shared.fetchTweetsRx(user: user)
             }
         //
-        let actionButtonTitle = Observable.create({ [weak self] observer in
-            if Auth.auth().currentUser?.uid == self?.user.uid {
-                observer.onNext("Edit Profile")
-                observer.onCompleted()
-            } else {
-                observer.onNext("Follow")
-                observer.onCompleted()
+        let buttonTitle = BehaviorRelay(value: "Loading")
+        
+        UserService.shared.checkIfUserIsFollowedRx(uid: user.uid)
+            .bind { [weak self] checkIfUserIsFollowed in
+                if checkIfUserIsFollowed {
+                    buttonTitle.accept("Following")
+                } else {
+                    if Auth.auth().currentUser?.uid == self?.user.uid {
+                        buttonTitle.accept("Edit Profile")
+                    } else {
+                        buttonTitle.accept("Follow")
+                    }
+                }
             }
-            return Disposables.create()
-        })
+            .disposed(by: disposeBag)
+        
+        input.followButtonTapped
+            .withLatestFrom(input.buttonTitle)
+            .withUnretained(self)
+            .bind(onNext: { weakself, title in
+                switch title {
+                case "Follow":
+                    UserService.shared.followUserRx(uid: (weakself.user.uid))
+                        .subscribe(onNext: { _ in
+                            buttonTitle.accept("Following")
+                        })
+                        .disposed(by: weakself.disposeBag)
+                case "Following":
+                    UserService.shared.unfollowUserRx(uid: (weakself.user.uid))
+                        .subscribe(onNext: { _ in
+                            buttonTitle.accept("Follow")
+                        })
+                        .disposed(by: weakself.disposeBag)
+                default:
+                    break
+                }
+            })
+            .disposed(by: disposeBag)
         return Output(userTweets: userTweets,
-                      buttonTitle: actionButtonTitle)
+                      buttonTitle: buttonTitle)
     }
     
     func attributedText(withValue value: Int, text: String) -> NSAttributedString {

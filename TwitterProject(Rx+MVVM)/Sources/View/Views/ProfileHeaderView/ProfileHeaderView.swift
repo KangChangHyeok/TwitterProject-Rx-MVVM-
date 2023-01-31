@@ -145,6 +145,9 @@ class ProfileHeaderView: UIView {
                 profileViewController?.navigationController?.popViewController(animated: true)
             })
             .disposed(by: disposeBag)
+        editProfileFollowButton.rx.tap
+            .bind(to: viewModel.input.followButtonTapped)
+            .disposed(by: disposeBag)
         profileImageView.sd_setImage(with: viewModel.user.profileImageUrl)
         fullNameLabel.text = viewModel.user.fullName
         userNameLabel.text = viewModel.user.userName
@@ -152,6 +155,9 @@ class ProfileHeaderView: UIView {
         followingLabel.attributedText = viewModel.attributedText(withValue: 0, text: "Following")
         viewModel.output.buttonTitle
             .bind(to: editProfileFollowButton.rx.title())
+            .disposed(by: disposeBag)
+        viewModel.output.buttonTitle
+            .bind(to: viewModel.input.buttonTitle)
             .disposed(by: disposeBag)
     }
 }
