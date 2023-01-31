@@ -9,6 +9,8 @@ import UIKit
 
 class UserCell: UITableViewCell {
     
+    var cellModel: UserCellModel!
+    
     lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -18,7 +20,7 @@ class UserCell: UITableViewCell {
         return imageView
     }()
     
-    let userNameLabel: UILabel = {
+    private let userNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 14)
         label.text = "userName"
@@ -26,7 +28,7 @@ class UserCell: UITableViewCell {
         return label
     }()
     
-    let fullNameLabel: UILabel = {
+    private let fullNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
@@ -63,6 +65,13 @@ class UserCell: UITableViewCell {
             make.centerY.equalTo(profileImageView.snp.centerY)
             make.left.equalTo(profileImageView.snp.right).offset(12)
         }
+    }
+    
+    func bind() {
+        
+        profileImageView.sd_setImage(with: cellModel.user.profileImageUrl)
+        userNameLabel.text = cellModel.user.userName
+        fullNameLabel.text = cellModel.user.fullName
     }
     
 }
