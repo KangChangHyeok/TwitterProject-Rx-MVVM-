@@ -66,7 +66,7 @@ struct UserService {
             return Disposables.create()
         }
     }
-    
+    // 유저 팔로잉하기
     func followUser(uid: String, completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         
@@ -84,7 +84,7 @@ struct UserService {
             return Disposables.create()
         }
     }
-    
+    // 유저 팔로잉 해제하기
     func unfollowUser(uid: String, completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let currentUid = Auth.auth().currentUser?.uid else { return }
         
@@ -113,6 +113,38 @@ struct UserService {
         Observable.create { observer in
             checkIfUserIsFollowed(uid: uid) { checkIfUserIsFollowed in
                 observer.onNext(checkIfUserIsFollowed)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    func fetchFollowerUsers(uid: String, completion: @escaping(Int) -> Void) {
+        userFollowersReference.child(uid).observeSingleEvent(of: .value) { snapshot in
+            let followers = snapshot.children.allObjects.count
+            completion(followers)
+        }
+    }
+    
+    func fetchFollowerUsersRx(uid: String) -> Observable<Int> {
+        Observable.create { observer in
+            fetchFollowerUsers(uid: uid) { followers in
+                observer.onNext(followers)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func fetchFollowingUsers(uid: String, completion: @escaping(Int) -> Void) {
+        userFollowingReference.child(uid).observeSingleEvent(of: .value) { snapshot in
+            let following = snapshot.children.allObjects.count
+            completion(following)
+        }
+    }
+    func fetchFollowingUsersRx(uid: String) -> Observable<Int> {
+        Observable.create { observer in
+            fetchFollowingUsers(uid: uid) { following in
+                observer.onNext(following)
                 observer.onCompleted()
             }
             return Disposables.create()

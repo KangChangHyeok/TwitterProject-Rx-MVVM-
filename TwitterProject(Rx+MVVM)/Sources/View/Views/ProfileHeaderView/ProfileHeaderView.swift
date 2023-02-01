@@ -153,11 +153,18 @@ class ProfileHeaderView: UIView {
         userNameLabel.text = viewModel.user.userName
         followersLabel.attributedText = viewModel.attributedText(withValue: 2, text: "Follows")
         followingLabel.attributedText = viewModel.attributedText(withValue: 0, text: "Following")
+        // output - buttonTitle
         viewModel.output.buttonTitle
             .bind(to: editProfileFollowButton.rx.title())
             .disposed(by: disposeBag)
         viewModel.output.buttonTitle
             .bind(to: viewModel.input.buttonTitle)
+            .disposed(by: disposeBag)
+        viewModel.output.followerUsersCount
+            .bind(to: followersLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        viewModel.output.followingUsersCount
+            .bind(to: followingLabel.rx.attributedText)
             .disposed(by: disposeBag)
     }
 }
