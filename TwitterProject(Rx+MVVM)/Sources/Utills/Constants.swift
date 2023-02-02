@@ -16,6 +16,8 @@ let dataBaseReference = Database.database().reference()
 let userReference = dataBaseReference.child("users")
 let tweetsReference = dataBaseReference.child("tweets")
 let userTweetsReference = dataBaseReference.child("user-tweets")
+let userFollowersReference = dataBaseReference.child("user-followers")
+let userFollowingReference = dataBaseReference.child("user-following")
 
 let reuseIdentifier = "tweetCell"
 let headerIdentifier = "ProfileHeader"
