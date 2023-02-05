@@ -12,6 +12,7 @@ import RxCocoa
 import SDWebImage
 import RxViewController
 
+
 class UploadTweetViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
     
@@ -21,7 +22,6 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
     private var uploadTweetButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .twitterBlue
-        button.setTitle("Tweet", for: .normal)
         button.titleLabel?.textAlignment = .center
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.setTitleColor(.white, for: .normal)
@@ -37,7 +37,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         return button
     }()
     private var profileImageView: UIImageView = {
-       let imageView = UIImageView()
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.snp.makeConstraints { make in
@@ -56,8 +56,20 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         stackView.alignment = .leading
         return stackView
     }()
+    private let replyLabel: UILabel = {
+        let replyLabel = UILabel()
+        replyLabel.font = UIFont.systemFont(ofSize: 14)
+        replyLabel.textColor = .lightGray
+        return replyLabel
+    }()
+    private lazy var stackViewWithReplyLabel: UIStackView = {
+        let stackViewWithReplyLabel = UIStackView(arrangedSubviews: [replyLabel, stackView])
+        stackViewWithReplyLabel.axis = .vertical
+        stackViewWithReplyLabel.spacing = 12
+        stackViewWithReplyLabel.alignment = .leading
+        return stackViewWithReplyLabel
+    }()
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -69,16 +81,30 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: uploadTweetButton)
         
-        view.addSubview(stackView)
+        view.addSubview(stackViewWithReplyLabel)
         stackView.snp.makeConstraints { make in
+            make.width.equalTo(stackViewWithReplyLabel.snp.width)
+        }
+        stackViewWithReplyLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0))
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
             make.height.equalTo(300)
         }
+        
     }
     // MARK: - Methods
     func bindViewModel() {
-
+        
+        switch viewModel.uploadTweetViewControllerType {
+            
+        case .tweet:
+            replyLabel.isHidden = true
+        case .reply(let tweet):
+            replyLabel.isHidden = false
+            replyLabel.text = "\(tweet.user.userName)에게 리트윗 보내기"
+        }
+        uploadTweetButton.setTitle(viewModel.buttonTitle, for: .normal)
+        captionTextView.placeholderLabel.text = viewModel.palceHolderText
         self.rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
@@ -94,7 +120,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
             })
             .disposed(by: disposeBag)
         
-
+        
         viewModel.output.userProfileImageUrl.asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] url in
                 self?.profileImageView.sd_setImage(with: url)

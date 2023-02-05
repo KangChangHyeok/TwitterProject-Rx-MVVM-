@@ -20,8 +20,6 @@ class FeedViewController: UIViewController, ViewModelBindable {
     var viewModel: FeedViewModel!
     var disposeBag = DisposeBag()
     lazy var collectionView: UICollectionView = {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.itemSize = CGSize(width: view.frame.width, height: 120)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.backgroundColor = .white
@@ -82,12 +80,10 @@ class FeedViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         
         viewModel.output.userTweets
-            .debug("--userTweets")
             .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
                 let tweetCellModel = TweetCellModel(tweet: tweet)
                 cell.cellModel = tweetCellModel
                 cell.bind()
-                print("!!")
             }
             .disposed(by: disposeBag)
         viewModel.output.cellProfileImageTapped
@@ -96,6 +92,16 @@ class FeedViewController: UIViewController, ViewModelBindable {
                 var profileViewController = ProfileViewController()
                 profileViewController.bind(viewModel: profileViewModel)
                 self?.navigationController?.pushViewController(profileViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+        viewModel.output.showRetweetViewController
+            .drive(onNext: { tweet in
+                let uploadTweetViewModel = UploadTweetViewModel(type: .reply(tweet))
+                var uploadTweetViewController = UploadTweetViewController()
+                uploadTweetViewController.bind(viewModel: uploadTweetViewModel)
+                let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
+                navigationController.modalPresentationStyle = .fullScreen
+                self.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)
         collectionView.rx.itemSelected

@@ -77,7 +77,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         //우측 하단 버튼 누를 경우 uploadTweetViewController화면으로 이동
         addTweetButton.rx.tap.asDriver()
             .drive(onNext: { [weak self] _ in
-                let viewModel = UploadTweetViewModel()
+                let viewModel = UploadTweetViewModel(type: .tweet)
                 var uploadTweetViewController = UploadTweetViewController()
                 uploadTweetViewController.bind(viewModel: viewModel)
                 let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
