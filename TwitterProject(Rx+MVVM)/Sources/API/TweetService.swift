@@ -127,4 +127,55 @@ struct TweetService {
             return Disposables.create()
         }
     }
+    func likeTweet(tweet: Tweet, completion: @escaping(Bool) -> Void) {
+        //유저 인증
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        // 좋아요 누른 상태인 경우 눌렀을때 좋아요 - 1, 안누른 상태일 경우 누르면 좋아요 + 1
+        let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
+        tweetsReference.child(tweet.tweetID).child("likes").setValue(likes)
+        if tweet.didLike {
+            // 유저가 해당 트윗에 이미 좋아요 눌렀을 경우
+            // unlike tweet
+            userLikesTweetReference.child(uid).child(tweet.tweetID).removeValue { _, _ in
+                tweetLikesUserReference.child(tweet.tweetID).removeValue { _, _ in
+                    completion(false)
+                }
+            }
+        } else {
+            // 유저가 해당 트윗에 좋아요 누르지 않은 경우
+            userLikesTweetReference.child(uid).updateChildValues([tweet.tweetID: 0]) { _, _ in
+                tweetLikesUserReference.child(tweet.tweetID).updateChildValues([uid: 1]) { _, _ in
+                    completion(true)
+                }
+            }
+        }
+    }
+    
+    func likeTweetRx(tweet: Tweet) -> Observable<Bool> {
+        Observable.create { observer in
+            likeTweet(tweet: tweet) { bool in
+                observer.onNext(bool)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+        
+    }
+    func checkIfUserLikedTweet(_ tweet: Tweet, completion: @escaping(Bool) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        userLikesTweetReference.child(uid).child(tweet.tweetID).observeSingleEvent(of: .value) { snapshot in
+            completion(snapshot.exists())
+        }
+    }
+    
+    func checkIfUserLiketTweetRx(tweet: Tweet) -> Observable<Bool> {
+        Observable.create { observer in
+            checkIfUserLikedTweet(tweet) { bool in
+                observer.onNext(bool)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
+
 }

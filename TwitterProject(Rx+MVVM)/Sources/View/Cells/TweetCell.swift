@@ -142,6 +142,28 @@ class TweetCell: UICollectionViewCell {
                 feedViewController.viewModel.input.cellRetweetButtonTapped.accept(weakself.cellModel.tweet)
             }
             .disposed(by: disposeBag)
+        likeButton.rx.tap
+            .debug("tap")
+            .bind(to: cellModel.input.likeButtonTapped)
+            .disposed(by: disposeBag)
+        cellModel.output.userLikeForTweet
+            .drive(onNext: { result in
+                if result {
+                    self.likeButton.tintColor = .red
+                } else {
+                    self.likeButton.tintColor = .gray
+                }
+            })
+            .disposed(by: disposeBag)
+        cellModel.output.checkIfUserLikeTweet
+            .drive(onNext: { result in
+                if result {
+                    self.likeButton.tintColor = .red
+                } else {
+                    self.likeButton.tintColor = .gray
+                }
+            })
+            .disposed(by: disposeBag)
     }
     override func prepareForReuse() {
         disposeBag = DisposeBag()
