@@ -45,25 +45,25 @@ class TweetCell: UICollectionViewCell {
         stackView.spacing = 4
         return stackView
     }()
-    private lazy var commentButton: UIButton = {
+    private let commentButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "comment"), for: .normal)
         button.tintColor = .darkGray
         return button
     }()
-    private lazy var retweetButton: UIButton = {
+    private let retweetButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "retweet"), for: .normal)
         button.tintColor = .darkGray
         return button
     }()
-    private lazy var likeButton: UIButton = {
+    private let likeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "like"), for: .normal)
         button.tintColor = .darkGray
         return button
     }()
-    private lazy var shareButton: UIButton = {
+    private let shareButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "share"), for: .normal)
         button.tintColor = .darkGray
@@ -135,7 +135,13 @@ class TweetCell: UICollectionViewCell {
             .disposed(by: disposeBag)
         informationLabel.attributedText = cellModel.informationText
         captionLabel.text = cellModel.captionLabelText
-        
+        commentButton.rx.tap
+            .withUnretained(self)
+            .bind { weakself, _ in
+                guard let feedViewController = weakself.superViewController as? FeedViewController else { return }
+                feedViewController.viewModel.input.cellRetweetButtonTapped.accept(weakself.cellModel.tweet)
+            }
+            .disposed(by: disposeBag)
     }
     override func prepareForReuse() {
         disposeBag = DisposeBag()

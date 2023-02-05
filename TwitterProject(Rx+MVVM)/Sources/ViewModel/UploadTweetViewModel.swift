@@ -10,8 +10,13 @@ import SDWebImage
 import RxSwift
 import RxCocoa
 
+enum UploadTweetControllerType {
+    case tweet
+    case reply(Tweet)
+}
+
 class UploadTweetViewModel: ViewModelType {
-    
+    let uploadTweetViewControllerType: UploadTweetControllerType
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
         let text = PublishRelay<String>()
@@ -26,6 +31,21 @@ class UploadTweetViewModel: ViewModelType {
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
+    
+    var buttonTitle: String
+    var palceHolderText: String
+    
+    init(type: UploadTweetControllerType) {
+        self.uploadTweetViewControllerType = type
+        switch uploadTweetViewControllerType {
+        case .tweet:
+            buttonTitle = "Tweet"
+            palceHolderText = "What's Happening?"
+        case .reply(let tweet):
+            buttonTitle = "Reply"
+            palceHolderText = "Tweet your reply"
+        }
+    }
     
     func transform(input: Input) -> Output {
         
