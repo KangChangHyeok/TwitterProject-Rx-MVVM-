@@ -18,7 +18,7 @@ class MainTabViewModel: ViewModelType {
     }
     struct Output {
         let authenticationFailure: Driver<Void>
-        let configureUI: Driver<Void>
+        let configureUI: Driver<[Tweet]>
     }
     let input = Input()
     lazy var output = transform(input: input)
@@ -36,9 +36,9 @@ class MainTabViewModel: ViewModelType {
         
         let configureUI = authenticationResult
             .filter { $0 == true }
-            .map({ _ in
-                ()
-            })
+            .flatMap { _ in
+                TweetService.shared.fetchTweetsRx()
+            }
             .share()
             .take(1).asDriver(onErrorDriveWith: .empty())
         

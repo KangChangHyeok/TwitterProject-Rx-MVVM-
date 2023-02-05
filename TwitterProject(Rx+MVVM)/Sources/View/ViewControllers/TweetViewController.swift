@@ -18,9 +18,7 @@ class TweetViewController: UIViewController, ViewModelBindable {
     
     private let headerView = TweetHeaderView()
     private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.frame.width, height: 120)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         return collectionView
     }()
     // MARK: - Override
@@ -34,7 +32,7 @@ class TweetViewController: UIViewController, ViewModelBindable {
         
         headerView.snp.makeConstraints { make in
             make.top.left.right.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(250)
+            make.height.equalTo(viewModel.getCaptionHeight(forwidth: view.frame.width).height + 280)
         }
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom)
@@ -44,6 +42,6 @@ class TweetViewController: UIViewController, ViewModelBindable {
     // MARK: - bindViewModel
     
     func bindViewModel() {
-        
+        headerView.bind(viewModel: viewModel)
     }
 }

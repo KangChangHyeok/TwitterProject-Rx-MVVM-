@@ -12,13 +12,19 @@ import RxCocoa
 
 class FeedViewModel: ViewModelType {
     
+    var initialUserTweets: [Tweet]
+    
+    init(initialUserTweets: [Tweet]) {
+        self.initialUserTweets = initialUserTweets
+    }
+    
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
         let cellProfileImageTapped = PublishRelay<User>()
     }
     struct Output {
-        let userProfileImageView: Driver<UIImageView>
-        let userTweets: Observable<[Tweet]>
+        let userProfileImageUrl: Driver<URL?>
+        let userTweets: BehaviorRelay<[Tweet]>
         let cellProfileImageTapped: Driver<User>
     }
     let input = Input()
@@ -33,27 +39,38 @@ class FeedViewModel: ViewModelType {
             return UserService.shared.fetchUserRx()
         }
         
-        let userProfileImageView = user
+        let userProfileImageUrl = user
             .map { user in
-                let profileImageView = UIImageView()
-                profileImageView.snp.makeConstraints { make in
-                    make.size.equalTo(CGSize(width: 32, height: 32))
-                }
-                profileImageView.layer.cornerRadius = 32 / 2
-                profileImageView.layer.masksToBounds = true
-                
-                guard let profileImageUrl = user.profileImageUrl else { return UIImageView() }
-                profileImageView.sd_setImage(with: profileImageUrl)
-                return profileImageView
+                return user.profileImageUrl
             }.asDriver(onErrorDriveWith: .empty())
         
-        let userTweets = viewWillAppear.flatMap { _ in
+        let userTweets = BehaviorRelay<[Tweet]>(value: initialUserTweets)
+        
+        viewWillAppear.flatMap { _ in
             TweetService.shared.fetchTweetsRx()
         }
+        .withUnretained(self)
+        .map({ weakself, userTweets in
+            weakself.initialUserTweets = userTweets
+            return userTweets
+        })
+        .bind(to: userTweets)
+        .disposed(by: disposeBag)
         
         let cellProfileImageTapped = input.cellProfileImageTapped.asDriver(onErrorDriveWith: .empty())
         
-        
-        return Output(userProfileImageView: userProfileImageView, userTweets: userTweets, cellProfileImageTapped: cellProfileImageTapped)
+        return Output(userProfileImageUrl: userProfileImageUrl, userTweets: userTweets, cellProfileImageTapped: cellProfileImageTapped)
+    }
+    
+    func getCellHeight(forwidth width: CGFloat, indexPath: IndexPath) -> CGSize {
+        let dummyLabel = UILabel()
+        dummyLabel.text = initialUserTweets[indexPath.row].caption
+        dummyLabel.numberOfLines = 0
+        dummyLabel.lineBreakMode = .byWordWrapping
+        dummyLabel.translatesAutoresizingMaskIntoConstraints = false
+        dummyLabel.snp.makeConstraints { make in
+            make.width.equalTo(width)
+        }
+        return dummyLabel.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
     }
 }

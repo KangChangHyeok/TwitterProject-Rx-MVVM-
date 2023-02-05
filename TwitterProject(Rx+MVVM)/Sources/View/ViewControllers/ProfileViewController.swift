@@ -27,7 +27,6 @@ class ProfileViewController: UIViewController, ViewModelBindable {
         
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        collectionView.register(ProfileHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerIdentifier)
         collectionView.backgroundColor = .systemBackground
         collectionView.contentInsetAdjustmentBehavior = .never
         collectionView.isHidden = false
@@ -69,7 +68,8 @@ class ProfileViewController: UIViewController, ViewModelBindable {
         viewModel.output.userTweets
             .bind(to: collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
                 let tweetCellModel = TweetCellModel(tweet: tweet)
-                cell.bind(cellModel: tweetCellModel)
+                cell.cellModel = tweetCellModel
+                cell.bind()
             }
             .disposed(by: disposeBag)
     }

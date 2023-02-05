@@ -54,8 +54,8 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         
         // 유저 인증 성공시 화면 구성하기(최초 1회만)
         viewModel.output.configureUI
-            .drive(onNext: { [weak self] _ in
-                self?.configureViewController()
+            .drive(onNext: { [weak self] userTweets in
+                self?.configureViewController(userTweets: userTweets)
                 self?.viewDidLayoutSubviews()
             })
             .disposed(by: disposeBag)
@@ -87,13 +87,13 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
             .disposed(by: disposeBag)
     }
     
-    func configureViewController() {
+    func configureViewController(userTweets: [Tweet]) {
         self.view.backgroundColor = .white
         self.tabBar.barTintColor = .white
         tabBar.backgroundColor = .white
         // tabBar viewcontrollers에 들어가는 각 ViewController에 viewModel binding
         var feedViewController = FeedViewController()
-        let feedViewModel = FeedViewModel()
+        let feedViewModel = FeedViewModel(initialUserTweets: userTweets)
         feedViewController.bind(viewModel: feedViewModel)
         let feedNavigationController = viewModel.makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
         

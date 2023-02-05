@@ -9,6 +9,8 @@ import UIKit
 import SnapKit
 
 class StatsView: UIView {
+    var viewModel: StatsViewModel!
+    
     private let statsView = UIView()
     private let topDivider: UIView = {
         let topDivider = UIView()
@@ -56,5 +58,9 @@ class StatsView: UIView {
             make.left.right.bottom.equalToSuperview()
             make.height.equalTo(1.0)
         }
+    }
+    func bind(viewModel: TweetViewModel) {
+        retweetsLabel.attributedText = viewModel.retweetsAtrributedString
+        likesLabel.attributedText = viewModel.likesAtrributedString
     }
 }

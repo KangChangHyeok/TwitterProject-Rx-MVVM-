@@ -53,6 +53,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         let stackView = UIStackView(arrangedSubviews: [profileImageView, captionTextView])
         stackView.axis = .horizontal
         stackView.spacing = 12
+        stackView.alignment = .leading
         return stackView
     }()
     // MARK: - Lifecycle
@@ -72,6 +73,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         stackView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0))
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
+            make.height.equalTo(300)
         }
     }
     // MARK: - Methods

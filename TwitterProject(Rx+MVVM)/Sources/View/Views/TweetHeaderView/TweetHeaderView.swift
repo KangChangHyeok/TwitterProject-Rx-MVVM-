@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SDWebImage
 
 class TweetHeaderView: UIView {
     // MARK: - properties
@@ -23,14 +24,12 @@ class TweetHeaderView: UIView {
     private let fullnameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 14)
-        label.text = "fullName"
         return label
     }()
     private let usernameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 14)
         label.textColor = .lightGray
-        label.text = "userName"
         return label
     }()
     private lazy var arrangedSubviewsInNameStackView = [fullnameLabel, usernameLabel]
@@ -51,7 +50,6 @@ class TweetHeaderView: UIView {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 20)
         label.numberOfLines = 0
-        label.text = "CaptionLabelText~~~!!"
         return label
     }()
     private let dateLabel: UILabel = {
@@ -59,7 +57,6 @@ class TweetHeaderView: UIView {
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .left
-        label.text = "6:33 PM - 020202020"
         return label
     }()
     private lazy var optionsButton: UIButton = {
@@ -68,15 +65,6 @@ class TweetHeaderView: UIView {
         button.setImage(UIImage(named: "down_arrow_24pt"), for: .normal)
         return button
     }()
-    //    private let replyLabel: ActiveLabel = {
-    //        let label = ActiveLabel()
-    //        label.textColor = .lightGray
-    //        label.font = UIFont.systemFont(ofSize: 12)
-    //        label.mentionColor = .twitterBlue
-    //        label.hashtagColor = .twitterBlue
-    //        return label
-    //    }()
-    //
     private lazy var statsView = StatsView()
     private lazy var commentButton: UIButton = {
         let button = createButton(withImageName: "comment")
@@ -134,7 +122,7 @@ class TweetHeaderView: UIView {
             make.right.equalToSuperview().offset(-8)
         }
         statsView.snp.makeConstraints { make in
-            make.top.equalTo(dateLabel.snp.bottom).offset(20)
+            make.top.equalTo(dateLabel.snp.bottom).offset(12)
             make.left.right.equalToSuperview()
             make.height.equalTo(40)
         }
@@ -147,13 +135,19 @@ class TweetHeaderView: UIView {
             make.centerX.equalTo(self)
             make.top.equalTo(statsView.snp.bottom).offset(16)
         }
-        
     }
-    func createButton(withImageName imageName: String) -> UIButton {
+    func bind(viewModel: TweetViewModel) {
+        profileImageView.sd_setImage(with: viewModel.tweet.user.profileImageUrl)
+        fullnameLabel.text = viewModel.tweet.user.fullName
+        usernameLabel.text = viewModel.tweet.user.userName
+        captionLabel.text = viewModel.tweet.caption
+        dateLabel.text = viewModel.headerTimeStamp
+        statsView.bind(viewModel: viewModel)
+    }
+    private func createButton(withImageName imageName: String) -> UIButton {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: imageName), for: .normal)
         button.tintColor = .darkGray
-        //        button.setDimensions(width: 20, height: 20)
         return button
     }
 }

@@ -16,23 +16,29 @@ import RxViewController
 
 class FeedViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
-
+    
     var viewModel: FeedViewModel!
     var disposeBag = DisposeBag()
     lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.frame.width, height: 120)
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        let layout = UICollectionViewFlowLayout()
+//        layout.itemSize = CGSize(width: view.frame.width, height: 120)
+        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         collectionView.backgroundColor = .white
         return collectionView
+    }()
+    private let profileImageView: UIImageView = {
+        let profileImageView = UIImageView()
+        profileImageView.layer.cornerRadius = 32 / 2
+        profileImageView.layer.masksToBounds = true
+        return profileImageView
     }()
     let titleImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "twitter_logo_blue"))
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
-    // MARK: - Lifecycle
+    // MARK: - Override
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -48,10 +54,14 @@ class FeedViewController: UIViewController, ViewModelBindable {
         collectionView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
         }
+        profileImageView.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 32, height: 32))
+        }
     }
-    // MARK: - Methods
-    
+    // MARK: - bindViewModel
     func bindViewModel() {
+        collectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
         let viewWillAppear = self.rx.viewWillAppear.share()
         
         viewWillAppear.asDriver(onErrorDriveWith: .empty())
@@ -63,16 +73,21 @@ class FeedViewController: UIViewController, ViewModelBindable {
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
         
-        viewModel.output.userProfileImageView
-            .drive(onNext: { [weak self] profileImageView in
-                self?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
+        viewModel.output.userProfileImageUrl
+            .drive(onNext: { [weak self] url in
+                guard let self = self else { return }
+                self.profileImageView.sd_setImage(with: url)
+                self.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: self.profileImageView)
             })
             .disposed(by: disposeBag)
         
         viewModel.output.userTweets
-            .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { row, tweet, cell in
+            .debug("--userTweets")
+            .bind(to: self.collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
                 let tweetCellModel = TweetCellModel(tweet: tweet)
-                cell.bind(cellModel: tweetCellModel)
+                cell.cellModel = tweetCellModel
+                cell.bind()
+                print("!!")
             }
             .disposed(by: disposeBag)
         viewModel.output.cellProfileImageTapped
@@ -83,5 +98,24 @@ class FeedViewController: UIViewController, ViewModelBindable {
                 self?.navigationController?.pushViewController(profileViewController, animated: true)
             })
             .disposed(by: disposeBag)
+        collectionView.rx.itemSelected
+            .withUnretained(self)
+            .bind { weakself, indexPath in
+                guard let selectedCell = weakself.collectionView.cellForItem(at: indexPath) as? TweetCell else { return }
+                let selectedCellTweetData = selectedCell.cellModel.tweet
+                let tweetViewModel = TweetViewModel(tweet: selectedCellTweetData)
+                var tweetViewController = TweetViewController()
+                tweetViewController.bind(viewModel: tweetViewModel)
+                weakself.navigationController?.pushViewController(tweetViewController, animated: true)
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+extension FeedViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellHeight = viewModel.getCellHeight(forwidth: view.frame.width, indexPath: indexPath).height
+
+        return CGSize(width: view.frame.width, height: cellHeight + 80)
     }
 }
