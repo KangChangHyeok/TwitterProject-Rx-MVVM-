@@ -70,8 +70,9 @@ class UploadTweetViewModel: ViewModelType {
             }
             .asDriver(onErrorDriveWith: .empty())
         let UploadTweet = input.uploadTweetButtonTapped.withLatestFrom(input.text)
-            .flatMap { caption in
-                TweetService.shared.uploadTweetRx(caption: caption)
+            .withUnretained(self)
+            .flatMap { weakself, caption in
+                TweetService.shared.uploadTweetRx(caption: caption, type: weakself.uploadTweetViewControllerType)
             }
             .share()
             .asDriver(onErrorDriveWith: .empty())

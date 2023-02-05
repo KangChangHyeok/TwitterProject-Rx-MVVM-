@@ -101,7 +101,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
             replyLabel.isHidden = true
         case .reply(let tweet):
             replyLabel.isHidden = false
-            replyLabel.text = tweet.user.userName
+            replyLabel.text = "\(tweet.user.userName)에게 리트윗 보내기"
         }
         uploadTweetButton.setTitle(viewModel.buttonTitle, for: .normal)
         captionTextView.placeholderLabel.text = viewModel.palceHolderText
