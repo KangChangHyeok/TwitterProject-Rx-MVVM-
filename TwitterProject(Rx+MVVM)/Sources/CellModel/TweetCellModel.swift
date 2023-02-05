@@ -6,10 +6,46 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
-struct TweetCellModel {
+class TweetCellModel {
+    struct Input {
+        let likeButtonTapped = PublishRelay<Void>()
+    }
+    struct Output {
+        let userLikeForTweet: Driver<Bool>
+        let checkIfUserLikeTweet: Driver<Bool>
+    }
+    let input = Input()
+    lazy var output = transform(input: input)
     
-    let tweet: Tweet
+    func transform(input: Input) -> Output {
+        let userLikeForTweet = input.likeButtonTapped
+            .flatMap { _ in
+                TweetService.shared.likeTweetRx(tweet: self.tweet)
+            }
+            .map { bool in
+                self.tweet.didLike = bool
+                if bool {
+                    self.tweet.likes += 1
+                } else {
+                    self.tweet.likes -= 1
+                }
+                return bool
+            }.asDriver(onErrorDriveWith: .empty())
+        
+        let checkIfUserLikeTweet = TweetService.shared.checkIfUserLiketTweetRx(tweet: self.tweet)
+            .map({ bool in
+                self.tweet.didLike = bool
+                return bool
+            })
+            .asDriver(onErrorDriveWith: .empty())
+        return Output(userLikeForTweet: userLikeForTweet,
+                      checkIfUserLikeTweet: checkIfUserLikeTweet)
+    }
+    var disposeBag = DisposeBag()
+    var tweet: Tweet
     
     var user: User {
         return tweet.user

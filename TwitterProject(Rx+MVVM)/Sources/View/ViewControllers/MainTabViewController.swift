@@ -56,7 +56,7 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         viewModel.output.configureUI
             .drive(onNext: { [weak self] userTweets in
                 self?.configureViewController(userTweets: userTweets)
-                self?.viewDidLayoutSubviews()
+                
             })
             .disposed(by: disposeBag)
         
