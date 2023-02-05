@@ -97,7 +97,7 @@ class ProfileHeaderView: UIView {
     }
 
     override func layoutSubviews() {
-        
+        backgroundColor = .systemBackground
         addSubview(containerView)
         containerView.addSubview(backButton)
         addSubview(editProfileFollowButton)
