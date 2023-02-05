@@ -19,6 +19,7 @@ class TweetViewController: UIViewController, ViewModelBindable {
     private let headerView = TweetHeaderView()
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         return collectionView
     }()
     // MARK: - Override
@@ -43,5 +44,24 @@ class TweetViewController: UIViewController, ViewModelBindable {
     
     func bindViewModel() {
         headerView.bind(viewModel: viewModel)
+        collectionView.rx.setDelegate(self)
+            .disposed(by: disposeBag)
+        rx.viewWillAppear
+            .bind(to: viewModel.input.viewWillAppear)
+            .disposed(by: disposeBag)
+        viewModel.output.repliesForTweet
+            .bind(to: collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
+                let tweetCellModel = TweetCellModel(tweet: tweet)
+                cell.cellModel = tweetCellModel
+                cell.bind()
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+extension TweetViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellHeight = viewModel.getCellHeightForReplies(forwidth: view.frame.width, indexPath: indexPath).height
+        return CGSize(width: view.frame.width, height: cellHeight + 80)
     }
 }
