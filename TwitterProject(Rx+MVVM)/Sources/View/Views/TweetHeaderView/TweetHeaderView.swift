@@ -8,10 +8,13 @@
 import UIKit
 import SnapKit
 import SDWebImage
+import RxSwift
+import RxCocoa
 
 class TweetHeaderView: UIView {
     // MARK: - properties
-    
+    var viewModel: TweetHeaderViewModel
+    var disposeBag = DisposeBag()
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -88,10 +91,13 @@ class TweetHeaderView: UIView {
         actionStackView.spacing = 72
         return actionStackView
     }()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    private lazy var actionSheet = ActionSheetLauncher(user: viewModel.user)
+    init(viewModel: TweetHeaderViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
         backgroundColor = .systemBackground
     }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -143,6 +149,12 @@ class TweetHeaderView: UIView {
         captionLabel.text = viewModel.tweet.caption
         dateLabel.text = viewModel.headerTimeStamp
         statsView.bind(viewModel: viewModel)
+        optionsButton.rx.tap
+            .withUnretained(self)
+            .bind { weakself, _ in
+                weakself.actionSheet.show()
+            }
+            .disposed(by: disposeBag)
     }
     private func createButton(withImageName imageName: String) -> UIButton {
         let button = UIButton(type: .system)

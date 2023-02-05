@@ -16,14 +16,17 @@ class TweetViewController: UIViewController, ViewModelBindable {
     var viewModel: TweetViewModel!
     var disposeBag = DisposeBag()
     
-    private let headerView = TweetHeaderView()
+    private lazy var headerView: TweetHeaderView = {
+        let tweetHeaderViewModel = TweetHeaderViewModel(user: viewModel.tweet.user)
+        let tweetHeaderView = TweetHeaderView(viewModel: tweetHeaderViewModel)
+        return tweetHeaderView
+    }()
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         return collectionView
     }()
     // MARK: - Override
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
