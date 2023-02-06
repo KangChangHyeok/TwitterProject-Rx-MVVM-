@@ -20,13 +20,13 @@ class FeedViewModel: ViewModelType {
     
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
-        let cellProfileImageTapped = PublishRelay<User>()
+        let cellProfileImageTapped = PublishRelay<Tweet>()
         let cellRetweetButtonTapped = PublishRelay<Tweet>()
     }
     struct Output {
         let userProfileImageUrl: Driver<URL?>
         let userTweets: BehaviorRelay<[Tweet]>
-        let cellProfileImageTapped: Driver<User>
+        let cellProfileImageTapped: Driver<Tweet>
         let showRetweetViewController: Driver<Tweet>
     }
     let input = Input()

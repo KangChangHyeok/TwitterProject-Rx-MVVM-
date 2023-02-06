@@ -130,7 +130,7 @@ class TweetCell: UICollectionViewCell {
             .withUnretained(self)
             .subscribe(onNext: { weakself, _ in
                 guard let feedViewController = weakself.superViewController as? FeedViewController else { return }
-                feedViewController.viewModel.input.cellProfileImageTapped.accept(weakself.cellModel.tweet.user)
+                feedViewController.viewModel.input.cellProfileImageTapped.accept(weakself.cellModel.tweet)
             })
             .disposed(by: disposeBag)
         informationLabel.attributedText = cellModel.informationText

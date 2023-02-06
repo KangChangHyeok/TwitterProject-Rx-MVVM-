@@ -75,11 +75,9 @@ class UploadTweetViewModel: ViewModelType {
                 TweetService.shared.uploadTweetRx(caption: caption, type: weakself.uploadTweetViewControllerType)
             }
             .share()
-            .asDriver(onErrorDriveWith: .empty())
-        
         return Output(userProfileImageUrl: userProfileImageUrl,
                       showCaptionTextView: showCaptionTextView,
                       hideCaptionTextView: hideCaptionTextView,
-                      successUploadTweet: UploadTweet)
+                      successUploadTweet: UploadTweet.asDriver(onErrorDriveWith: .empty()))
     }
 }
