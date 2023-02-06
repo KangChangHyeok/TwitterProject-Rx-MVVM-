@@ -178,6 +178,7 @@
 			children = (
 				634B39DD298B4C3C00B486D3 /* TweetViewModel.swift */,
 				634B39EA298FB17F00B486D3 /* TweetHeaderViewModel.swift */,
+				634B39E6298BFEB200B486D3 /* StatsViewModel.swift */,
 			);
 			path = TweetView;
 			sourceTree = "<group>";
@@ -297,7 +298,6 @@
 		63E535F2296571320055C065 /* CellModel */ = {
 			isa = PBXGroup;
 			children = (
-				634B39E6298BFEB200B486D3 /* StatsViewModel.swift */,
 				63E535F3296571450055C065 /* TweetCellModel.swift */,
 				63B365562988B21400621921 /* UserCellModel.swift */,
 			);
