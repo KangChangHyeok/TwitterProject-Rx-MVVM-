@@ -143,7 +143,6 @@ class TweetCell: UICollectionViewCell {
             }
             .disposed(by: disposeBag)
         likeButton.rx.tap
-            .debug("tap")
             .bind(to: cellModel.input.likeButtonTapped)
             .disposed(by: disposeBag)
         cellModel.output.userLikeForTweet

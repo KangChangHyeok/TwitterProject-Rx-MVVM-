@@ -68,7 +68,12 @@ class TweetHeaderView: UIView {
         button.setImage(UIImage(named: "down_arrow_24pt"), for: .normal)
         return button
     }()
-    private lazy var statsView = StatsView()
+    private lazy var statsView: StatsView = {
+        let statsViewModel = StatsViewModel(tweet: viewModel.tweet)
+        let statsView = StatsView(viewModel: statsViewModel)
+        statsView.bind()
+        return statsView
+    }()
     private lazy var commentButton: UIButton = {
         let button = createButton(withImageName: "comment")
         return button
@@ -91,7 +96,7 @@ class TweetHeaderView: UIView {
         actionStackView.spacing = 72
         return actionStackView
     }()
-    private lazy var actionSheet = ActionSheetLauncher(user: viewModel.user)
+    private lazy var actionSheet = ActionSheetLauncher(user: viewModel.tweet.user)
     init(viewModel: TweetHeaderViewModel) {
         self.viewModel = viewModel
         super.init(frame: .zero)
@@ -142,18 +147,41 @@ class TweetHeaderView: UIView {
             make.top.equalTo(statsView.snp.bottom).offset(16)
         }
     }
-    func bind(viewModel: TweetViewModel) {
+    func bind() {
         profileImageView.sd_setImage(with: viewModel.tweet.user.profileImageUrl)
         fullnameLabel.text = viewModel.tweet.user.fullName
         usernameLabel.text = viewModel.tweet.user.userName
         captionLabel.text = viewModel.tweet.caption
         dateLabel.text = viewModel.headerTimeStamp
-        statsView.bind(viewModel: viewModel)
         optionsButton.rx.tap
             .withUnretained(self)
             .bind { weakself, _ in
                 weakself.actionSheet.show()
             }
+            .disposed(by: disposeBag)
+        likeButton.rx.tap
+            .bind(to: viewModel.input.likeButtonTapped)
+            .disposed(by: disposeBag)
+        viewModel.output.userLikeForTweet
+            .drive(onNext: { result in
+                if result {
+                    self.likeButton.tintColor = .red
+                    self.statsView.viewModel.input.userLikesChange.accept(())
+                } else {
+                    self.likeButton.tintColor = .gray
+                    self.statsView.viewModel.input.userLikesChange.accept(())
+                }
+                
+            })
+            .disposed(by: disposeBag)
+        viewModel.output.checkIfUserLikeTweet
+            .drive(onNext: { result in
+                if result {
+                    self.likeButton.tintColor = .red
+                } else {
+                    self.likeButton.tintColor = .gray
+                }
+            })
             .disposed(by: disposeBag)
     }
     private func createButton(withImageName imageName: String) -> UIButton {

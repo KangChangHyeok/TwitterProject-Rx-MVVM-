@@ -17,8 +17,9 @@ class TweetViewController: UIViewController, ViewModelBindable {
     var disposeBag = DisposeBag()
     
     private lazy var headerView: TweetHeaderView = {
-        let tweetHeaderViewModel = TweetHeaderViewModel(user: viewModel.tweet.user)
+        let tweetHeaderViewModel = TweetHeaderViewModel(tweet: viewModel.tweet)
         let tweetHeaderView = TweetHeaderView(viewModel: tweetHeaderViewModel)
+        tweetHeaderView.bind()
         return tweetHeaderView
     }()
     private lazy var collectionView: UICollectionView = {
@@ -46,7 +47,7 @@ class TweetViewController: UIViewController, ViewModelBindable {
     // MARK: - bindViewModel
     
     func bindViewModel() {
-        headerView.bind(viewModel: viewModel)
+        
         collectionView.rx.setDelegate(self)
             .disposed(by: disposeBag)
         rx.viewWillAppear

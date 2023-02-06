@@ -177,5 +177,25 @@ struct TweetService {
             return Disposables.create()
         }
     }
+    func fetchTweetLikes(tweet: Tweet, completion: @escaping(Int) -> Void) {
+        tweetsReference.child(tweet.tweetID).getData { error, snapshot in
+            print("!!")
+            guard let dictionary = snapshot?.value as? [String:Any] else { return }
+            guard let value = dictionary[tweet.tweetID] as? [String:Any] else { return }
+            print(value)
+            guard let likes = value["likes"] as? Int else { return }
+            print(likes)
+            completion(likes)
+        }
+    }
+    func fetchTweetLikesRx(tweet: Tweet) -> Observable<Int> {
+        Observable.create { observer in
+            fetchTweetLikes(tweet: tweet) { value in
+                observer.onNext(value)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
 
 }

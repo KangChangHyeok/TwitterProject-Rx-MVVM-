@@ -7,9 +7,20 @@
 
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class StatsView: UIView {
-    var viewModel: StatsViewModel!
+    var viewModel: StatsViewModel
+    var disposeBag = DisposeBag()
+    init(viewModel: StatsViewModel) {
+        self.viewModel = viewModel
+        super.init(frame: .zero)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     private let statsView = UIView()
     private let topDivider: UIView = {
@@ -59,8 +70,10 @@ class StatsView: UIView {
             make.height.equalTo(1.0)
         }
     }
-    func bind(viewModel: TweetViewModel) {
+    func bind() {
         retweetsLabel.attributedText = viewModel.retweetsAtrributedString
-        likesLabel.attributedText = viewModel.likesAtrributedString
+        viewModel.output.userLikesAtrributedString
+            .bind(to: likesLabel.rx.attributedText)
+            .disposed(by: disposeBag)
     }
 }
