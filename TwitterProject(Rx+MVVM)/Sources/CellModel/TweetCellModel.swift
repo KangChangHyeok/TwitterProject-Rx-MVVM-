@@ -21,10 +21,11 @@ class TweetCellModel {
     lazy var output = transform(input: input)
     
     func transform(input: Input) -> Output {
-        let userLikeForTweet = input.likeButtonTapped
+        let likeResult = input.likeButtonTapped
             .flatMap { _ in
                 TweetService.shared.likeTweetRx(tweet: self.tweet)
             }
+        let userLikeForTweet = likeResult
             .map { bool in
                 self.tweet.didLike = bool
                 if bool {
@@ -34,7 +35,12 @@ class TweetCellModel {
                 }
                 return bool
             }.asDriver(onErrorDriveWith: .empty())
-        
+        likeResult.subscribe(onNext: { result in
+            if result {
+                NotificationService.shared.uploadNotification(toUser: self.tweet.user, type: .like, tweetID: self.tweet.tweetID)
+            }
+        })
+        .disposed(by: disposeBag)
         let checkIfUserLikeTweet = TweetService.shared.checkIfUserLiketTweetRx(tweet: self.tweet)
             .map({ bool in
                 self.tweet.didLike = bool

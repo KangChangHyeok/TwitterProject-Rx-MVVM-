@@ -17,6 +17,6 @@ class ConversationsViewController: UIViewController {
     }
     override func viewWillLayoutSubviews() {
         view.backgroundColor = .white
-        navigationItem.title = "Messages"
+        navigationItem.title = "Notifications"
     }
 }

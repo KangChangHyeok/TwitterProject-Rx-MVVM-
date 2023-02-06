@@ -87,8 +87,8 @@ class FeedViewController: UIViewController, ViewModelBindable {
             }
             .disposed(by: disposeBag)
         viewModel.output.cellProfileImageTapped
-            .drive(onNext: { [weak self] user in
-                let profileViewModel = ProfileViewModel(user: user)
+            .drive(onNext: { [weak self] tweet in
+                let profileViewModel = ProfileViewModel(user: tweet.user)
                 var profileViewController = ProfileViewController()
                 profileViewController.bind(viewModel: profileViewModel)
                 self?.navigationController?.pushViewController(profileViewController, animated: true)

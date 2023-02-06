@@ -13,11 +13,11 @@ import RxCocoa
 
 
 class ProfileViewModel: ViewModelType {
-    
     let user: User
     
     init(user: User) {
         self.user = user
+        
     }
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
@@ -108,6 +108,7 @@ class ProfileViewModel: ViewModelType {
                 case "팔로우":
                     UserService.shared.followUserRx(uid: (weakself.user.uid))
                         .subscribe(onNext: { _ in
+                            NotificationService.shared.uploadNotification(toUser: self.user, type: .follow)
                             buttonTitle.accept("팔로잉")
                         })
                         .disposed(by: weakself.disposeBag)
