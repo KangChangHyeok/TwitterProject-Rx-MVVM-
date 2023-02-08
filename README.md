@@ -22,4 +22,4 @@
 - MVVM
 
 
-### [문제 해결] (https://www.notion.so/RxSwift-6157bd0b2db34c2798273fa31667a917)
+### [문제 해결](https://www.notion.so/RxSwift-6157bd0b2db34c2798273fa31667a917)
