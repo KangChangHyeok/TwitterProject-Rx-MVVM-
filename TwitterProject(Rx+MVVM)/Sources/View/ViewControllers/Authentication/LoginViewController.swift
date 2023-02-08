@@ -59,6 +59,9 @@ class LoginViewController: UIViewController, ViewModelBindable {
         stackView.distribution = .fillEqually
         return stackView
     }()
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
