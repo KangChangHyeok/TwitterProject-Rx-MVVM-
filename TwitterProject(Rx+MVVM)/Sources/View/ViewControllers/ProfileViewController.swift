@@ -32,6 +32,9 @@ class ProfileViewController: UIViewController, ViewModelBindable {
         collectionView.isHidden = false
         return collectionView
     }()
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()

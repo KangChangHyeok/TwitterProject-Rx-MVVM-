@@ -25,6 +25,10 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         button.layer.masksToBounds = true
         return button
     }()
+    override var childForStatusBarStyle: UIViewController? {
+        let selectedViewController = selectedViewController as? UINavigationController
+        return selectedViewController?.topViewController
+    }
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -66,11 +70,12 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
                 self?.view.backgroundColor = .twitterBlue
                 self?.tabBar.barTintColor = .twitterBlue
                 self?.tabBar.isTranslucent = false
-                let navigationController = UINavigationController(rootViewController: LoginViewController())
+                let navigationController = AuthenticationNavigationController(rootViewController: LoginViewController())
                 guard var loginViewController = navigationController.viewControllers.first as? LoginViewController else { return }
                 let loginViewModel = LoginViewModel()
                 loginViewController.bind(viewModel: loginViewModel)
                 navigationController.modalPresentationStyle = .fullScreen
+                navigationController.navigationBar.barStyle = .black
                 self?.present(navigationController, animated: true)
             })
             .disposed(by: disposeBag)

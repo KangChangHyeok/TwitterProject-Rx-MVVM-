@@ -75,6 +75,9 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
         let button = Utilites().attributedButton(firstPart: "Already have an account?", secondPart: " Log In")
         return button
     }()
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
