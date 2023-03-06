@@ -9,10 +9,15 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-class MainTabViewController: UITabBarController, ViewModelBindable {
-    
+protocol MainTabBarControllerDelegate: AnyObject {
+    func showUploadTweetController()
+    func showLoginViewController()
+}
+
+class MainTabBarController: UITabBarController, ViewModelBindable {
     
     // MARK: - Properties
+    weak var appCoordinator: MainTabBarControllerDelegate?
     var viewModel: MainTabViewModel!
     var disposeBag = DisposeBag()
     
@@ -33,40 +38,31 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    override func viewDidLayoutSubviews() {
-        view.addSubview(addTweetButton)
-        addTweetButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().offset(-16)
-            make.bottom.equalTo(tabBar.snp.top).offset(-16)
-            make.size.equalTo(CGSize(width: 56, height: 56))
-        }
+        addSubViews()
+        layout()
     }
     
     // MARK: - Methods
     func bindViewModel() {
-//        viewModel.logUserOut()
+        viewModel.logUserOut()
         // MARK: - Input
-        self.rx.viewDidAppear
-            .bind(to: viewModel.input.viewDidAppear)
-            .disposed(by: disposeBag)
-        addTweetButton.rx.tap
-            .bind(to: viewModel.input.addTweetButtonTapped)
-            .disposed(by: disposeBag)
-        
+        let input = MainTabViewModel.Input(viewDidAppear: self.rx.viewDidAppear
+                                           , addTweetButtonTapped: addTweetButton.rx.tap)
         // MARK: - Output
+        let output = viewModel.transform(input: input)
         
         // 유저 인증 성공시 화면 구성하기(최초 1회만)
-        viewModel.output.configureUI
+        output.configureUI
             .drive(onNext: { [weak self] userTweets in
                 self?.configureViewController(userTweets: userTweets)
-                
             })
             .disposed(by: disposeBag)
-        
         // 유저 인증 실패(현재 로그인한 유저가 없을 경우)시 로그인 화면으로 이동
-        viewModel.output.authenticationFailure
+        output.authenticationFailure
+            .delay(.seconds(1))
             .drive(onNext: { [weak self] _ in
+                guard let weakself = self else { return }
+                self?.appCoordinator?.showLoginViewController()
                 self?.view.backgroundColor = .twitterBlue
                 self?.tabBar.barTintColor = .twitterBlue
                 self?.tabBar.isTranslucent = false
@@ -77,17 +73,13 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
                 navigationController.modalPresentationStyle = .fullScreen
                 navigationController.navigationBar.barStyle = .black
                 self?.present(navigationController, animated: true)
+                
             })
             .disposed(by: disposeBag)
-        //우측 하단 버튼 누를 경우 uploadTweetViewController화면으로 이동
         addTweetButton.rx.tap.asDriver()
             .drive(onNext: { [weak self] _ in
-                let viewModel = UploadTweetViewModel(type: .tweet)
-                var uploadTweetViewController = UploadTweetViewController()
-                uploadTweetViewController.bind(viewModel: viewModel)
-                let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
-                navigationController.modalPresentationStyle = .fullScreen
-                self?.present(navigationController, animated: true)
+                guard let weakself = self else { return }
+                weakself.appCoordinator?.showUploadTweetController()
             })
             .disposed(by: disposeBag)
     }
@@ -113,5 +105,17 @@ class MainTabViewController: UITabBarController, ViewModelBindable {
         let notificationsNavigationController = viewModel.makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: notificationViewController)
         let conversationsView = viewModel.makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         viewControllers = [feedNavigationController, exploreNavigationController, notificationsNavigationController, conversationsView]
+    }
+}
+extension MainTabBarController: LayoutProtocol {
+    func addSubViews() {
+        view.addSubview(addTweetButton)
+    }
+    func layout() {
+        addTweetButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalTo(tabBar.snp.top).offset(-16)
+            make.size.equalTo(CGSize(width: 56, height: 56))
+        }
     }
 }

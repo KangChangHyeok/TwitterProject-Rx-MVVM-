@@ -27,10 +27,16 @@ protocol ViewModelBindable {
 extension ViewModelBindable where Self: UIViewController {
     mutating func bind(viewModel: ViewModelType) {
         self.viewModel = viewModel
-        loadViewIfNeeded()
         bindViewModel()
     }
 }
+protocol LayoutProtocol: AnyObject {
+    func addSubViews()
+    func layout()
+}
 
-
+protocol Coordinator: AnyObject {
+    var childCoordinators: [Coordinator] { get set }
+    func start()
+}
 
