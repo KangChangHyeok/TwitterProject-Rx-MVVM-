@@ -79,7 +79,7 @@ class TweetCell: UICollectionViewCell {
     }()
     private let underlineView: UIView = {
         let underlineView = UIView()
-        underlineView.backgroundColor = .systemGroupedBackground
+        underlineView.backgroundColor = .systemBackground
         return underlineView
     }()
     // MARK: - Lifecycle

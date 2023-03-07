@@ -17,16 +17,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FirebaseApp.configure()
         
-        window = UIWindow(frame: UIScreen.main.bounds)
-        
         let mainTabBarController = MainTabBarController()
         let appCoordinator = AppCoordinator(mainTabBarController: mainTabBarController)
         self.appCoordinator = appCoordinator
         appCoordinator.start()
         
-        
+        window = UIWindow(frame: UIScreen.main.bounds)
         window?.rootViewController = mainTabBarController
         window?.makeKeyAndVisible()
+        
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()

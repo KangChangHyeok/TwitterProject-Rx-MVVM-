@@ -24,8 +24,10 @@ class MainTabViewModel: ViewModelType {
     
     func transform(input: Input) -> Output {
         
-        let initialAuthenticationResult = AuthService.shared.authenticateUserAndConfigureUIRx()
-            .take(1)
+        let initialAuthenticationResult = input.viewDidAppear
+            .flatMap({ _ in
+                AuthService.shared.authenticateUserAndConfigureUIRx()
+            })
             .share()
         
         // 로그인 성공시 기본화면 설정(addTweetButton, 탭바 아이템 누를시 나오는 각 화면 설정) , 최초 1회만 실행
@@ -54,10 +56,5 @@ class MainTabViewModel: ViewModelType {
         } catch let error {
             print("DEBUG - \(error.localizedDescription)")
         }
-    }
-    func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        navigationController.tabBarItem.image = image
-        return navigationController
     }
 }
