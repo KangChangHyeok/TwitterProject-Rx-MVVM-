@@ -29,7 +29,7 @@ struct AuthService {
         }
     }
     // 로그인 여부 확인
-    func authenticateUserAndConfigureUIRx() -> Observable<Bool> {
+    func checkUserLoggedin() -> Observable<Bool> {
         Observable<Bool>.create { observer in
             guard Auth.auth().currentUser != nil else {
                 observer.onNext(false)

@@ -40,3 +40,11 @@ protocol Coordinator: AnyObject {
     func start()
 }
 
+extension Coordinator {
+    
+    func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
+        let navigationController = UINavigationController(rootViewController: rootViewController)
+        navigationController.tabBarItem.image = image
+        return navigationController
+    }
+}

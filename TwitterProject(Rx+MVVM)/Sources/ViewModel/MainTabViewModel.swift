@@ -17,39 +17,38 @@ class MainTabViewModel: ViewModelType {
         let addTweetButtonTapped: ControlEvent<Void>
     }
     struct Output {
-        let authenticationFailure: Driver<Void>
-        let configureUI: Driver<[Tweet]>
+        let userLoggedinSuccess: Driver<Void>
+        let userLoggedinFailure: Driver<Void>
     }
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
         
-        let initialAuthenticationResult = input.viewDidAppear
+        let isUserLoggedin = input.viewDidAppear
             .flatMap({ _ in
-                AuthService.shared.authenticateUserAndConfigureUIRx()
+                AuthService.shared.checkUserLoggedin()
             })
             .share()
         
-        // 로그인 성공시 기본화면 설정(addTweetButton, 탭바 아이템 누를시 나오는 각 화면 설정) , 최초 1회만 실행
-        
-        let configureUI = initialAuthenticationResult
+        let userLoggedinSuccess = isUserLoggedin
             .filter { $0 == true }
-            .flatMap { _ in
-                TweetService.shared.fetchTweetsRx()
-            }
+            .map({ _ in
+                ()
+            })
+            .take(1)
             .asDriver(onErrorDriveWith: .empty())
         
-        let authenticationFailure = initialAuthenticationResult
+        let userLoggedinFailure = isUserLoggedin
             .filter { $0 == false }
             .map({ _ in
                 ()
             })
+            .take(1)
             .asDriver(onErrorDriveWith: .empty())
         
-        return Output(authenticationFailure: authenticationFailure,
-                      configureUI: configureUI)
+        return Output(userLoggedinSuccess: userLoggedinSuccess,
+                      userLoggedinFailure: userLoggedinFailure)
     }
-    
     func logUserOut() {
         do {
             try Auth.auth().signOut()

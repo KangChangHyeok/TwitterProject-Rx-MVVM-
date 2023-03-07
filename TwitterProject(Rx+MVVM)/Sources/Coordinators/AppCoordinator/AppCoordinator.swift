@@ -44,32 +44,27 @@ final class AppCoordinator: Coordinator, MainTabBarControllerDelegate {
         
         mainTabBarController.present(navigationController, animated: true)
     }
-    func configureMainTabBarController(userTweets: [Tweet]) {
+    func configureMainTabBarController() {
         mainTabBarController.view.backgroundColor = .white
         mainTabBarController.tabBar.barTintColor = .white
         mainTabBarController.tabBar.backgroundColor = .white
-        // tabBar viewcontrollers에 들어가는 각 ViewController에 viewModel binding
-        let feedViewController = FeedViewController()
-        let feedViewModel = FeedViewModel(initialUserTweets: userTweets)
-        feedViewController.bind(viewModel: feedViewModel)
-        let feedNavigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
+
+        let feedViewCoordinator = FeedViewCoordinator(mainTabBarController: mainTabBarController)
+        setChildCoordinator(append: feedViewCoordinator)
         
-        let exploreViewController = ExploreViewController()
-        let exploreViewModel = ExploreViewModel()
-        exploreViewController.bind(viewModel: exploreViewModel)
-        let exploreNavigationController = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: exploreViewController)
+        let exploreViewCoordinator = ExploreViewCoordinator(mainTabBarController: mainTabBarController)
+        setChildCoordinator(append: exploreViewCoordinator)
         
-        let notificationViewController = NotificationViewController()
-        let notificationViewModel = NotificationViewModel()
-        notificationViewController.bind(viewModel: notificationViewModel)
-        let notificationsNavigationController = makeNavigationController(image: UIImage(named: "like_unselected"), rootViewController: notificationViewController)
-        let conversationsView = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
-        mainTabBarController.viewControllers = [feedNavigationController, exploreNavigationController, notificationsNavigationController, conversationsView]
+        let notificationViewCoordinator = NotificationViewCoordinator(mainTabBarController: mainTabBarController)
+        setChildCoordinator(append: notificationViewCoordinator)
+        
+        let conversationViewCoordinator = ConversationViewCoordinator(mainTabBarController: mainTabBarController)
+        setChildCoordinator(append: conversationViewCoordinator)
     }
-    private func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        navigationController.tabBarItem.image = image
-        return navigationController
+    
+    private func setChildCoordinator(append coordinator: Coordinator) {
+        coordinator.start()
+        childCoordinators.append(coordinator)
     }
     deinit {
         print("AppCoordinator deinit")

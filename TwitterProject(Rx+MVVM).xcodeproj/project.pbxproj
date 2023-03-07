@@ -22,6 +22,10 @@
 		634FE3CD2966D45900A5B62F /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 634FE3CC2966D45800A5B62F /* ProfileViewController.swift */; };
 		63535A782993627F0094D040 /* AuthenticationNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63535A772993627F0094D040 /* AuthenticationNavigationController.swift */; };
 		6362A8A629B5E4C700805967 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8A529B5E4C700805967 /* AppCoordinator.swift */; };
+		6362A8AA29B6DC1F00805967 /* FeedViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8A929B6DC1F00805967 /* FeedViewCoordinator.swift */; };
+		6362A8AC29B6E29900805967 /* ExploreViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8AB29B6E29900805967 /* ExploreViewCoordinator.swift */; };
+		6362A8AE29B6E2AE00805967 /* NotificationViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8AD29B6E2AE00805967 /* NotificationViewCoordinator.swift */; };
+		6362A8B029B6E2BC00805967 /* ConversationViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8AF29B6E2BC00805967 /* ConversationViewCoordinator.swift */; };
 		638C584B2991039F00BED8E6 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C584A2991039F00BED8E6 /* NotificationViewModel.swift */; };
 		638C584D299106A800BED8E6 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C584C299106A800BED8E6 /* NotificationCell.swift */; };
 		638C584F29910E0700BED8E6 /* NotificationCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C584E29910E0700BED8E6 /* NotificationCellModel.swift */; };
@@ -79,6 +83,10 @@
 		634FE3CC2966D45800A5B62F /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		63535A772993627F0094D040 /* AuthenticationNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationNavigationController.swift; sourceTree = "<group>"; };
 		6362A8A529B5E4C700805967 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		6362A8A929B6DC1F00805967 /* FeedViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedViewCoordinator.swift; sourceTree = "<group>"; };
+		6362A8AB29B6E29900805967 /* ExploreViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewCoordinator.swift; sourceTree = "<group>"; };
+		6362A8AD29B6E2AE00805967 /* NotificationViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewCoordinator.swift; sourceTree = "<group>"; };
+		6362A8AF29B6E2BC00805967 /* ConversationViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewCoordinator.swift; sourceTree = "<group>"; };
 		638C584A2991039F00BED8E6 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		638C584C299106A800BED8E6 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		638C584E29910E0700BED8E6 /* NotificationCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCellModel.swift; sourceTree = "<group>"; };
@@ -200,9 +208,29 @@
 		6362A8A429B5E4B000805967 /* Coordinators */ = {
 			isa = PBXGroup;
 			children = (
-				6362A8A529B5E4C700805967 /* AppCoordinator.swift */,
+				6362A8A729B6DBEA00805967 /* AppCoordinator */,
 			);
 			path = Coordinators;
+			sourceTree = "<group>";
+		};
+		6362A8A729B6DBEA00805967 /* AppCoordinator */ = {
+			isa = PBXGroup;
+			children = (
+				6362A8A529B5E4C700805967 /* AppCoordinator.swift */,
+				6362A8A829B6DBF400805967 /* ChildCoordinators */,
+			);
+			path = AppCoordinator;
+			sourceTree = "<group>";
+		};
+		6362A8A829B6DBF400805967 /* ChildCoordinators */ = {
+			isa = PBXGroup;
+			children = (
+				6362A8A929B6DC1F00805967 /* FeedViewCoordinator.swift */,
+				6362A8AB29B6E29900805967 /* ExploreViewCoordinator.swift */,
+				6362A8AD29B6E2AE00805967 /* NotificationViewCoordinator.swift */,
+				6362A8AF29B6E2BC00805967 /* ConversationViewCoordinator.swift */,
+			);
+			path = ChildCoordinators;
 			sourceTree = "<group>";
 		};
 		6390319529407901000D4795 = {
@@ -487,6 +515,7 @@
 				63A44CC429630EC3005B1F2A /* UploadTweetViewModel.swift in Sources */,
 				63FB3A4A29474E5300E7EAD2 /* Constants.swift in Sources */,
 				634B39E7298BFEB200B486D3 /* StatsViewModel.swift in Sources */,
+				6362A8AE29B6E2AE00805967 /* NotificationViewCoordinator.swift in Sources */,
 				63535A782993627F0094D040 /* AuthenticationNavigationController.swift in Sources */,
 				639031A229407901000D4795 /* AppDelegate.swift in Sources */,
 				63A44CC929641299005B1F2A /* TweetService.swift in Sources */,
@@ -502,6 +531,7 @@
 				634B39E4298BBD3700B486D3 /* StatsView.swift in Sources */,
 				639031B629407987000D4795 /* MainTabBarController.swift in Sources */,
 				63149319297680130041D426 /* ProfileFilterView.swift in Sources */,
+				6362A8B029B6E2BC00805967 /* ConversationViewCoordinator.swift in Sources */,
 				63A44CCD296434D0005B1F2A /* TweetCell.swift in Sources */,
 				63FB3A5329485A7C00E7EAD2 /* LoginViewModel.swift in Sources */,
 				639031C82940BBA0000D4795 /* LoginViewController.swift in Sources */,
@@ -519,11 +549,13 @@
 				634B39EB298FB17F00B486D3 /* TweetHeaderViewModel.swift in Sources */,
 				639031C1294081BA000D4795 /* NotificationViewController.swift in Sources */,
 				639031C3294081D3000D4795 /* ConversationsViewController.swift in Sources */,
+				6362A8AA29B6DC1F00805967 /* FeedViewCoordinator.swift in Sources */,
 				63A44CC7296409AB005B1F2A /* CaptionTextView.swift in Sources */,
 				63B365572988B21400621921 /* UserCellModel.swift in Sources */,
 				638C584F29910E0700BED8E6 /* NotificationCellModel.swift in Sources */,
 				63B36555298802B500621921 /* ExploreViewModel.swift in Sources */,
 				63D2BF692990C0B300A27809 /* Notification.swift in Sources */,
+				6362A8AC29B6E29900805967 /* ExploreViewCoordinator.swift in Sources */,
 				638C584B2991039F00BED8E6 /* NotificationViewModel.swift in Sources */,
 				634B39DC298B4B9900B486D3 /* TweetViewController.swift in Sources */,
 				631493172974F7B80041D426 /* ProfileHeaderView.swift in Sources */,

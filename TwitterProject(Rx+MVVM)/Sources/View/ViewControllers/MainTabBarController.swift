@@ -12,7 +12,7 @@ import RxCocoa
 protocol MainTabBarControllerDelegate: AnyObject {
     func showUploadTweetController()
     func showLoginViewController()
-    func configureMainTabBarController(userTweets: [Tweet])
+    func configureMainTabBarController()
 }
 
 final class MainTabBarController: UITabBarController, ViewModelBindable {
@@ -51,18 +51,18 @@ final class MainTabBarController: UITabBarController, ViewModelBindable {
         // MARK: - Output
         let output = viewModel.transform(input: input)
         
-        // 유저 인증 성공시 화면 구성하기(최초 1회만)
-        output.configureUI
+        output.userLoggedinSuccess
             .drive(onNext: { [weak self] userTweets in
-                self?.appCoordinator?.configureMainTabBarController(userTweets: userTweets)
+                self?.appCoordinator?.configureMainTabBarController()
             })
             .disposed(by: disposeBag)
-        // 유저 인증 실패(현재 로그인한 유저가 없을 경우)시 로그인 화면으로 이동
-        output.authenticationFailure
+        
+        output.userLoggedinFailure
             .drive(onNext: { [weak self] _ in
                 self?.appCoordinator?.showLoginViewController()
             })
             .disposed(by: disposeBag)
+        
         addTweetButton.rx.tap.asDriver()
             .drive(onNext: { [weak self] _ in
                 self?.appCoordinator?.showUploadTweetController()

@@ -12,12 +12,6 @@ import RxCocoa
 
 class FeedViewModel: ViewModelType {
     
-    var initialUserTweets: [Tweet]
-    
-    init(initialUserTweets: [Tweet]) {
-        self.initialUserTweets = initialUserTweets
-    }
-    
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
         let cellProfileImageTapped = PublishRelay<Tweet>()
@@ -46,16 +40,11 @@ class FeedViewModel: ViewModelType {
                 return user.profileImageUrl
             }.asDriver(onErrorDriveWith: .empty())
         
-        let userTweets = BehaviorRelay<[Tweet]>(value: initialUserTweets)
+        let userTweets = BehaviorRelay<[Tweet]>(value: [])
         
         viewWillAppear.flatMap { _ in
             TweetService.shared.fetchTweetsRx()
         }
-        .withUnretained(self)
-        .map({ weakself, userTweets in
-            weakself.initialUserTweets = userTweets
-            return userTweets
-        })
         .bind(to: userTweets)
         .disposed(by: disposeBag)
         
@@ -71,7 +60,7 @@ class FeedViewModel: ViewModelType {
     
     func getCellHeight(forwidth width: CGFloat, indexPath: IndexPath) -> CGSize {
         let dummyLabel = UILabel()
-        dummyLabel.text = initialUserTweets[indexPath.row].caption
+        dummyLabel.text = output.userTweets.value[indexPath.row].caption
         dummyLabel.numberOfLines = 0
         dummyLabel.lineBreakMode = .byWordWrapping
         dummyLabel.translatesAutoresizingMaskIntoConstraints = false
