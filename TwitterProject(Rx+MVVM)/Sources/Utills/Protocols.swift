@@ -17,20 +17,26 @@ protocol ViewModelType {
     
     func transform(input: Input) -> Output
 }
-protocol ViewModelBindable {
-    associatedtype ViewModelType
+protocol ViewModelBindable: AnyObject {
+    associatedtype ViewModel: ViewModelType
     var disposeBag: DisposeBag { get set }
-    var viewModel: ViewModelType! { get set }
+    var viewModel: ViewModel! { get set }
     
     func bindViewModel()
 }
 extension ViewModelBindable where Self: UIViewController {
-    mutating func bind(viewModel: ViewModelType) {
+    func bind(viewModel: ViewModel) {
         self.viewModel = viewModel
-        loadViewIfNeeded()
         bindViewModel()
     }
 }
+protocol LayoutProtocol: AnyObject {
+    func addSubViews()
+    func layout()
+}
 
-
+protocol Coordinator: AnyObject {
+    var childCoordinators: [Coordinator] { get set }
+    func start()
+}
 

@@ -13,36 +13,33 @@ import RxCocoa
 class MainTabViewModel: ViewModelType {
     
     struct Input {
-        let viewDidAppear = PublishRelay<Bool>()
-        let addTweetButtonTapped = PublishRelay<Void>()
+        let viewDidAppear: ControlEvent<Bool>
+        let addTweetButtonTapped: ControlEvent<Void>
     }
     struct Output {
         let authenticationFailure: Driver<Void>
         let configureUI: Driver<[Tweet]>
     }
-    let input = Input()
-    lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
         
-        let authenticationResult = input.viewDidAppear.map { _ in ()}
-            .flatMap { _ in
+        let initialAuthenticationResult = input.viewDidAppear
+            .flatMap({ _ in
                 AuthService.shared.authenticateUserAndConfigureUIRx()
-            }
+            })
             .share()
         
         // 로그인 성공시 기본화면 설정(addTweetButton, 탭바 아이템 누를시 나오는 각 화면 설정) , 최초 1회만 실행
         
-        let configureUI = authenticationResult
+        let configureUI = initialAuthenticationResult
             .filter { $0 == true }
             .flatMap { _ in
                 TweetService.shared.fetchTweetsRx()
             }
-            .share()
-            .take(1).asDriver(onErrorDriveWith: .empty())
+            .asDriver(onErrorDriveWith: .empty())
         
-        let authenticationFailure = authenticationResult
+        let authenticationFailure = initialAuthenticationResult
             .filter { $0 == false }
             .map({ _ in
                 ()
@@ -59,10 +56,5 @@ class MainTabViewModel: ViewModelType {
         } catch let error {
             print("DEBUG - \(error.localizedDescription)")
         }
-    }
-    func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
-        let navigationController = UINavigationController(rootViewController: rootViewController)
-        navigationController.tabBarItem.image = image
-        return navigationController
     }
 }

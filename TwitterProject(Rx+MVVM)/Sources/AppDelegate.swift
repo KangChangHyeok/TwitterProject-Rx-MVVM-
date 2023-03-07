@@ -11,16 +11,21 @@ import FirebaseCore
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var appCoordinator: AppCoordinator?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
         FirebaseApp.configure()
-        let viewModel = MainTabViewModel()
-        var mainTabViewController = MainTabViewController()
-        mainTabViewController.bind(viewModel: viewModel)
-
+        
+        let mainTabBarController = MainTabBarController()
+        let appCoordinator = AppCoordinator(mainTabBarController: mainTabBarController)
+        self.appCoordinator = appCoordinator
+        appCoordinator.start()
+        
         window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = mainTabBarController
         window?.makeKeyAndVisible()
-        window?.rootViewController = mainTabViewController
+        
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()

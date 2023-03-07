@@ -18,7 +18,7 @@ struct AuthService {
     func logInUser(email: String, password: String) -> Observable<Bool> {
         Observable.create { observer in
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
-                if let error = error {
+                if error != nil {
                     observer.onNext(false)
                     observer.onCompleted()
                 }

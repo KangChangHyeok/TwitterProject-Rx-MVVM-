@@ -25,7 +25,7 @@ class StatsView: UIView {
     private let statsView = UIView()
     private let topDivider: UIView = {
         let topDivider = UIView()
-        topDivider.backgroundColor = .systemGroupedBackground
+        topDivider.backgroundColor = .systemBackground
         return topDivider
     }()
     private lazy var retweetsLabel: UILabel = {
@@ -48,7 +48,7 @@ class StatsView: UIView {
     }()
     private let bottomDivider: UIView = {
         let bottomDivider = UIView()
-        bottomDivider.backgroundColor = .systemGroupedBackground
+        bottomDivider.backgroundColor = .systemBackground
         return bottomDivider
     }()
     override func layoutSubviews() {
