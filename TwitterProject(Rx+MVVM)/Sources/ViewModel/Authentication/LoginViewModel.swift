@@ -9,22 +9,18 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-
 class LoginViewModel: ViewModelType {
     
-    var disposeBag = DisposeBag()
-    
     struct Input {
-        let email = BehaviorRelay(value: String())
-        let password = BehaviorRelay(value: String())
-        let loginButtonTapped = PublishRelay<Void>()
+        let email: ControlProperty<String>
+        let password: ControlProperty<String>
+        let loginButtonTapped: ControlEvent<Void>
     }
     struct Output {
-        let successLogin: Driver<Void>
-        let failureLogin: Driver<Void>
+        let userLoginSucceed: Driver<Void>
+        let userLoginFailed: Driver<Void>
     }
-    let input = Input()
-    lazy var output = transform(input: input)
+    var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
         let loginResult = input.loginButtonTapped
@@ -33,19 +29,19 @@ class LoginViewModel: ViewModelType {
                 AuthService.shared.logInUser(email: email, password: password)
             }.share()
         
-        
-        let successLogin = loginResult
-            .filter { $0 == true}
+        let userLoginSucceed = loginResult
+            .filter { $0 == true }
             .map { _ in
                 ()
             }
             .asDriver(onErrorDriveWith: .empty())
-        let failureLogin = loginResult
+        let userLoginFailed = loginResult
             .filter { $0 == false }
             .map { _ in
                 ()
             }
             .asDriver(onErrorDriveWith: .empty())
-        return Output(successLogin: successLogin, failureLogin: failureLogin)
+        return Output(userLoginSucceed: userLoginSucceed,
+                      userLoginFailed: userLoginFailed)
     }
 }

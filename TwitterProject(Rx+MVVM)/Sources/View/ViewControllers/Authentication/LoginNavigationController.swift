@@ -6,7 +6,7 @@
 //
 import UIKit
 
-class AuthenticationNavigationController: UINavigationController {
+class LoginNavigationController: UINavigationController {
     override var childForStatusBarStyle: UIViewController? {
         self.topViewController
     }

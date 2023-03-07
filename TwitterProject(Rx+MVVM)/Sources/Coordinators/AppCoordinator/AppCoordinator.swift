@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AppCoordinator: Coordinator, MainTabBarControllerDelegate {
+final class AppCoordinator: Coordinator {
     
     var childCoordinators: [Coordinator] = []
     private var mainTabBarController: MainTabBarController
@@ -21,7 +21,12 @@ final class AppCoordinator: Coordinator, MainTabBarControllerDelegate {
         mainTabBarController.bind(viewModel: viewModel)
         mainTabBarController.appCoordinator = self
     }
-    // MARK: - MainTabBarViewController Request
+    deinit {
+        print("AppCoordinator deinit")
+    }
+}
+extension AppCoordinator: MainTabBarControllerDelegate {
+    // MARK: - MainTabBarViewController Accept Request
     func showUploadTweetController() {
         let viewModel = UploadTweetViewModel(type: .tweet)
         let uploadTweetViewController = UploadTweetViewController()
@@ -30,19 +35,14 @@ final class AppCoordinator: Coordinator, MainTabBarControllerDelegate {
         navigationController.modalPresentationStyle = .fullScreen
         mainTabBarController.present(navigationController, animated: true)
     }
-    
     func showLoginViewController() {
         mainTabBarController.view.backgroundColor = .twitterBlue
         mainTabBarController.tabBar.barTintColor = .twitterBlue
         mainTabBarController.tabBar.isTranslucent = false
-        let navigationController = AuthenticationNavigationController(rootViewController: LoginViewController())
-        guard let loginViewController = navigationController.viewControllers.first as? LoginViewController else { return }
-        let loginViewModel = LoginViewModel()
-        loginViewController.bind(viewModel: loginViewModel)
-        navigationController.modalPresentationStyle = .fullScreen
-        navigationController.navigationBar.barStyle = .black
-        
-        mainTabBarController.present(navigationController, animated: true)
+        let loginViewCoordinator = LoginViewCoordinator(mainTabBarController: mainTabBarController)
+        loginViewCoordinator.start()
+        loginViewCoordinator.appCoordinator = self
+        childCoordinators.append(loginViewCoordinator)
     }
     func configureMainTabBarController() {
         mainTabBarController.view.backgroundColor = .white
@@ -61,12 +61,14 @@ final class AppCoordinator: Coordinator, MainTabBarControllerDelegate {
         let conversationViewCoordinator = ConversationViewCoordinator(mainTabBarController: mainTabBarController)
         setChildCoordinator(append: conversationViewCoordinator)
     }
-    
     private func setChildCoordinator(append coordinator: Coordinator) {
         coordinator.start()
         childCoordinators.append(coordinator)
     }
-    deinit {
-        print("AppCoordinator deinit")
+}
+
+extension AppCoordinator: LoginViewCoordinatorDelegate {
+    func coordinatorDidFinished(loginViewCoordinator: Coordinator) {
+        self.childCoordinators = self.childCoordinators.filter({ $0 !== loginViewCoordinator })
     }
 }
