@@ -10,13 +10,12 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class RegisterationViewController: UIViewController, ViewModelBindable {
+final class RegisterationViewController: UIViewController, ViewModelBindable {
     
     // MARK: - Properties
+    
     var viewModel: RegisterationViewModel!
     var disposeBag = DisposeBag()
-    
-    private let imagePicker = UIImagePickerController()
     
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
@@ -78,22 +77,57 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
+    var input: RegisterationViewModel.Input?
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        addSubViews()
+        layout()
     }
-    override func viewDidLayoutSubviews() {
-        view.backgroundColor = .twitterBlue
-        imagePicker.allowsEditing = true
+    // MARK: - Methods
+    func bindViewModel() {
+        // MARK: - Input
         
+        
+        let input = RegisterationViewModel.Input(plusPhotoButtonTapped: plusPhotoButton.rx.tap,
+                                                 email: emailTextField.rx.text.orEmpty,
+                                                 password: passwordTextField.rx.text.orEmpty,
+                                                 fullName: fullNameTextField.rx.text.orEmpty,
+                                                 userName: userNameTextField.rx.text.orEmpty,
+                                                 signUpButtonTapped: signUpButton.rx.tap,
+                                                 loginButtonTapped: logInButton.rx.tap)
+        // MARK: - Output
+        let output = viewModel.transform(input: input)
+        
+        output.didFinishPicking
+            .drive(onNext: { [weak self] image in
+                self?.plusPhotoButton.layer.cornerRadius = 128 / 2
+                self?.plusPhotoButton.layer.masksToBounds = true
+                self?.plusPhotoButton.imageView?.contentMode = .scaleAspectFill
+                self?.plusPhotoButton.imageView?.clipsToBounds = true
+                self?.plusPhotoButton.layer.borderColor = UIColor.white.cgColor
+                self?.plusPhotoButton.layer.borderWidth = 3
+                self?.plusPhotoButton.setImage(image.withRenderingMode(.alwaysOriginal), for: .normal)
+            })
+            .disposed(by: disposeBag)
+    }
+}
+
+extension RegisterationViewController: LayoutProtocol {
+    func addSubViews() {
         view.addSubview(plusPhotoButton)
+        view.addSubview(stackView)
+        view.addSubview(logInButton)
+    }
+    func layout() {
+        view.backgroundColor = .twitterBlue
+        
         plusPhotoButton.snp.makeConstraints { make in
             make.centerX.equalTo(view)
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.size.equalTo(CGSize(width: 150, height: 150))
         }
-        view.addSubview(stackView)
         stackView.arrangedSubviews.forEach { view in
             view.snp.makeConstraints { make in
                 make.height.equalTo(50)
@@ -103,77 +137,9 @@ class RegisterationViewController: UIViewController, ViewModelBindable {
             make.top.equalTo(plusPhotoButton.snp.bottom)
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 32, bottom: 0, right: 32))
         }
-        view.addSubview(logInButton)
         logInButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 40, bottom: 16, right: 40))
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-    }
-    // MARK: - Methods
-    func bindViewModel() {
-        plusPhotoButton.rx.tap
-            .withUnretained(self)
-            .subscribe(onNext: { weakSelf, _ in
-                weakSelf.present(weakSelf.imagePicker, animated: true)
-            })
-            .disposed(by: disposeBag)
-        
-        let didFinishPicking = imagePicker.rx.didFinishPickingMediaWithInfo
-            .share()
-        
-        didFinishPicking
-            .map { information in
-                information[.editedImage] as! UIImage
-            }
-            .share()
-            .bind(to: viewModel.input.profileImage)
-            .disposed(by: disposeBag)
-        
-        didFinishPicking
-            .subscribe(onNext: { [weak self] information in
-                guard let profileImage = information[.editedImage] as? UIImage else { return }
-                self?.plusPhotoButton.layer.cornerRadius = 128 / 2
-                self?.plusPhotoButton.layer.masksToBounds = true
-                self?.plusPhotoButton.imageView?.contentMode = .scaleAspectFill
-                self?.plusPhotoButton.imageView?.clipsToBounds = true
-                self?.plusPhotoButton.layer.borderColor = UIColor.white.cgColor
-                self?.plusPhotoButton.layer.borderWidth = 3
-                self?.plusPhotoButton.setImage(profileImage.withRenderingMode(.alwaysOriginal), for: .normal)
-                self?.dismiss(animated: true)
-            })
-            .disposed(by: disposeBag)
-        
-        emailTextField.rx.text.orEmpty
-            .bind(to: viewModel.input.email)
-            .disposed(by: disposeBag)
-        
-        passwordTextField.rx.text.orEmpty
-            .bind(to: viewModel.input.password)
-            .disposed(by: disposeBag)
-        
-        fullNameTextField.rx.text.orEmpty
-            .bind(to: viewModel.input.fullName)
-            .disposed(by: disposeBag)
-        
-        userNameTextField.rx.text.orEmpty
-            .bind(to: viewModel.input.userName)
-            .disposed(by: disposeBag)
-        
-        logInButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
-            })
-            .disposed(by: disposeBag)
-        
-        signUpButton.rx.tap
-            .bind(to: viewModel.input.signUpButtonTapped)
-            .disposed(by: disposeBag)
-        
-        viewModel.output.signUpRequest
-            .drive(onNext: { [ weak self] _ in
-                print("DEBUG - 회원가입 완료!")
-                self?.dismiss(animated: true)
-            })
-            .disposed(by: disposeBag)
     }
 }

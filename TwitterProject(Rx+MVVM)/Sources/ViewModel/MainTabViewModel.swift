@@ -32,7 +32,6 @@ class MainTabViewModel: ViewModelType {
         
         let userLoggedinSuccess = isUserLoggedin
             .filter { $0 == true }
-            .debug("성공")
             .map({ _ in
                 ()
             })
@@ -41,7 +40,6 @@ class MainTabViewModel: ViewModelType {
         
         let userLoggedinFailure = isUserLoggedin
             .filter { $0 == false }
-            .debug("실패")
             .map({ _ in
                 ()
             })

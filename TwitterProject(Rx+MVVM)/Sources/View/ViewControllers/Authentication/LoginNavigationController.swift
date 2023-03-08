@@ -10,4 +10,7 @@ class LoginNavigationController: UINavigationController {
     override var childForStatusBarStyle: UIViewController? {
         self.topViewController
     }
+    override func viewDidLoad() {
+        navigationBar.isHidden = true
+    }
 }

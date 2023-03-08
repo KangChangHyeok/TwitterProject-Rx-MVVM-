@@ -60,6 +60,7 @@ extension AppCoordinator: MainTabBarControllerDelegate {
         
         let conversationViewCoordinator = ConversationViewCoordinator(mainTabBarController: mainTabBarController)
         setChildCoordinator(append: conversationViewCoordinator)
+        print(childCoordinators)
     }
     private func setChildCoordinator(append coordinator: Coordinator) {
         coordinator.start()
@@ -68,7 +69,8 @@ extension AppCoordinator: MainTabBarControllerDelegate {
 }
 
 extension AppCoordinator: LoginViewCoordinatorDelegate {
-    func coordinatorDidFinished(loginViewCoordinator: Coordinator) {
-        self.childCoordinators = self.childCoordinators.filter({ $0 !== loginViewCoordinator })
+    func coordinatorDidFinished(coordinator: Coordinator) {
+        self.childCoordinators = self.childCoordinators.filter({ $0 !== coordinator })
+        print(childCoordinators)
     }
 }

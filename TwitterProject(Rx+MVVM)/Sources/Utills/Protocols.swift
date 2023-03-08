@@ -27,6 +27,7 @@ protocol ViewModelBindable: AnyObject {
 extension ViewModelBindable where Self: UIViewController {
     func bind(viewModel: ViewModel) {
         self.viewModel = viewModel
+        loadViewIfNeeded()
         bindViewModel()
     }
 }

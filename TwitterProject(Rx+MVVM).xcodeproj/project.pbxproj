@@ -26,7 +26,9 @@
 		6362A8AC29B6E29900805967 /* ExploreViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8AB29B6E29900805967 /* ExploreViewCoordinator.swift */; };
 		6362A8AE29B6E2AE00805967 /* NotificationViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8AD29B6E2AE00805967 /* NotificationViewCoordinator.swift */; };
 		6362A8B029B6E2BC00805967 /* ConversationViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8AF29B6E2BC00805967 /* ConversationViewCoordinator.swift */; };
-		6362A8B329B711F300805967 /* loginViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8B229B711F300805967 /* loginViewCoordinator.swift */; };
+		6362A8B329B711F300805967 /* LoginViewCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8B229B711F300805967 /* LoginViewCoordinator.swift */; };
+		6362A8B929B8B4D600805967 /* ProfileImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8B829B8B4D600805967 /* ProfileImagePickerController.swift */; };
+		6362A8BB29B8C41800805967 /* ProfileImagePickerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6362A8BA29B8C41800805967 /* ProfileImagePickerViewModel.swift */; };
 		638C584B2991039F00BED8E6 /* NotificationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C584A2991039F00BED8E6 /* NotificationViewModel.swift */; };
 		638C584D299106A800BED8E6 /* NotificationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C584C299106A800BED8E6 /* NotificationCell.swift */; };
 		638C584F29910E0700BED8E6 /* NotificationCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638C584E29910E0700BED8E6 /* NotificationCellModel.swift */; };
@@ -88,7 +90,9 @@
 		6362A8AB29B6E29900805967 /* ExploreViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewCoordinator.swift; sourceTree = "<group>"; };
 		6362A8AD29B6E2AE00805967 /* NotificationViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewCoordinator.swift; sourceTree = "<group>"; };
 		6362A8AF29B6E2BC00805967 /* ConversationViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationViewCoordinator.swift; sourceTree = "<group>"; };
-		6362A8B229B711F300805967 /* loginViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = loginViewCoordinator.swift; sourceTree = "<group>"; };
+		6362A8B229B711F300805967 /* LoginViewCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewCoordinator.swift; sourceTree = "<group>"; };
+		6362A8B829B8B4D600805967 /* ProfileImagePickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImagePickerController.swift; sourceTree = "<group>"; };
+		6362A8BA29B8C41800805967 /* ProfileImagePickerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileImagePickerViewModel.swift; sourceTree = "<group>"; };
 		638C584A2991039F00BED8E6 /* NotificationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewModel.swift; sourceTree = "<group>"; };
 		638C584C299106A800BED8E6 /* NotificationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCell.swift; sourceTree = "<group>"; };
 		638C584E29910E0700BED8E6 /* NotificationCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationCellModel.swift; sourceTree = "<group>"; };
@@ -239,7 +243,7 @@
 		6362A8B129B711DD00805967 /* Authenticaion */ = {
 			isa = PBXGroup;
 			children = (
-				6362A8B229B711F300805967 /* loginViewCoordinator.swift */,
+				6362A8B229B711F300805967 /* LoginViewCoordinator.swift */,
 			);
 			path = Authenticaion;
 			sourceTree = "<group>";
@@ -334,9 +338,10 @@
 		639031C62940BB8D000D4795 /* Authentication */ = {
 			isa = PBXGroup;
 			children = (
+				63535A772993627F0094D040 /* LoginNavigationController.swift */,
 				639031C72940BBA0000D4795 /* LoginViewController.swift */,
 				639031C92940BC45000D4795 /* RegisterationViewController.swift */,
-				63535A772993627F0094D040 /* LoginNavigationController.swift */,
+				6362A8B829B8B4D600805967 /* ProfileImagePickerController.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -346,6 +351,7 @@
 			children = (
 				63FB3A5229485A7C00E7EAD2 /* LoginViewModel.swift */,
 				63FB3A5429485A8700E7EAD2 /* RegisterationViewModel.swift */,
+				6362A8BA29B8C41800805967 /* ProfileImagePickerViewModel.swift */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -533,6 +539,7 @@
 				631493152974ED810041D426 /* ProfileViewModel.swift in Sources */,
 				634FE3CD2966D45900A5B62F /* ProfileViewController.swift in Sources */,
 				63B365532987FA8C00621921 /* UserCell.swift in Sources */,
+				6362A8BB29B8C41800805967 /* ProfileImagePickerViewModel.swift in Sources */,
 				63FB3A4C294765DB00E7EAD2 /* AuthService.swift in Sources */,
 				63D2BF6B2990C2F200A27809 /* NotificationService.swift in Sources */,
 				639031BD29407F07000D4795 /* FeedViewController.swift in Sources */,
@@ -550,10 +557,11 @@
 				639031CA2940BC45000D4795 /* RegisterationViewController.swift in Sources */,
 				63A44CCB29642D24005B1F2A /* Tweet.swift in Sources */,
 				6314931B297682B90041D426 /* ProfileFilterCell.swift in Sources */,
-				6362A8B329B711F300805967 /* loginViewCoordinator.swift in Sources */,
+				6362A8B329B711F300805967 /* LoginViewCoordinator.swift in Sources */,
 				63FB3A7E2948A66400E7EAD2 /* MainTabViewModel.swift in Sources */,
 				634B39DE298B4C3C00B486D3 /* TweetViewModel.swift in Sources */,
 				63FB3A5529485A8700E7EAD2 /* RegisterationViewModel.swift in Sources */,
+				6362A8B929B8B4D600805967 /* ProfileImagePickerController.swift in Sources */,
 				63954A632959A0F000EF7E77 /* User.swift in Sources */,
 				634B39E9298F9B9900B486D3 /* ActionSheetLauncher.swift in Sources */,
 				63A44CC22962DA6E005B1F2A /* UploadTweetController.swift in Sources */,
