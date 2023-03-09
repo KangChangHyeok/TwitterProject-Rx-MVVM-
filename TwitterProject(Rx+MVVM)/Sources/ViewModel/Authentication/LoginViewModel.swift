@@ -17,6 +17,9 @@ protocol LoginViewControllerDelegate: AnyObject {
 
 class LoginViewModel: ViewModelType {
     
+    weak var coordinator: LoginViewControllerDelegate?
+    var disposeBag = DisposeBag()
+    
     struct Input {
         let email: ControlProperty<String>
         let password: ControlProperty<String>
@@ -25,9 +28,7 @@ class LoginViewModel: ViewModelType {
     }
     struct Output {
     }
-    weak var coordinator: LoginViewControllerDelegate?
-    var disposeBag = DisposeBag()
-    
+   
     func transform(input: Input) -> Output {
         let loginResult = input.loginButtonTapped
             .withLatestFrom(Observable.combineLatest (input.email, input.password))

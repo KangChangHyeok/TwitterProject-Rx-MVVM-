@@ -15,36 +15,33 @@ enum UploadTweetControllerType {
     case reply(Tweet)
 }
 
+protocol UploadTweetViewModelDelegate: AnyObject {
+    func dismissUploadTweetViewController()
+}
+
 class UploadTweetViewModel: ViewModelType {
+    
     let uploadTweetViewControllerType: UploadTweetControllerType
+    weak var coordinator: UploadTweetViewModelDelegate?
+    var disposeBag = DisposeBag()
+    
     struct Input {
-        let viewWillAppear = PublishRelay<Bool>()
-        let text = PublishRelay<String>()
-        let uploadTweetButtonTapped = PublishRelay<Void>()
+        let viewWillAppear: ControlEvent<Bool>
+        let text: ControlProperty<String>
+        let uploadTweetButtonTapped: ControlEvent<Void>
+        let cancelButtonTapped: ControlEvent<Void>
     }
     struct Output {
         let userProfileImageUrl: Observable<URL?>
-        let showCaptionTextView: Driver<Void>
-        let hideCaptionTextView: Driver<Void>
-        let successUploadTweet: Driver<Void>
+        let buttonTitle: Observable<String>
+        let placeHolderText: Observable<String>
+        let captionTextViewPlaceHolderIsHidden: Observable<Bool>
+        let replyLabelIsHidden: Observable<Bool>
+        let replyLabelText: BehaviorSubject<String>
     }
-    let input = Input()
-    lazy var output = transform(input: input)
-    var disposeBag = DisposeBag()
-    
-    var buttonTitle: String
-    var palceHolderText: String
-    
+        
     init(type: UploadTweetControllerType) {
         self.uploadTweetViewControllerType = type
-        switch uploadTweetViewControllerType {
-        case .tweet:
-            buttonTitle = "Tweet"
-            palceHolderText = "What's Happening?"
-        case .reply(let tweet):
-            buttonTitle = "Reply"
-            palceHolderText = "Tweet your reply"
-        }
     }
     
     func transform(input: Input) -> Output {
@@ -56,28 +53,66 @@ class UploadTweetViewModel: ViewModelType {
             .map { user in
                 user.profileImageUrl
             }
+        let buttonTitle = input.viewWillAppear
+            .withUnretained(self)
+            .map { weakself, _ in
+                switch weakself.uploadTweetViewControllerType {
+                case .tweet:
+                    return "Tweet"
+                case .reply(_):
+                    return "Reply"
+                }
+            }
+        let placeHolderText = input.viewWillAppear
+            .withUnretained(self)
+            .map { weakself, _ in
+                switch weakself.uploadTweetViewControllerType {
+                case .tweet:
+                    return "What's Happening?"
+                case .reply(_):
+                    return "Tweet your reply"
+                }
+            }
+        let captionTextViewPlaceHolderIsHidden = input.text
+            .map { !$0.isEmpty }
         
-        let showCaptionTextView = input.text
-            .filter { $0.isEmpty == true }
-            .map { _ in
-                ()
+        let replyLabelText = BehaviorSubject<String>(value: "")
+        
+        let replyLabelIsHidden = input.viewWillAppear
+            .withUnretained(self)
+            .map { weakself, _ in
+                switch weakself.uploadTweetViewControllerType {
+                case .tweet:
+                    return true
+                case .reply(let tweet):
+                    replyLabelText.onNext("\(tweet.user.userName) 에게 리트윗 보내기")
+                    replyLabelText.onCompleted()
+                    return false
+                }
             }
-            .asDriver(onErrorDriveWith: .empty())
-        let hideCaptionTextView = input.text
-            .filter { $0.isEmpty == false }
-            .map { _ in
-                ()
+        
+        input.cancelButtonTapped
+            .withUnretained(self)
+            .bind { weakself, _ in
+                weakself.coordinator?.dismissUploadTweetViewController()
             }
-            .asDriver(onErrorDriveWith: .empty())
-        let UploadTweet = input.uploadTweetButtonTapped.withLatestFrom(input.text)
+            .disposed(by: disposeBag)
+        
+        input.uploadTweetButtonTapped.withLatestFrom(input.text)
             .withUnretained(self)
             .flatMap { weakself, caption in
                 TweetService.shared.uploadTweetRx(caption: caption, type: weakself.uploadTweetViewControllerType)
-            }
-            .share()
+            }.asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] _ in
+                self?.coordinator?.dismissUploadTweetViewController()
+            })
+            .disposed(by: disposeBag)
+        
         return Output(userProfileImageUrl: userProfileImageUrl,
-                      showCaptionTextView: showCaptionTextView,
-                      hideCaptionTextView: hideCaptionTextView,
-                      successUploadTweet: UploadTweet.asDriver(onErrorDriveWith: .empty()))
+                      buttonTitle: buttonTitle,
+                      placeHolderText: placeHolderText,
+                      captionTextViewPlaceHolderIsHidden: captionTextViewPlaceHolderIsHidden,
+                      replyLabelIsHidden: replyLabelIsHidden,
+                      replyLabelText: replyLabelText)
     }
 }

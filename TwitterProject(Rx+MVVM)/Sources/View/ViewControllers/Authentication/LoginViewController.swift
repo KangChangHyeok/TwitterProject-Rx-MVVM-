@@ -10,8 +10,6 @@ import RxSwift
 import SnapKit
 import RxViewController
 
-
-
 final class LoginViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
     

@@ -7,10 +7,12 @@
 
 
 import UIKit
+
 import RxSwift
 import RxCocoa
-import SDWebImage
 import RxViewController
+import SDWebImage
+
 
 
 class UploadTweetViewController: UIViewController, ViewModelBindable {
@@ -72,8 +74,52 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        addSubViews()
+        layout()
     }
-    override func viewDidLayoutSubviews() {
+    // MARK: - Methods
+    func bindViewModel() {
+        // MARK: - Input
+        let input = UploadTweetViewModel.Input(viewWillAppear: self.rx.viewWillAppear,
+                                               text: captionTextView.rx.text.orEmpty,
+                                               uploadTweetButtonTapped: uploadTweetButton.rx.tap,
+                                               cancelButtonTapped: cancelButton.rx.tap)
+        // MARK: - Output
+        let output = viewModel.transform(input: input)
+        
+        output.userProfileImageUrl.asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] url in
+                self?.profileImageView.sd_setImage(with: url)
+            })
+            .disposed(by: disposeBag)
+    
+        output.buttonTitle
+            .bind(to: uploadTweetButton.rx.title())
+            .disposed(by: disposeBag)
+        
+        output.placeHolderText
+            .bind(to: captionTextView.placeholderLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        output.captionTextViewPlaceHolderIsHidden
+            .bind(to: captionTextView.placeholderLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        output.replyLabelIsHidden
+            .bind(to: replyLabel.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        output.replyLabelText
+            .bind(to: replyLabel.rx.text)
+            .disposed(by: disposeBag)
+    }
+}
+
+extension UploadTweetViewController: LayoutProtocol {
+    func addSubViews() {
+        view.addSubview(stackViewWithReplyLabel)
+    }
+    func layout() {
         view.backgroundColor = .white
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.isTranslucent = false
@@ -81,7 +127,6 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: uploadTweetButton)
         
-        view.addSubview(stackViewWithReplyLabel)
         stackView.snp.makeConstraints { make in
             make.width.equalTo(stackViewWithReplyLabel.snp.width)
         }
@@ -90,56 +135,5 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
             make.leading.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16))
             make.height.equalTo(300)
         }
-        
-    }
-    // MARK: - Methods
-    func bindViewModel() {
-        
-        switch viewModel.uploadTweetViewControllerType {
-            
-        case .tweet:
-            replyLabel.isHidden = true
-        case .reply(let tweet):
-            replyLabel.isHidden = false
-            replyLabel.text = "\(tweet.user.userName)에게 리트윗 보내기"
-        }
-        uploadTweetButton.setTitle(viewModel.buttonTitle, for: .normal)
-        captionTextView.placeholderLabel.text = viewModel.palceHolderText
-        self.rx.viewWillAppear
-            .bind(to: viewModel.input.viewWillAppear)
-            .disposed(by: disposeBag)
-        captionTextView.rx.text.orEmpty
-            .bind(to: viewModel.input.text)
-            .disposed(by: disposeBag)
-        uploadTweetButton.rx.tap
-            .bind(to: viewModel.input.uploadTweetButtonTapped)
-            .disposed(by: disposeBag)
-        cancelButton.rx.tap
-            .subscribe(onNext: { [ weak self] _ in
-                self?.dismiss(animated: true)
-            })
-            .disposed(by: disposeBag)
-        
-        
-        viewModel.output.userProfileImageUrl.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] url in
-                self?.profileImageView.sd_setImage(with: url)
-            })
-            .disposed(by: disposeBag)
-        viewModel.output.showCaptionTextView
-            .drive(onNext: { [weak self] _ in
-                self?.captionTextView.placeholderLabel.isHidden = false
-            })
-            .disposed(by: disposeBag)
-        viewModel.output.hideCaptionTextView
-            .drive(onNext: { [weak self] _ in
-                self?.captionTextView.placeholderLabel.isHidden = true
-            })
-            .disposed(by: disposeBag)
-        viewModel.output.successUploadTweet
-            .drive(onNext: { [weak self] _ in
-                self?.dismiss(animated: true)
-            })
-            .disposed(by: disposeBag)
     }
 }

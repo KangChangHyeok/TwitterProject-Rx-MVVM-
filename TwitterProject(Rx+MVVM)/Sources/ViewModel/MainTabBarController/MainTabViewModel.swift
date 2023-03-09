@@ -12,12 +12,15 @@ import RxSwift
 import RxCocoa
 
 protocol MainTabViewModelDelegate: AnyObject {
-    func showUploadTweetController()
-    func showLoginViewController()
+    func presentUploadTweetController()
+    func presentLoginViewController()
     func configureMainTabBarController()
 }
 
 class MainTabViewModel: ViewModelType {
+    
+    weak var appCoordinator: MainTabViewModelDelegate?
+    var disposeBag = DisposeBag()
     
     struct Input {
         let viewDidAppear: ControlEvent<Bool>
@@ -25,8 +28,6 @@ class MainTabViewModel: ViewModelType {
     }
     struct Output {
     }
-    weak var appCoordinator: MainTabViewModelDelegate?
-    var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
         
@@ -48,13 +49,13 @@ class MainTabViewModel: ViewModelType {
             .filter { $0 == false }
             .take(1).asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { [weak self] _ in
-                self?.appCoordinator?.showLoginViewController()
+                self?.appCoordinator?.presentLoginViewController()
             })
             .disposed(by: disposeBag)
         
         input.addTweetButtonTapped.asDriver()
             .drive(onNext: { [weak self] _ in
-                self?.appCoordinator?.showUploadTweetController()
+                self?.appCoordinator?.presentUploadTweetController()
             })
             .disposed(by: disposeBag)
         

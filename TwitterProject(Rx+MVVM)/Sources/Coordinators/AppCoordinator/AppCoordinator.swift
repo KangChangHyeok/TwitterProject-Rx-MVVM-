@@ -26,17 +26,17 @@ final class AppCoordinator: Coordinator {
     }
 }
 extension AppCoordinator: MainTabViewModelDelegate {
-    // MARK: - MainTabBarViewController Accept Request
-    func showUploadTweetController() {
+    func presentUploadTweetController() {
         let viewModel = UploadTweetViewModel(type: .tweet)
+        viewModel.coordinator = self
         let uploadTweetViewController = UploadTweetViewController()
         uploadTweetViewController.bind(viewModel: viewModel)
         let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
         navigationController.modalPresentationStyle = .fullScreen
         mainTabBarController.present(navigationController, animated: true)
-        print("DEBUG - 트위터 추가 버튼 클릭")
+        print("DEBUG - 트위터 추가 버튼 클릭. 트위터 등록 화면 출력.")
     }
-    func showLoginViewController() {
+    func presentLoginViewController() {
         mainTabBarController.view.backgroundColor = .twitterBlue
         mainTabBarController.tabBar.barTintColor = .twitterBlue
         mainTabBarController.tabBar.isTranslucent = false
@@ -74,5 +74,10 @@ extension AppCoordinator: LoginViewCoordinatorDelegate {
     func coordinatorDidFinished(coordinator: Coordinator) {
         self.childCoordinators = self.childCoordinators.filter({ $0 !== coordinator })
         print("DEBUG - 로그인 완료(회원가입 성공 or 로그인 화면에서 로그인 성공) 현재 childCoordinators: \(childCoordinators)")
+    }
+}
+extension AppCoordinator: UploadTweetViewModelDelegate {
+    func dismissUploadTweetViewController() {
+        mainTabBarController.dismiss(animated: true)
     }
 }

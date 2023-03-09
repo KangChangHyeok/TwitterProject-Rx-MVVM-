@@ -22,5 +22,4 @@ final class FeedViewCoordinator: Coordinator {
         let navigationController = makeNavigationController(image: UIImage(named: "home_unselected"), rootViewController: feedViewController)
         mainTabBarController.viewControllers = [navigationController]
     }
-    
 }
