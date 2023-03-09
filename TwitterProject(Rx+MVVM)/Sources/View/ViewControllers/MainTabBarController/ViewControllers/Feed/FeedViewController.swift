@@ -89,7 +89,7 @@ class FeedViewController: UIViewController, ViewModelBindable {
         viewModel.output.cellProfileImageTapped
             .drive(onNext: { [weak self] tweet in
                 let profileViewModel = ProfileViewModel(user: tweet.user)
-                var profileViewController = ProfileViewController()
+                let profileViewController = ProfileViewController()
                 profileViewController.bind(viewModel: profileViewModel)
                 self?.navigationController?.pushViewController(profileViewController, animated: true)
             })
@@ -97,7 +97,7 @@ class FeedViewController: UIViewController, ViewModelBindable {
         viewModel.output.showRetweetViewController
             .drive(onNext: { tweet in
                 let uploadTweetViewModel = UploadTweetViewModel(type: .reply(tweet))
-                var uploadTweetViewController = UploadTweetViewController()
+                let uploadTweetViewController = UploadTweetViewController()
                 uploadTweetViewController.bind(viewModel: uploadTweetViewModel)
                 let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
                 navigationController.modalPresentationStyle = .fullScreen
@@ -110,7 +110,7 @@ class FeedViewController: UIViewController, ViewModelBindable {
                 guard let selectedCell = weakself.collectionView.cellForItem(at: indexPath) as? TweetCell else { return }
                 let selectedCellTweetData = selectedCell.cellModel.tweet
                 let tweetViewModel = TweetViewModel(tweet: selectedCellTweetData)
-                var tweetViewController = TweetViewController()
+                let tweetViewController = TweetViewController()
                 tweetViewController.bind(viewModel: tweetViewModel)
                 weakself.navigationController?.pushViewController(tweetViewController, animated: true)
             }

@@ -25,42 +25,42 @@ final class RegisterationViewController: UIViewController, ViewModelBindable {
     }()
     
     private lazy var emailContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
+        let view = makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
         return view
     }()
     private lazy var passwordContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
+        let view = makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
         return view
     }()
     private lazy var fullNameContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"),textField: fullNameTextField)
+        let view = makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"),textField: fullNameTextField)
         return view
     }()
     private lazy var userNameContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"), textField: userNameTextField)
+        let view = makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"), textField: userNameTextField)
         return view
     }()
     
-    private let emailTextField: UITextField = {
-        let textField = Utilites().makeTextField(placeHolerString: "Email")
+    private lazy var emailTextField: UITextField = {
+        let textField = makeTextField(placeHolerString: "Email")
         return textField
     }()
     
-    private let passwordTextField: UITextField = {
-        let textField = Utilites().makeTextField(placeHolerString: "Password")
+    private lazy var passwordTextField: UITextField = {
+        let textField = makeTextField(placeHolerString: "Password")
         textField.isSecureTextEntry = true
         return textField
     }()
-    private let fullNameTextField: UITextField = {
-        let textField = Utilites().makeTextField(placeHolerString: "Full Name")
+    private lazy var fullNameTextField: UITextField = {
+        let textField = makeTextField(placeHolerString: "Full Name")
         return textField
     }()
-    private let userNameTextField: UITextField = {
-        let textField = Utilites().makeTextField(placeHolerString: "User Name")
+    private lazy var userNameTextField: UITextField = {
+        let textField = makeTextField(placeHolerString: "User Name")
         return textField
     }()
-    private let signUpButton: UIButton = {
-        let button = Utilites().makeButton(buttonTitle: "Sign Up")
+    private lazy var signUpButton: UIButton = {
+        let button = makeButton(buttonTitle: "Sign Up")
         return button
     }()
     private lazy var stackView: UIStackView = {
@@ -70,14 +70,13 @@ final class RegisterationViewController: UIViewController, ViewModelBindable {
         stackView.distribution = .fillEqually
         return stackView
     }()
-    private let logInButton: UIButton = {
-        let button = Utilites().attributedButton(firstPart: "Already have an account?", secondPart: " Log In")
+    private lazy var logInButton: UIButton = {
+        let button = attributedButton(firstPart: "Already have an account?", secondPart: " Log In")
         return button
     }()
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
-    var input: RegisterationViewModel.Input?
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -102,7 +101,7 @@ final class RegisterationViewController: UIViewController, ViewModelBindable {
         
         output.didFinishPicking
             .drive(onNext: { [weak self] image in
-                self?.plusPhotoButton.layer.cornerRadius = 128 / 2
+                self?.plusPhotoButton.layer.cornerRadius = 150 / 2
                 self?.plusPhotoButton.layer.masksToBounds = true
                 self?.plusPhotoButton.imageView?.contentMode = .scaleAspectFill
                 self?.plusPhotoButton.imageView?.clipsToBounds = true
@@ -142,4 +141,9 @@ extension RegisterationViewController: LayoutProtocol {
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
+}
+
+private extension RegisterationViewController {
+    
+    
 }

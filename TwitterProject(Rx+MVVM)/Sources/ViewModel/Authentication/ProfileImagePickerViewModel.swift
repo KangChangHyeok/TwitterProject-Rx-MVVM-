@@ -21,7 +21,6 @@ class ProfileImagePickerViewModel: ViewModelType {
         let didFihishPicking: Observable<[UIImagePickerController.InfoKey : AnyObject]>
     }
     struct Output {
-        
     }
     
     func transform(input: Input) -> Output {
@@ -29,11 +28,11 @@ class ProfileImagePickerViewModel: ViewModelType {
         input.didFihishPicking
             .withUnretained(self)
             .subscribe(onNext: { weakself, information in
-
                 guard let pickedImage = information[.editedImage] as? UIImage else { return }
                 weakself.coordinator?.didFihishPicking(image: pickedImage)
             })
             .disposed(by: disposeBag)
+        
         return Output()
     }
 }

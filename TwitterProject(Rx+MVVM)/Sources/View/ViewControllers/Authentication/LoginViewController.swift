@@ -10,15 +10,11 @@ import RxSwift
 import SnapKit
 import RxViewController
 
-protocol LoginViewControllerDelegate: AnyObject {
-    func dismissLoginViewController()
-    func showFailToastMeessageView()
-    func showRegisterViewController()
-}
+
 
 final class LoginViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
-    weak var loginViewCoordinator: LoginViewControllerDelegate?
+    
     var viewModel: LoginViewModel!
     var disposeBag = DisposeBag()
     
@@ -30,28 +26,28 @@ final class LoginViewController: UIViewController, ViewModelBindable {
         return imageView
     }()
     private lazy var emailContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
+        let view = makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
         return view
     }()
     private lazy var passwordContainerView: UIView = {
-        let view = Utilites().makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
+        let view = makeContainerView(image: UIImage(named: "ic_lock_outline_white_2x"), textField: passwordTextField)
         return view
     }()
-    private let emailTextField: UITextField = {
-        let textField = Utilites().makeTextField(placeHolerString: "Email")
+    private lazy var emailTextField: UITextField = {
+        let textField = makeTextField(placeHolerString: "Email")
         return textField
     }()
-    private let passwordTextField: UITextField = {
-        let textField = Utilites().makeTextField(placeHolerString: "Password")
+    private lazy var passwordTextField: UITextField = {
+        let textField = makeTextField(placeHolerString: "Password")
         textField.isSecureTextEntry = true
         return textField
     }()
-    private let logInButton: UIButton = {
-        let button = Utilites().makeButton(buttonTitle: "Log In")
+    private lazy var logInButton: UIButton = {
+        let button = makeButton(buttonTitle: "Log In")
         return button
     }()
-    private let signUpButton: UIButton = {
-        let button = Utilites().attributedButton(firstPart: "Don't have an account", secondPart: " Sign Up")
+    private lazy var signUpButton: UIButton = {
+        let button = attributedButton(firstPart: "Don't have an account", secondPart: " Sign Up")
         return button
     }()
     private lazy var stackView: UIStackView = {
@@ -75,28 +71,11 @@ final class LoginViewController: UIViewController, ViewModelBindable {
         // MARK: - Input
         let input = LoginViewModel.Input(email: emailTextField.rx.text.orEmpty,
                                          password: passwordTextField.rx.text.orEmpty,
-                                         loginButtonTapped: logInButton.rx.tap)
+                                         loginButtonTapped: logInButton.rx.tap,
+                                         signUpButtonTapped: signUpButton.rx.tap)
         
         // MARK: - Output
-        let output = viewModel.transform(input: input)
-        
-        output.userLoginSucceed
-            .drive(onNext: { [weak self] _ in
-                self?.loginViewCoordinator?.dismissLoginViewController()
-            })
-            .disposed(by: disposeBag)
-        
-        output.userLoginFailed
-            .drive(onNext: { [weak self] _ in
-                self?.loginViewCoordinator?.showFailToastMeessageView()
-            })
-            .disposed(by: disposeBag)
-        
-        signUpButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
-                self?.loginViewCoordinator?.showRegisterViewController()
-            })
-            .disposed(by: disposeBag)
+        _ = viewModel.transform(input: input)
     }
 }
 extension LoginViewController: LayoutProtocol {

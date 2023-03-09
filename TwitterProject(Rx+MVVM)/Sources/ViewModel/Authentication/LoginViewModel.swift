@@ -9,17 +9,23 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+protocol LoginViewControllerDelegate: AnyObject {
+    func dismissLoginViewController()
+    func showFailToastMeessageView()
+    func showRegisterViewController()
+}
+
 class LoginViewModel: ViewModelType {
     
     struct Input {
         let email: ControlProperty<String>
         let password: ControlProperty<String>
         let loginButtonTapped: ControlEvent<Void>
+        let signUpButtonTapped: ControlEvent<Void>
     }
     struct Output {
-        let userLoginSucceed: Driver<Void>
-        let userLoginFailed: Driver<Void>
     }
+    weak var coordinator: LoginViewControllerDelegate?
     var disposeBag = DisposeBag()
     
     func transform(input: Input) -> Output {
@@ -29,19 +35,28 @@ class LoginViewModel: ViewModelType {
                 AuthService.shared.logInUser(email: email, password: password)
             }.share()
         
-        let userLoginSucceed = loginResult
+        loginResult
             .filter { $0 == true }
-            .map { _ in
-                ()
-            }
             .asDriver(onErrorDriveWith: .empty())
-        let userLoginFailed = loginResult
+            .drive(onNext: { [weak self] _ in
+                self?.coordinator?.dismissLoginViewController()
+            })
+            .disposed(by: disposeBag)
+        
+        loginResult
             .filter { $0 == false }
-            .map { _ in
-                ()
-            }
             .asDriver(onErrorDriveWith: .empty())
-        return Output(userLoginSucceed: userLoginSucceed,
-                      userLoginFailed: userLoginFailed)
+            .drive(onNext: { [weak self] _ in
+                self?.coordinator?.showFailToastMeessageView()
+            })
+            .disposed(by: disposeBag)
+        
+        input.signUpButtonTapped.asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] _ in
+                self?.coordinator?.showRegisterViewController()
+            })
+            .disposed(by: disposeBag)
+        
+        return Output()
     }
 }

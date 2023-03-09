@@ -18,14 +18,14 @@ final class AppCoordinator: Coordinator {
     
     func start() {
         let viewModel = MainTabViewModel()
+        viewModel.appCoordinator = self
         mainTabBarController.bind(viewModel: viewModel)
-        mainTabBarController.appCoordinator = self
     }
     deinit {
-        print("AppCoordinator deinit")
+        print("DEBUG - 앱 종료. AppCoordinator deinit")
     }
 }
-extension AppCoordinator: MainTabBarControllerDelegate {
+extension AppCoordinator: MainTabViewModelDelegate {
     // MARK: - MainTabBarViewController Accept Request
     func showUploadTweetController() {
         let viewModel = UploadTweetViewModel(type: .tweet)
@@ -34,6 +34,7 @@ extension AppCoordinator: MainTabBarControllerDelegate {
         let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
         navigationController.modalPresentationStyle = .fullScreen
         mainTabBarController.present(navigationController, animated: true)
+        print("DEBUG - 트위터 추가 버튼 클릭")
     }
     func showLoginViewController() {
         mainTabBarController.view.backgroundColor = .twitterBlue
@@ -43,6 +44,7 @@ extension AppCoordinator: MainTabBarControllerDelegate {
         loginViewCoordinator.start()
         loginViewCoordinator.appCoordinator = self
         childCoordinators.append(loginViewCoordinator)
+        print("DEBUG - 유저 로그인 하지 않음 로그인 화면 출력 childCoordinators: \(childCoordinators)")
     }
     func configureMainTabBarController() {
         mainTabBarController.view.backgroundColor = .white
@@ -60,7 +62,7 @@ extension AppCoordinator: MainTabBarControllerDelegate {
         
         let conversationViewCoordinator = ConversationViewCoordinator(mainTabBarController: mainTabBarController)
         setChildCoordinator(append: conversationViewCoordinator)
-        print(childCoordinators)
+        print("DEBUG - 로그인 완료 이후 탭별로 각 화면 코디네이터 생성 childCoordinators: \(childCoordinators)")
     }
     private func setChildCoordinator(append coordinator: Coordinator) {
         coordinator.start()
@@ -71,6 +73,6 @@ extension AppCoordinator: MainTabBarControllerDelegate {
 extension AppCoordinator: LoginViewCoordinatorDelegate {
     func coordinatorDidFinished(coordinator: Coordinator) {
         self.childCoordinators = self.childCoordinators.filter({ $0 !== coordinator })
-        print(childCoordinators)
+        print("DEBUG - 로그인 완료(회원가입 성공 or 로그인 화면에서 로그인 성공) 현재 childCoordinators: \(childCoordinators)")
     }
 }

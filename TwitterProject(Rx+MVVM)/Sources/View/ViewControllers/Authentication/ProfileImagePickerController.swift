@@ -8,7 +8,7 @@
 import UIKit
 import RxSwift
 
-class ProfileImagePickerController: UIImagePickerController, ViewModelBindable {
+final class ProfileImagePickerController: UIImagePickerController, ViewModelBindable {
     
     var viewModel: ProfileImagePickerViewModel!
     var disposeBag = DisposeBag()

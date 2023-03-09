@@ -46,7 +46,7 @@ class RegisterationViewModel: ViewModelType {
 
         let registerationInformation = Observable.combineLatest(pickedImage.asObservable(),input.email, input.password, input.fullName, input.userName)
             
-        let signUpRequest = input.signUpButtonTapped.withLatestFrom(registerationInformation)
+        input.signUpButtonTapped.withLatestFrom(registerationInformation)
             .flatMap { (profileImage, email, password, fullName, userName) in
                     AuthService.shared.signUpUserRx(email: email, password: password, fullName: fullName, userName: userName, profileImage: profileImage)
             }

@@ -9,16 +9,12 @@ import SnapKit
 import RxSwift
 import RxCocoa
 
-protocol MainTabBarControllerDelegate: AnyObject {
-    func showUploadTweetController()
-    func showLoginViewController()
-    func configureMainTabBarController()
-}
+
 
 final class MainTabBarController: UITabBarController, ViewModelBindable {
     
     // MARK: - Properties
-    weak var appCoordinator: MainTabBarControllerDelegate?
+    
     var viewModel: MainTabViewModel!
     var disposeBag = DisposeBag()
     
@@ -49,25 +45,7 @@ final class MainTabBarController: UITabBarController, ViewModelBindable {
         let input = MainTabViewModel.Input(viewDidAppear: self.rx.viewDidAppear,
                                            addTweetButtonTapped: addTweetButton.rx.tap)
         // MARK: - Output
-        let output = viewModel.transform(input: input)
-        
-        output.userLoggedinSuccess
-            .drive(onNext: { [weak self] userTweets in
-                self?.appCoordinator?.configureMainTabBarController()
-            })
-            .disposed(by: disposeBag)
-        
-        output.userLoggedinFailure
-            .drive(onNext: { [weak self] _ in
-                self?.appCoordinator?.showLoginViewController()
-            })
-            .disposed(by: disposeBag)
-        
-        addTweetButton.rx.tap.asDriver()
-            .drive(onNext: { [weak self] _ in
-                self?.appCoordinator?.showUploadTweetController()
-            })
-            .disposed(by: disposeBag)
+        _ = viewModel.transform(input: input)
     }
 }
 extension MainTabBarController: LayoutProtocol {

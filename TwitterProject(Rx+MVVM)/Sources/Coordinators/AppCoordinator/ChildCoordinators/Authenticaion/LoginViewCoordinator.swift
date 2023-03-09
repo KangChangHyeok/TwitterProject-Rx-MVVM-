@@ -26,9 +26,9 @@ class LoginViewCoordinator: Coordinator {
     
     func start() {
         let loginViewModel = LoginViewModel()
+        loginViewModel.coordinator = self
         let loginViewController = LoginViewController()
         loginViewController.bind(viewModel: loginViewModel)
-        loginViewController.loginViewCoordinator = self
         
         self.loginNavigationController = LoginNavigationController(rootViewController: loginViewController)
         guard let navigationController = self.loginNavigationController else { return }
@@ -46,11 +46,10 @@ extension LoginViewCoordinator: LoginViewControllerDelegate {
     func dismissLoginViewController() {
         mainTabBarController.dismiss(animated: true)
         appCoordinator?.coordinatorDidFinished(coordinator: self)
-        self.childCoordinators.removeAll()
     }
     
     func showFailToastMeessageView() {
-        print("로그인 실패시 토스트 메세지 뷰 출력해줘야함")
+        print("DEBUG - 로그인 실패. 실패 토스트메세지 보여줘야 하는데 아직 미구현.")
     }
     
     func showRegisterViewController() {
