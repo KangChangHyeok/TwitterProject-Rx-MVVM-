@@ -5,7 +5,6 @@
 //  Created by 강창혁 on 2023/01/02.
 //
 
-
 import UIKit
 
 import RxSwift
@@ -13,14 +12,11 @@ import RxCocoa
 import RxViewController
 import SDWebImage
 
-
-
 class UploadTweetViewController: UIViewController, ViewModelBindable {
-    // MARK: - Properties
-    
+    // MARK: - viewModel, DisposeBag
     var viewModel: UploadTweetViewModel!
     var disposeBag = DisposeBag()
-    
+    // MARK: - UI
     private var uploadTweetButton: UIButton = {
         let button = UIButton(type: .system)
         button.backgroundColor = .twitterBlue
@@ -50,7 +46,6 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         return imageView
     }()
     private let captionTextView = CaptionTextView()
-    
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [profileImageView, captionTextView])
         stackView.axis = .horizontal
@@ -71,62 +66,74 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         stackViewWithReplyLabel.alignment = .leading
         return stackViewWithReplyLabel
     }()
-    // MARK: - Lifecycle
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        setValue()
         addSubViews()
         layout()
     }
-    // MARK: - Methods
+    // MARK: - bindViewModel
     func bindViewModel() {
-        // MARK: - Input
-        let input = UploadTweetViewModel.Input(viewWillAppear: self.rx.viewWillAppear,
-                                               text: captionTextView.rx.text.orEmpty,
-                                               uploadTweetButtonTapped: uploadTweetButton.rx.tap,
-                                               cancelButtonTapped: cancelButton.rx.tap)
-        // MARK: - Output
-        let output = viewModel.transform(input: input)
+        // MARK: - viewModel Input
+        rx.viewWillAppear
+            .bind(to: viewModel.input.viewWillAppear)
+            .disposed(by: disposeBag)
         
-        output.userProfileImageUrl.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] url in
-                self?.profileImageView.sd_setImage(with: url)
+        captionTextView.rx.text.orEmpty
+            .bind(to: viewModel.input.text)
+            .disposed(by: disposeBag)
+        
+        uploadTweetButton.rx.tap
+            .bind(to: viewModel.input.uploadTweetButtonTapped)
+            .disposed(by: disposeBag)
+        
+        cancelButton.rx.tap
+            .bind(to: viewModel.input.cancelButtonTapped)
+            .disposed(by: disposeBag)
+        // MARK: - viewModel Output
+        viewModel.output.userProfileImageUrl
+            .withUnretained(self)
+            .subscribe(onNext: { uploadTweetViewController, url in
+                uploadTweetViewController.profileImageView.sd_setImage(with: url)
             })
             .disposed(by: disposeBag)
-    
-        output.buttonTitle
+        
+        viewModel.output.buttonTitle
             .bind(to: uploadTweetButton.rx.title())
             .disposed(by: disposeBag)
         
-        output.placeHolderText
+        viewModel.output.placeHolderText
             .bind(to: captionTextView.placeholderLabel.rx.text)
             .disposed(by: disposeBag)
         
-        output.captionTextViewPlaceHolderIsHidden
+        viewModel.output.captionTextViewPlaceHolderIsHidden
             .bind(to: captionTextView.placeholderLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
-        output.replyLabelIsHidden
+        viewModel.output.replyLabelIsHidden
             .bind(to: replyLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
-        output.replyLabelText
+        viewModel.output.replyLabelText
             .bind(to: replyLabel.rx.text)
             .disposed(by: disposeBag)
     }
 }
-
+// MARK: - LayoutProtocol
 extension UploadTweetViewController: LayoutProtocol {
-    func addSubViews() {
-        view.addSubview(stackViewWithReplyLabel)
-    }
-    func layout() {
+    func setValue() {
         view.backgroundColor = .white
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.isTranslucent = false
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: cancelButton)
         navigationItem.rightBarButtonItem = UIBarButtonItem(customView: uploadTweetButton)
-        
+    }
+    func addSubViews() {
+        view.addSubview(stackViewWithReplyLabel)
+    }
+    func layout() {
         stackView.snp.makeConstraints { make in
             make.width.equalTo(stackViewWithReplyLabel.snp.width)
         }

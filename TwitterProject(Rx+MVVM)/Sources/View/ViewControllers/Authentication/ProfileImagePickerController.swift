@@ -9,12 +9,10 @@ import UIKit
 import RxSwift
 
 final class ProfileImagePickerController: UIImagePickerController, ViewModelBindable {
-    
+    // MARK: - viewModel, disposeBag
     var viewModel: ProfileImagePickerViewModel!
     var disposeBag = DisposeBag()
-    override func viewDidLoad() {
-        
-    }
+    // MARK: - bindViewModel
     func bindViewModel() {
         self.allowsEditing = true
         // MARK: - Input

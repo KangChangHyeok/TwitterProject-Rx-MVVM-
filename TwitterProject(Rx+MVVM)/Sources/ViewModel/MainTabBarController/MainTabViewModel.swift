@@ -11,54 +11,60 @@ import FirebaseAuth
 import RxSwift
 import RxCocoa
 
+// MARK: - MainTabViewModelDelegate
 protocol MainTabViewModelDelegate: AnyObject {
     func presentUploadTweetController()
     func presentLoginViewController()
     func configureMainTabBarController()
 }
-
+// MARK: - MainTabViewModel
 class MainTabViewModel: ViewModelType {
-    
-    weak var appCoordinator: MainTabViewModelDelegate?
-    var disposeBag = DisposeBag()
-    
+    // MARK: - Input
     struct Input {
-        let viewDidAppear: ControlEvent<Bool>
-        let addTweetButtonTapped: ControlEvent<Void>
+        let viewDidAppear = BehaviorRelay<Bool>(value: false)
+        let addTweetButtonTapped = PublishRelay<Void>()
     }
+    // MARK: - Output
     struct Output {
     }
-    
+    // MARK: -
+    weak var appCoordinator: MainTabViewModelDelegate?
+    let input = Input()
+    lazy var output = transform(input: input)
+    var disposeBag = DisposeBag()
+    // MARK: - transform
     func transform(input: Input) -> Output {
         
         let isUserLoggedin = input.viewDidAppear
+            .filter({ $0 == true })
             .flatMap({ _ in
                 AuthService.shared.checkUserLoggedin()
             })
-            .share()
         
         isUserLoggedin
             .filter { $0 == true }
-            .take(1).asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] _ in
-                self?.appCoordinator?.configureMainTabBarController()
+            .take(1)
+            .withUnretained(self)
+            .subscribe(onNext: { mainTabViewModel, _ in
+                mainTabViewModel.appCoordinator?.configureMainTabBarController()
             })
             .disposed(by: disposeBag)
         
         isUserLoggedin
             .filter { $0 == false }
-            .take(1).asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] _ in
-                self?.appCoordinator?.presentLoginViewController()
+            .take(1)
+            .withUnretained(self)
+            .subscribe(onNext: { mainTabViewModel, _ in
+                mainTabViewModel.appCoordinator?.presentLoginViewController()
             })
             .disposed(by: disposeBag)
         
-        input.addTweetButtonTapped.asDriver()
-            .drive(onNext: { [weak self] _ in
-                self?.appCoordinator?.presentUploadTweetController()
+        input.addTweetButtonTapped
+            .withUnretained(self)
+            .subscribe(onNext: { mainTabViewModel, _ in
+                mainTabViewModel.appCoordinator?.presentUploadTweetController()
             })
             .disposed(by: disposeBag)
-        
         return Output()
     }
     func logUserOut() {

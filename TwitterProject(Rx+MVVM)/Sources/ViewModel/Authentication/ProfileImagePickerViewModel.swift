@@ -12,27 +12,27 @@ protocol ProfileImagePickerViewModelDelegate: AnyObject {
     func didFihishPicking(image: UIImage)
 }
 
-class ProfileImagePickerViewModel: ViewModelType {
-    
-    weak var coordinator: ProfileImagePickerViewModelDelegate?
-    var disposeBag = DisposeBag()
-    
+final class ProfileImagePickerViewModel: ViewModelType {
+    // MARK: - Input
     struct Input {
         let didFihishPicking: Observable<[UIImagePickerController.InfoKey : AnyObject]>
     }
+    // MARK: - Output
     struct Output {
     }
-    
+    // MARK: -
+    weak var coordinator: ProfileImagePickerViewModelDelegate?
+    var disposeBag = DisposeBag()
+    // MARK: - transform
     func transform(input: Input) -> Output {
         
         input.didFihishPicking
             .withUnretained(self)
-            .subscribe(onNext: { weakself, information in
+            .subscribe(onNext: { profileImagePickerViewModel, information in
                 guard let pickedImage = information[.editedImage] as? UIImage else { return }
-                weakself.coordinator?.didFihishPicking(image: pickedImage)
+                profileImagePickerViewModel.coordinator?.didFihishPicking(image: pickedImage)
             })
             .disposed(by: disposeBag)
-        
         return Output()
     }
 }

@@ -14,7 +14,7 @@ final class NotificationViewCoordinator: Coordinator {
     init(mainTabBarController: MainTabBarController) {
         self.mainTabBarController = mainTabBarController
     }
-    
+    // MARK: - start
     func start() {
         let notificationViewController = NotificationViewController()
         let notificationViewModel = NotificationViewModel()

@@ -11,7 +11,7 @@ protocol LoginViewCoordinatorDelegate: AnyObject {
     func coordinatorDidFinished(coordinator: Coordinator)
 }
 
-class LoginViewCoordinator: Coordinator {
+final class LoginViewCoordinator: Coordinator {
     
     weak var appCoordinator: LoginViewCoordinatorDelegate?
     var childCoordinators: [Coordinator] = []
@@ -23,7 +23,6 @@ class LoginViewCoordinator: Coordinator {
     init(mainTabBarController: MainTabBarController) {
         self.mainTabBarController = mainTabBarController
     }
-    
     func start() {
         let loginViewModel = LoginViewModel()
         loginViewModel.coordinator = self
@@ -42,16 +41,13 @@ class LoginViewCoordinator: Coordinator {
 }
 // MARK: - LoginViewController Accept Request
 extension LoginViewCoordinator: LoginViewControllerDelegate {
-    
     func dismissLoginViewController() {
         mainTabBarController.dismiss(animated: true)
         appCoordinator?.coordinatorDidFinished(coordinator: self)
     }
-    
     func showFailToastMeessageView() {
         print("DEBUG - 로그인 실패. 실패 토스트메세지 보여줘야 하는데 아직 미구현.")
     }
-    
     func showRegisterViewController() {
         let registerViewController = RegisterationViewController()
         let registerViewModel = RegisterationViewModel()
@@ -60,18 +56,16 @@ extension LoginViewCoordinator: LoginViewControllerDelegate {
         self.loginNavigationController?.pushViewController(registerViewController, animated: true)
     }
 }
-
+// MARK: - RegistrationViewControllerDelegate
 extension LoginViewCoordinator: RegistrationViewControllerDelegate {
     func dismissRegistrationViewController() {
         self.loginNavigationController?.dismiss(animated: true)
         print("DEBUG - 회원가입 완료됨. LoginCoordinator 해제 시점")
         appCoordinator?.coordinatorDidFinished(coordinator: self)
     }
-    
     func popRegistrationViewController() {
         self.loginNavigationController?.popViewController(animated: true)
     }
-    
     func showImagePickerController() {
         let viewModel = ProfileImagePickerViewModel()
         viewModel.coordinator = self
@@ -80,9 +74,9 @@ extension LoginViewCoordinator: RegistrationViewControllerDelegate {
         
         self.loginNavigationController?.present(imagePickerController, animated: true)
         self.profileImagePickerController = imagePickerController
-    
     }
 }
+// MARK: - ProfileImagePickerViewModelDelegate
 extension LoginViewCoordinator: ProfileImagePickerViewModelDelegate {
     func didFihishPicking(image: UIImage) {
         guard let registerationViewController = loginNavigationController?.topViewController as? RegisterationViewController else { return }

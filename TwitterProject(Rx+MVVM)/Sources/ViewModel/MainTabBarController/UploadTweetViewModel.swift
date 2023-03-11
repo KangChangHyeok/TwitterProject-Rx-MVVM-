@@ -20,17 +20,14 @@ protocol UploadTweetViewModelDelegate: AnyObject {
 }
 
 class UploadTweetViewModel: ViewModelType {
-    
-    let uploadTweetViewControllerType: UploadTweetControllerType
-    weak var coordinator: UploadTweetViewModelDelegate?
-    var disposeBag = DisposeBag()
-    
+    // MARK: - Input
     struct Input {
-        let viewWillAppear: ControlEvent<Bool>
-        let text: ControlProperty<String>
-        let uploadTweetButtonTapped: ControlEvent<Void>
-        let cancelButtonTapped: ControlEvent<Void>
+        let viewWillAppear = BehaviorRelay<Bool>(value: false)
+        let text = PublishRelay<String>()
+        let uploadTweetButtonTapped = PublishRelay<Void>()
+        let cancelButtonTapped = PublishRelay<Void>()
     }
+    // MARK: - Output
     struct Output {
         let userProfileImageUrl: Observable<URL?>
         let buttonTitle: Observable<String>
@@ -39,13 +36,19 @@ class UploadTweetViewModel: ViewModelType {
         let replyLabelIsHidden: Observable<Bool>
         let replyLabelText: BehaviorSubject<String>
     }
-        
+    // MARK: -
+    weak var coordinator: UploadTweetViewModelDelegate?
+    let input = Input()
+    lazy var output = transform(input: input)
+    var disposeBag = DisposeBag()
+    
+    let uploadTweetViewControllerType: UploadTweetControllerType
+    
     init(type: UploadTweetControllerType) {
         self.uploadTweetViewControllerType = type
     }
-    
+    // MARK: - transform
     func transform(input: Input) -> Output {
-        
         let userProfileImageUrl = input.viewWillAppear
             .flatMap { _ in
                 UserService.shared.fetchUserRx()

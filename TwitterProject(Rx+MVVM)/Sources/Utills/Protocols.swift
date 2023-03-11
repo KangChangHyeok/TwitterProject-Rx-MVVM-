@@ -31,7 +31,8 @@ extension ViewModelBindable where Self: UIViewController {
         bindViewModel()
     }
 }
-protocol LayoutProtocol: AnyObject {
+@objc protocol LayoutProtocol: AnyObject {
+    @objc optional func setValue()
     func addSubViews()
     func layout()
 }

@@ -10,57 +10,62 @@ import RxSwift
 import RxCocoa
 
 protocol RegistrationViewControllerDelegate: AnyObject {
-    //회원가입이 종료되는거
     func dismissRegistrationViewController()
-    // 하단 버튼 눌러서 로그인 화면으로 돌아가기
     func popRegistrationViewController()
     func showImagePickerController()
 }
 
-class RegisterationViewModel: ViewModelType {
-    
-    weak var coordinator: RegistrationViewControllerDelegate?
-    var disposeBag = DisposeBag()
-    
+final class RegisterationViewModel: ViewModelType {
+    // MARK: - Input
     struct Input {
-        let plusPhotoButtonTapped: ControlEvent<Void>
-        let email: ControlProperty<String>
-        let password: ControlProperty<String>
-        let fullName: ControlProperty<String>
-        let userName: ControlProperty<String>
-        let signUpButtonTapped: ControlEvent<Void>
-        let loginButtonTapped: ControlEvent<Void>
+        let plusPhotoButtonTapped = PublishRelay<Void>()
+        let email = PublishRelay<String>()
+        let password = PublishRelay<String>()
+        let fullName = PublishRelay<String>()
+        let userName = PublishRelay<String>()
+        let signUpButtonTapped = PublishRelay<Void>()
+        let loginButtonTapped = PublishRelay<Void>()
     }
-    
-    let pickedImage = PublishSubject<UIImage>()
+    // MARK: - Output
     struct Output {
         let didFinishPicking: Driver<UIImage>
     }
+    // MARK: -
+    weak var coordinator: RegistrationViewControllerDelegate?
+    let input = Input()
+    lazy var output = transform(input: input)
+    var disposeBag = DisposeBag()
     
+    let pickedImage = PublishSubject<UIImage>()
+    // MARK: - transform
     func transform(input: Input) -> Output {
-        input.plusPhotoButtonTapped.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] _ in
-                self?.coordinator?.showImagePickerController()
+        input.plusPhotoButtonTapped
+            .withUnretained(self)
+            .subscribe(onNext: { registerationViewModel, _ in
+                registerationViewModel.coordinator?.showImagePickerController()
             })
             .disposed(by: disposeBag)
 
-        let registerationInformation = Observable.combineLatest(pickedImage.asObservable(),input.email, input.password, input.fullName, input.userName)
+        let registerationInformation = Observable.combineLatest(
+            pickedImage.asObservable(), input.email, input.password, input.fullName, input.userName)
             
         input.signUpButtonTapped.withLatestFrom(registerationInformation)
             .flatMap { (profileImage, email, password, fullName, userName) in
                     AuthService.shared.signUpUserRx(email: email, password: password, fullName: fullName, userName: userName, profileImage: profileImage)
             }
-            .asDriver(onErrorJustReturn: ())
-            .drive(onNext: { [weak self] _ in
-                self?.coordinator?.dismissRegistrationViewController()
+            .withUnretained(self)
+            .subscribe(onNext: { registerationViewModel, _ in
+                registerationViewModel.coordinator?.dismissRegistrationViewController()
             })
             .disposed(by: disposeBag)
     
-        input.loginButtonTapped.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] _ in
-                self?.coordinator?.popRegistrationViewController()
+        input.loginButtonTapped
+            .withUnretained(self)
+            .subscribe(onNext: { registerationViewModel, _ in
+                registerationViewModel.coordinator?.popRegistrationViewController()
             })
             .disposed(by: disposeBag)
+        
         return Output(didFinishPicking: pickedImage.asDriver(onErrorDriveWith: .empty()))
     }
 }

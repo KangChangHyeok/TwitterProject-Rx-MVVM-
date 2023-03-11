@@ -15,7 +15,7 @@ final class AppCoordinator: Coordinator {
     init(mainTabBarController: MainTabBarController) {
         self.mainTabBarController = mainTabBarController
     }
-    
+    // MARK: - start
     func start() {
         let viewModel = MainTabViewModel()
         viewModel.appCoordinator = self
@@ -25,6 +25,7 @@ final class AppCoordinator: Coordinator {
         print("DEBUG - 앱 종료. AppCoordinator deinit")
     }
 }
+// MARK: - MainTabViewModelDelegate
 extension AppCoordinator: MainTabViewModelDelegate {
     func presentUploadTweetController() {
         let viewModel = UploadTweetViewModel(type: .tweet)
@@ -69,15 +70,18 @@ extension AppCoordinator: MainTabViewModelDelegate {
         childCoordinators.append(coordinator)
     }
 }
-
+// MARK: - LoginViewCoordinatorDelegate
 extension AppCoordinator: LoginViewCoordinatorDelegate {
     func coordinatorDidFinished(coordinator: Coordinator) {
         self.childCoordinators = self.childCoordinators.filter({ $0 !== coordinator })
+        self.configureMainTabBarController()
         print("DEBUG - 로그인 완료(회원가입 성공 or 로그인 화면에서 로그인 성공) 현재 childCoordinators: \(childCoordinators)")
     }
 }
+// MARK: - UploadTweetViewModelDelegate
 extension AppCoordinator: UploadTweetViewModelDelegate {
     func dismissUploadTweetViewController() {
         mainTabBarController.dismiss(animated: true)
+        print("DEBUG - 트윗 업로드 완료 or 취소")
     }
 }

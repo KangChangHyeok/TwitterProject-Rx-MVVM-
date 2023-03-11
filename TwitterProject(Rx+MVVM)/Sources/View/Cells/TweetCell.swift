@@ -151,7 +151,6 @@ extension TweetCell: LayoutProtocol {
         contentView.addSubview(actionStackView)
         contentView.addSubview(underlineView)
     }
-    
     func layout() {
         profileImageView.snp.makeConstraints { make in
             make.top.left.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 0))

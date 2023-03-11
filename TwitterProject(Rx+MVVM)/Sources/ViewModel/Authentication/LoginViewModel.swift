@@ -15,20 +15,23 @@ protocol LoginViewControllerDelegate: AnyObject {
     func showRegisterViewController()
 }
 
-class LoginViewModel: ViewModelType {
-    
-    weak var coordinator: LoginViewControllerDelegate?
-    var disposeBag = DisposeBag()
-    
+final class LoginViewModel: ViewModelType {
+    // MARK: - Input
     struct Input {
-        let email: ControlProperty<String>
-        let password: ControlProperty<String>
-        let loginButtonTapped: ControlEvent<Void>
-        let signUpButtonTapped: ControlEvent<Void>
+        let email = PublishRelay<String>()
+        let password = PublishRelay<String>()
+        let loginButtonTapped = PublishRelay<Void>()
+        let signUpButtonTapped = PublishRelay<Void>()
     }
+    // MARK: - Output
     struct Output {
     }
-   
+    // MARK: -
+    weak var coordinator: LoginViewControllerDelegate?
+    let input = Input()
+    lazy var output = transform(input: input)
+    var disposeBag = DisposeBag()
+    // MARK: - transform
     func transform(input: Input) -> Output {
         let loginResult = input.loginButtonTapped
             .withLatestFrom(Observable.combineLatest (input.email, input.password))
@@ -36,11 +39,6 @@ class LoginViewModel: ViewModelType {
                 AuthService.shared.logInUser(email: email, password: password)
             }.share()
         
-        Observable.combineLatest(input.email, input.password)
-            .subscribe(onNext: { email, password in
-                print(email, password)
-            })
-            .disposed(by: disposeBag)
         loginResult
             .filter { $0 == true }
             .asDriver(onErrorDriveWith: .empty())

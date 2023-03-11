@@ -14,7 +14,7 @@ final class ExploreViewCoordinator: Coordinator {
     init(mainTabBarController: MainTabBarController) {
         self.mainTabBarController = mainTabBarController
     }
-    
+    // MARK: - start
     func start() {
         let exploreViewController = ExploreViewController()
         let exploreViewModel = ExploreViewModel()
@@ -22,6 +22,4 @@ final class ExploreViewCoordinator: Coordinator {
         let navigationController = makeNavigationController(image: UIImage(named: "search_unselected"), rootViewController: exploreViewController)
         mainTabBarController.viewControllers?.append(navigationController)
     }
-    
-    
 }

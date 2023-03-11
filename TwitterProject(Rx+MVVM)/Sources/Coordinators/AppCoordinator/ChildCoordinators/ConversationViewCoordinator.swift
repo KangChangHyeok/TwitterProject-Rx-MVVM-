@@ -14,6 +14,7 @@ final class ConversationViewCoordinator: Coordinator {
     init(mainTabBarController: MainTabBarController) {
         self.mainTabBarController = mainTabBarController
     }
+    // MARK: - start
     func start() {
         let conversationsViewController = makeNavigationController(image: UIImage(named: "ic_mail_outline_white_2x-1"), rootViewController: ConversationsViewController())
         mainTabBarController.viewControllers?.append(conversationsViewController)

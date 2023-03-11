@@ -99,6 +99,9 @@ class FeedViewController: UIViewController, ViewModelBindable {
 }
 
 extension FeedViewController: LayoutProtocol {
+    func setValue() {
+        
+    }
     func addSubViews() {
         view.addSubview(feedTableView)
     }

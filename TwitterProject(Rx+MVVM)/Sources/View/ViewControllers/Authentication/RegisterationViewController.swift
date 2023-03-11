@@ -11,19 +11,19 @@ import RxSwift
 import RxCocoa
 
 final class RegisterationViewController: UIViewController, ViewModelBindable {
-    
-    // MARK: - Properties
-    
+    // MARK: - viewModel, disposeBag
     var viewModel: RegisterationViewModel!
     var disposeBag = DisposeBag()
-    
+    // MARK: - UI
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "plus_photo"), for: .normal)
         button.tintColor = .white
         return button
     }()
-    
     private lazy var emailContainerView: UIView = {
         let view = makeContainerView(image: UIImage(named: "ic_mail_outline_white_2x-1"),textField: emailTextField)
         return view
@@ -40,12 +40,10 @@ final class RegisterationViewController: UIViewController, ViewModelBindable {
         let view = makeContainerView(image: UIImage(named: "ic_person_outline_white_2x"), textField: userNameTextField)
         return view
     }()
-    
     private lazy var emailTextField: UITextField = {
         let textField = makeTextField(placeHolerString: "Email")
         return textField
     }()
-    
     private lazy var passwordTextField: UITextField = {
         let textField = makeTextField(placeHolerString: "Password")
         textField.isSecureTextEntry = true
@@ -74,32 +72,41 @@ final class RegisterationViewController: UIViewController, ViewModelBindable {
         let button = attributedButton(firstPart: "Already have an account?", secondPart: " Log In")
         return button
     }()
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    // MARK: - Lifecycle
-    
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        setValue()
         addSubViews()
         layout()
     }
-    // MARK: - Methods
+    // MARK: - bindViewModel
     func bindViewModel() {
-        // MARK: - Input
+        // MARK: - viewModel Input
+        plusPhotoButton.rx.tap
+            .bind(to: viewModel.input.plusPhotoButtonTapped)
+            .disposed(by: disposeBag)
         
+        emailTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.email)
+            .disposed(by: disposeBag)
         
-        let input = RegisterationViewModel.Input(plusPhotoButtonTapped: plusPhotoButton.rx.tap,
-                                                 email: emailTextField.rx.text.orEmpty,
-                                                 password: passwordTextField.rx.text.orEmpty,
-                                                 fullName: fullNameTextField.rx.text.orEmpty,
-                                                 userName: userNameTextField.rx.text.orEmpty,
-                                                 signUpButtonTapped: signUpButton.rx.tap,
-                                                 loginButtonTapped: logInButton.rx.tap)
-        // MARK: - Output
-        let output = viewModel.transform(input: input)
+        passwordTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.password)
+            .disposed(by: disposeBag)
         
-        output.didFinishPicking
+        fullNameTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.fullName)
+            .disposed(by: disposeBag)
+        
+        signUpButton.rx.tap
+            .bind(to: viewModel.input.signUpButtonTapped)
+            .disposed(by: disposeBag)
+        
+        logInButton.rx.tap
+            .bind(to: viewModel.input.loginButtonTapped)
+            .disposed(by: disposeBag)
+        // MARK: - viewModel Output
+        viewModel.output.didFinishPicking
             .drive(onNext: { [weak self] image in
                 self?.plusPhotoButton.layer.cornerRadius = 150 / 2
                 self?.plusPhotoButton.layer.masksToBounds = true
@@ -112,16 +119,17 @@ final class RegisterationViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
     }
 }
-
+// MARK: - LayoutProtocol
 extension RegisterationViewController: LayoutProtocol {
+    func setValue() {
+        view.backgroundColor = .twitterBlue
+    }
     func addSubViews() {
         view.addSubview(plusPhotoButton)
         view.addSubview(stackView)
         view.addSubview(logInButton)
     }
     func layout() {
-        view.backgroundColor = .twitterBlue
-        
         plusPhotoButton.snp.makeConstraints { make in
             make.centerX.equalTo(view)
             make.top.equalTo(view.safeAreaLayoutGuide)
@@ -141,9 +149,4 @@ extension RegisterationViewController: LayoutProtocol {
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
-}
-
-private extension RegisterationViewController {
-    
-    
 }

@@ -11,11 +11,13 @@ import SnapKit
 import RxViewController
 
 final class LoginViewController: UIViewController, ViewModelBindable {
-    // MARK: - Properties
-    
+    // MARK: - viewModel, disposeBag
     var viewModel: LoginViewModel!
     var disposeBag = DisposeBag()
-    
+    // MARK: - UI
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     private let logoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -55,37 +57,47 @@ final class LoginViewController: UIViewController, ViewModelBindable {
         stackView.distribution = .fillEqually
         return stackView
     }()
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    // MARK: - Lifecycle
+    // MARK: - vieDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        setValue()
         addSubViews()
         layout()
     }
     // MARK: - bindViewModel
     func bindViewModel() {
-        // MARK: - Input
-        let input = LoginViewModel.Input(email: emailTextField.rx.text.orEmpty,
-                                         password: passwordTextField.rx.text.orEmpty,
-                                         loginButtonTapped: logInButton.rx.tap,
-                                         signUpButtonTapped: signUpButton.rx.tap)
+        // MARK: - viewModel Input
+        emailTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.email)
+            .disposed(by: disposeBag)
         
+        passwordTextField.rx.text.orEmpty
+            .bind(to: viewModel.input.password)
+            .disposed(by: disposeBag)
+        
+        logInButton.rx.tap
+            .bind(to: viewModel.input.loginButtonTapped)
+            .disposed(by: disposeBag)
+        
+        signUpButton.rx.tap
+            .bind(to: viewModel.input.signUpButtonTapped)
+            .disposed(by: disposeBag)
         // MARK: - Output
-        _ = viewModel.transform(input: input)
+        _ = viewModel.output
     }
 }
+// MARK: - LayoutProtocol
 extension LoginViewController: LayoutProtocol {
+    func setValue() {
+        view.backgroundColor = .twitterBlue
+        navigationController?.navigationBar.isHidden = true
+    }
     func addSubViews() {
         view.addSubview(logoImageView)
         view.addSubview(stackView)
         view.addSubview(signUpButton)
     }
     func layout() {
-        view.backgroundColor = .twitterBlue
-        navigationController?.navigationBar.isHidden = true
-        
         logoImageView.snp.makeConstraints { make in
             make.centerX.equalTo(view)
             make.top.equalTo(view.safeAreaLayoutGuide)

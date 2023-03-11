@@ -16,6 +16,7 @@ final class FeedViewCoordinator: Coordinator {
     init(mainTabBarController: MainTabBarController) {
         self.mainTabBarController = mainTabBarController
     }
+    // MARK: - start
     func start() {
         let feedViewController = FeedViewController()
         let feedViewModel = FeedViewModel()
@@ -26,9 +27,8 @@ final class FeedViewCoordinator: Coordinator {
         mainTabBarController.viewControllers = [navigationController]
     }
 }
-
+// MARK: - FeedViewModelDelegate
 extension FeedViewCoordinator: FeedViewModelDelegate {
-    
     func pushProfileViewController(user: User) {
         let profileViewModel = ProfileViewModel(user: user)
         let profileViewController = ProfileViewController()

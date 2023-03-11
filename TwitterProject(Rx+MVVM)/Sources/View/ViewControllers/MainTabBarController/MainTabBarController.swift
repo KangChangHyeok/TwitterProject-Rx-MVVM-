@@ -12,12 +12,14 @@ import RxCocoa
 
 
 final class MainTabBarController: UITabBarController, ViewModelBindable {
-    
-    // MARK: - Properties
-    
+    // MARK: - viewModel, disposeBag
     var viewModel: MainTabViewModel!
     var disposeBag = DisposeBag()
-    
+    // MARK: - UI
+    override var childForStatusBarStyle: UIViewController? {
+        let selectedViewController = selectedViewController as? UINavigationController
+        return selectedViewController?.topViewController
+    }
     private lazy var addTweetButton: UIButton = {
         let button = UIButton()
         button.tintColor = .white
@@ -27,12 +29,7 @@ final class MainTabBarController: UITabBarController, ViewModelBindable {
         button.layer.masksToBounds = true
         return button
     }()
-    override var childForStatusBarStyle: UIViewController? {
-        let selectedViewController = selectedViewController as? UINavigationController
-        return selectedViewController?.topViewController
-    }
-    
-    // MARK: - Lifecycle
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         addSubViews()
@@ -40,14 +37,20 @@ final class MainTabBarController: UITabBarController, ViewModelBindable {
     }
     // MARK: - bindViewModel
     func bindViewModel() {
-//        viewModel.logUserOut()
-        // MARK: - Input
-        let input = MainTabViewModel.Input(viewDidAppear: self.rx.viewDidAppear,
-                                           addTweetButtonTapped: addTweetButton.rx.tap)
-        // MARK: - Output
-        _ = viewModel.transform(input: input)
+        viewModel.logUserOut()
+        // MARK: - viewModel Input
+        rx.viewDidAppear
+            .bind(to: viewModel.input.viewDidAppear)
+            .disposed(by: disposeBag)
+        
+        addTweetButton.rx.tap
+            .bind(to: viewModel.input.addTweetButtonTapped)
+            .disposed(by: disposeBag)
+        // MARK: - viewModel Output
+        _ = viewModel.output
     }
 }
+// MARK: - LayoutProtocol
 extension MainTabBarController: LayoutProtocol {
     func addSubViews() {
         view.addSubview(addTweetButton)
