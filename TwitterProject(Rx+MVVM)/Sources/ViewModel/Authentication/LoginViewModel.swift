@@ -36,6 +36,11 @@ class LoginViewModel: ViewModelType {
                 AuthService.shared.logInUser(email: email, password: password)
             }.share()
         
+        Observable.combineLatest(input.email, input.password)
+            .subscribe(onNext: { email, password in
+                print(email, password)
+            })
+            .disposed(by: disposeBag)
         loginResult
             .filter { $0 == true }
             .asDriver(onErrorDriveWith: .empty())

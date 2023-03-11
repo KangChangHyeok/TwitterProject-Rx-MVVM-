@@ -126,25 +126,25 @@ open class CollectionViewSectionedDataSource<Section: SectionModelType>
 
     // UICollectionViewDataSource
     
-    open func numberOfSections(in collectionView: UICollectionView) -> Int {
+    open func numberOfSections(in feedTableView: UICollectionView) -> Int {
         return _sectionModels.count
     }
     
-    open func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    open func collectionView(_ feedTableView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return _sectionModels[section].items.count
     }
     
-    open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    open func collectionView(_ feedTableView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         precondition(indexPath.item < _sectionModels[indexPath.section].items.count)
         
-        return configureCell(self, collectionView, indexPath, self[indexPath])
+        return configureCell(self, feedTableView, indexPath, self[indexPath])
     }
     
-    open func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        return configureSupplementaryView!(self, collectionView, kind, indexPath)
+    open func collectionView(_ feedTableView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        return configureSupplementaryView!(self, feedTableView, kind, indexPath)
     }
     
-    open func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+    open func collectionView(_ feedTableView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
         guard let canMoveItem = canMoveItemAtIndexPath?(self, indexPath) else {
             return false
         }
@@ -152,7 +152,7 @@ open class CollectionViewSectionedDataSource<Section: SectionModelType>
         return canMoveItem
     }
     
-    open func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+    open func collectionView(_ feedTableView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         self._sectionModels.moveFromSourceIndexPath(sourceIndexPath, destinationIndexPath: destinationIndexPath)
         self.moveItem(self, sourceIndexPath, destinationIndexPath)
     }

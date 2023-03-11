@@ -24,7 +24,7 @@ let tweetLikesUserReference = dataBaseReference.child("tweet-likes-forUser")
 
 
 let notificationReference = dataBaseReference.child("notifications")
-let reuseIdentifier = "tweetCell"
+let tweetCellIdentifier = "tweetCell"
 let headerIdentifier = "ProfileHeader"
 let profileFilterCellIdentifier = "ProfileFilterCell"
 let userCellIdentifier = "UserCell"

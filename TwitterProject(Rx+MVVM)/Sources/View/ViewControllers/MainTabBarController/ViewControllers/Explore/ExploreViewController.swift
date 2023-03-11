@@ -54,6 +54,7 @@ class ExploreViewController: UIViewController, ViewModelBindable {
         self.rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
+        
         self.rx.viewWillAppear
             .bind(onNext: { [weak self] _ in
                 self?.navigationController?.navigationBar.isHidden = false
@@ -62,6 +63,7 @@ class ExploreViewController: UIViewController, ViewModelBindable {
         serachController.searchBar.rx.text.orEmpty
             .bind(to: viewModel.input.searchBarText)
             .disposed(by: disposeBag)
+        
         tableView.rx.itemSelected
             .bind { [weak self] indexPath in
                 let cell = self?.tableView.cellForRow(at: indexPath) as! UserCell

@@ -24,7 +24,7 @@ private final class CollectionViewPrefetchDataSourceNotSet
     : NSObject
     , UICollectionViewDataSourcePrefetching {
 
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {}
+    func collectionView(_ feedTableView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {}
 
 }
 
@@ -34,17 +34,17 @@ open class RxCollectionViewDataSourcePrefetchingProxy
     , DelegateProxyType {
 
     /// Typed parent object.
-    public weak private(set) var collectionView: UICollectionView?
+    public weak private(set) var feedTableView: UICollectionView?
 
     /// - parameter collectionView: Parent object for delegate proxy.
-    public init(collectionView: ParentObject) {
-        self.collectionView = collectionView
-        super.init(parentObject: collectionView, delegateProxy: RxCollectionViewDataSourcePrefetchingProxy.self)
+    public init(feedTableView: ParentObject) {
+        self.feedTableView = feedTableView
+        super.init(parentObject: feedTableView, delegateProxy: RxCollectionViewDataSourcePrefetchingProxy.self)
     }
 
     // Register known implementations
     public static func registerKnownImplementations() {
-        self.register { RxCollectionViewDataSourcePrefetchingProxy(collectionView: $0) }
+        self.register { RxCollectionViewDataSourcePrefetchingProxy(feedTableView: $0) }
     }
 
     private var _prefetchItemsPublishSubject: PublishSubject<[IndexPath]>?
@@ -80,12 +80,12 @@ open class RxCollectionViewDataSourcePrefetchingProxy
 @available(iOS 10.0, tvOS 10.0, *)
 extension RxCollectionViewDataSourcePrefetchingProxy: UICollectionViewDataSourcePrefetching {
     /// Required delegate method implementation.
-    public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+    public func collectionView(_ feedTableView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         if let subject = _prefetchItemsPublishSubject {
             subject.on(.next(indexPaths))
         }
 
-        (_requiredMethodsPrefetchDataSource ?? collectionViewPrefetchDataSourceNotSet).collectionView(collectionView, prefetchItemsAt: indexPaths)
+        (_requiredMethodsPrefetchDataSource ?? collectionViewPrefetchDataSourceNotSet).collectionView(feedTableView, prefetchItemsAt: indexPaths)
     }
 }
 

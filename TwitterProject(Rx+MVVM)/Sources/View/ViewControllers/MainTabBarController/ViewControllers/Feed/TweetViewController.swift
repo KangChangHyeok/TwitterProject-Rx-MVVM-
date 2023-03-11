@@ -24,7 +24,7 @@ class TweetViewController: UIViewController, ViewModelBindable {
     }()
     private lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: tweetCellIdentifier)
         return collectionView
     }()
     // MARK: - Override
@@ -53,13 +53,13 @@ class TweetViewController: UIViewController, ViewModelBindable {
         rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
-        viewModel.output.repliesForTweet
-            .bind(to: collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
-                let tweetCellModel = TweetCellModel(tweet: tweet)
-                cell.cellModel = tweetCellModel
-                cell.bind()
-            }
-            .disposed(by: disposeBag)
+//        viewModel.output.repliesForTweet
+//            .bind(to: collectionView.rx.items(cellIdentifier: tweetCellIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
+//                let tweetCellModel = TweetCellModel(tweet: tweet)
+//                cell.cellModel = tweetCellModel
+//                cell.bind(tweet: tweet)
+//            }
+//            .disposed(by: disposeBag)
     }
 }
 

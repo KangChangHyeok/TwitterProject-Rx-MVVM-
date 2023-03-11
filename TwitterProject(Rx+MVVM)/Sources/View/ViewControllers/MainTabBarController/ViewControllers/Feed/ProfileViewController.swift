@@ -21,16 +21,14 @@ class ProfileViewController: UIViewController, ViewModelBindable {
     var disposeBag = DisposeBag()
     
     lazy var profileHeaderView = ProfileHeaderView()
-    lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.frame.width, height: 120)
+    lazy var collectionView: UITableView = {
         
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.register(TweetCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-        collectionView.backgroundColor = .systemBackground
-        collectionView.contentInsetAdjustmentBehavior = .never
-        collectionView.isHidden = false
-        return collectionView
+        let tableView = UITableView(frame: .zero)
+        tableView.register(TweetCell.self, forCellReuseIdentifier: tweetCellIdentifier)
+        tableView.backgroundColor = .systemBackground
+        tableView.contentInsetAdjustmentBehavior = .never
+        tableView.isHidden = false
+        return tableView
     }()
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -68,13 +66,14 @@ class ProfileViewController: UIViewController, ViewModelBindable {
             .disposed(by: disposeBag)
         
         //output
-        viewModel.output.userTweets
-            .bind(to: collectionView.rx.items(cellIdentifier: reuseIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
-                let tweetCellModel = TweetCellModel(tweet: tweet)
-                cell.cellModel = tweetCellModel
-                cell.bind()
-            }
-            .disposed(by: disposeBag)
+//        viewModel.output.userTweets
+//            .bind(to: collectionView.rx.items(cellIdentifier: tweetCellIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
+//                let tweetCellModel = TweetCellModel(tweet: tweet)
+//                cell.cellModel = tweetCellModel
+//                cell.bind(tweet: tweet)
+//            }
+//            .disposed(by: disposeBag)
+        
     }
 }
 

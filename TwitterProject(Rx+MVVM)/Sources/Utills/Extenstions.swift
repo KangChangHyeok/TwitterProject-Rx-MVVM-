@@ -76,7 +76,7 @@ extension UIColor {
     
     static let twitterBlue = UIColor.rgb(red: 29, green: 161, blue: 242)
 }
-// ImagePickerController RxExtension
+// MARK: - ImagePickerController RxExtension
 
 final class RxImagePickerDelegateProxy: DelegateProxy<UIImagePickerController, UINavigationControllerDelegate & UIImagePickerControllerDelegate>, DelegateProxyType, UINavigationControllerDelegate & UIImagePickerControllerDelegate {
 
@@ -108,8 +108,21 @@ func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
     guard let returnValue = object as? T else {
         throw RxCocoaError.castingError(object: object, targetType: resultType)
     }
-
     return returnValue
+}
+
+// MARK: - UITableViewDelegate Proxy( not Working)
+
+extension Reactive where Base: UITableView {
+    
+    public var heightForRowAt: ControlEvent<IndexPath> {
+        let source = delegate.methodInvoked(#selector(UITableViewDelegate.tableView(_:heightForRowAt:)))
+            .map { a in
+                return a[1] as! IndexPath
+            }
+        return ControlEvent(events: source)
+    }
+
 }
 // MARK: - UIResponder
 

@@ -50,7 +50,7 @@ extension AppCoordinator: MainTabViewModelDelegate {
         mainTabBarController.view.backgroundColor = .white
         mainTabBarController.tabBar.barTintColor = .white
         mainTabBarController.tabBar.backgroundColor = .white
-
+        
         let feedViewCoordinator = FeedViewCoordinator(mainTabBarController: mainTabBarController)
         setChildCoordinator(append: feedViewCoordinator)
         

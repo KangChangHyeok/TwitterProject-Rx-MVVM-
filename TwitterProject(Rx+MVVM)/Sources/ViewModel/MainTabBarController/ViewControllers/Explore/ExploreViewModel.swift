@@ -19,6 +19,7 @@ class ExploreViewModel: ViewModelType {
         let usersData: PublishRelay<[User]>
     }
     var disposeBag = DisposeBag()
+    
     let input = Input()
     lazy var output = transform(input: input)
     

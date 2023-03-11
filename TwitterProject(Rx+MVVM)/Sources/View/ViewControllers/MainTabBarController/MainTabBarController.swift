@@ -40,7 +40,7 @@ final class MainTabBarController: UITabBarController, ViewModelBindable {
     }
     // MARK: - bindViewModel
     func bindViewModel() {
-        viewModel.logUserOut()
+//        viewModel.logUserOut()
         // MARK: - Input
         let input = MainTabViewModel.Input(viewDidAppear: self.rx.viewDidAppear,
                                            addTweetButtonTapped: addTweetButton.rx.tap)
