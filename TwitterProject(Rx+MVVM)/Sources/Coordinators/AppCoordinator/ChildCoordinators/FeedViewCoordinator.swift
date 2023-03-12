@@ -35,4 +35,25 @@ extension FeedViewCoordinator: FeedViewModelDelegate {
         profileViewController.bind(viewModel: profileViewModel)
         self.navigationController?.pushViewController(profileViewController, animated: true)
     }
+    func pushTweetViewController(tweet: Tweet) {
+        let tweetViewModel = TweetViewModel(tweet: tweet)
+        let tweetViewController = TweetViewController()
+        tweetViewController.bind(viewModel: tweetViewModel)
+        self.navigationController?.pushViewController(tweetViewController, animated: true)
+    }
+    func presentReTweetViewController(tweet: Tweet) {
+        let uploadTweetViewModel = UploadTweetViewModel(type: .reply(tweet))
+        uploadTweetViewModel.coordinator = self
+        let uploadTweetViewController = UploadTweetViewController()
+        uploadTweetViewController.bind(viewModel: uploadTweetViewModel)
+        
+        let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        self.navigationController?.present(navigationController, animated: true)
+    }
+}
+extension FeedViewCoordinator: UploadTweetViewModelDelegate {
+    func dismissRetweetViewController() {
+        self.navigationController?.dismiss(animated: true)
+    }
 }

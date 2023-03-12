@@ -15,8 +15,9 @@ enum UploadTweetControllerType {
     case reply(Tweet)
 }
 
-protocol UploadTweetViewModelDelegate: AnyObject {
-    func dismissUploadTweetViewController()
+@objc protocol UploadTweetViewModelDelegate: AnyObject {
+    @objc optional func dismissUploadTweetViewController()
+    @objc optional func dismissRetweetViewController()
 }
 
 class UploadTweetViewModel: ViewModelType {
@@ -50,6 +51,7 @@ class UploadTweetViewModel: ViewModelType {
     // MARK: - transform
     func transform(input: Input) -> Output {
         let userProfileImageUrl = input.viewWillAppear
+            .filter({ $0 == true })
             .flatMap { _ in
                 UserService.shared.fetchUserRx()
             }
@@ -57,6 +59,7 @@ class UploadTweetViewModel: ViewModelType {
                 user.profileImageUrl
             }
         let buttonTitle = input.viewWillAppear
+            .filter({ $0 == true })
             .withUnretained(self)
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
@@ -67,6 +70,7 @@ class UploadTweetViewModel: ViewModelType {
                 }
             }
         let placeHolderText = input.viewWillAppear
+            .filter({ $0 == true })
             .withUnretained(self)
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
@@ -82,6 +86,7 @@ class UploadTweetViewModel: ViewModelType {
         let replyLabelText = BehaviorSubject<String>(value: "")
         
         let replyLabelIsHidden = input.viewWillAppear
+            .filter({ $0 == true })
             .withUnretained(self)
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
@@ -96,18 +101,29 @@ class UploadTweetViewModel: ViewModelType {
         
         input.cancelButtonTapped
             .withUnretained(self)
-            .bind { weakself, _ in
-                weakself.coordinator?.dismissUploadTweetViewController()
+            .bind { uploadTweetViewModel, _ in
+                switch uploadTweetViewModel.uploadTweetViewControllerType {
+                case .tweet:
+                    uploadTweetViewModel.coordinator?.dismissUploadTweetViewController?()
+                case .reply(_):
+                    uploadTweetViewModel.coordinator?.dismissRetweetViewController?()
+                }
             }
             .disposed(by: disposeBag)
-        
+
         input.uploadTweetButtonTapped.withLatestFrom(input.text)
             .withUnretained(self)
-            .flatMap { weakself, caption in
-                TweetService.shared.uploadTweetRx(caption: caption, type: weakself.uploadTweetViewControllerType)
-            }.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] _ in
-                self?.coordinator?.dismissUploadTweetViewController()
+            .flatMap { uploadTweetViewModel, caption in
+                TweetService.shared.uploadTweetRx(caption: caption, type: uploadTweetViewModel.uploadTweetViewControllerType)
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { uploadTweetViewModel, type in
+                switch type {
+                case .tweet:
+                    uploadTweetViewModel.coordinator?.dismissUploadTweetViewController?()
+                case .reply(_):
+                    uploadTweetViewModel.coordinator?.dismissRetweetViewController?()
+                }
             })
             .disposed(by: disposeBag)
         

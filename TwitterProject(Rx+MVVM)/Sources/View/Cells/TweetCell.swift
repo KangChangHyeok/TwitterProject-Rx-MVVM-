@@ -12,10 +12,9 @@ import RxGesture
 
 class TweetCell: UITableViewCell {
     
-    // MARK: - Properties
+    // MARK: - disposeBag
     var disposeBag = DisposeBag()
-    var cellModel: TweetCellModel!
-    
+    // MARK: - UI
     private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -24,20 +23,17 @@ class TweetCell: UITableViewCell {
         imageView.backgroundColor = .twitterBlue
         return imageView
     }()
-    
     private let captionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
         return label
     }()
-    
     private let informationLabel: UILabel = {
         let informationLabel = UILabel()
         informationLabel.font = UIFont.systemFont(ofSize: 14)
         return informationLabel
     }()
-    
     private lazy var userDataStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [informationLabel, captionLabel])
         stackView.axis = .vertical
@@ -46,7 +42,7 @@ class TweetCell: UITableViewCell {
         stackView.spacing = 4
         return stackView
     }()
-    private let commentButton: UIButton = {
+    private let retweetButton2: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "comment"), for: .normal)
         button.tintColor = .darkGray
@@ -70,7 +66,7 @@ class TweetCell: UITableViewCell {
         button.tintColor = .darkGray
         return button
     }()
-    private lazy var arrangedSubviewsInActionStackView = [commentButton, retweetButton, likeButton, shareButton]
+    private lazy var arrangedSubviewsInActionStackView = [retweetButton2, retweetButton, likeButton, shareButton]
     private lazy var actionStackView: UIStackView = {
         let actionStackView = UIStackView(arrangedSubviews: arrangedSubviewsInActionStackView)
         actionStackView.axis = .horizontal
@@ -83,67 +79,81 @@ class TweetCell: UITableViewCell {
         underlineView.backgroundColor = .systemGray5
         return underlineView
     }()
-    // MARK: - Lifecycle
-    
+    // MARK: - init
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    // MARK: - layoutSubviews
     override func layoutSubviews() {
         addSubViews()
         layout()
     }
+    // MARK: - bind
     func bind(tweet: Tweet, viewModel: FeedViewModel) {
         profileImageView.sd_setImage(with: tweet.user.profileImageUrl)
         informationLabel.attributedText = tweet.informationText
         captionLabel.text = tweet.caption
         
-        self.profileImageView.rx.tapGesture()
+        contentView.rx.tapGestureOnTop()
             .when(.recognized)
-            .map { _ in
+            .map({ _ in
+                return tweet
+            })
+            .bind(to: viewModel.input.itemSelected)
+            .disposed(by: disposeBag)
+        
+        profileImageView.rx.tapGestureOnTop()
+            .when(.recognized)
+            .map { a in
                 return tweet.user
             }
             .bind(to: viewModel.input.cellProfileImageTapped)
             .disposed(by: disposeBag)
-            
-//        let tap = profileImageView.rx
-//            .tapGesture()
-//        commentButton.rx.tap
-//            .withUnretained(self)
-//            .bind { weakself, _ in
-//                guard let feedViewController = weakself.superViewController as? FeedViewController else { return }
-//                feedViewController.viewModel.input.cellRetweetButtonTapped.accept(weakself.cellModel.tweet)
-//            }
-//            .disposed(by: disposeBag)
-//        likeButton.rx.tap
-//            .bind(to: cellModel.input.likeButtonTapped)
-//            .disposed(by: disposeBag)
-//        cellModel.output.userLikeForTweet
-//            .drive(onNext: { result in
-//                if result {
-//                    self.likeButton.tintColor = .red
-//                } else {
-//                    self.likeButton.tintColor = .gray
-//                }
-//            })
-//            .disposed(by: disposeBag)
-//        cellModel.output.checkIfUserLikeTweet
-//            .drive(onNext: { result in
-//                if result {
-//                    self.likeButton.tintColor = .red
-//                } else {
-//                    self.likeButton.tintColor = .gray
-//                }
-//            })
-//            .disposed(by: disposeBag)
+        
+        retweetButton2.rx.tap
+            .map { _ in
+                return tweet
+            }
+            .bind(to: viewModel.input.retweetButtonTapped)
+            .disposed(by: disposeBag)
+        
+        //        commentButton.rx.tap
+        //            .withUnretained(self)
+        //            .bind { weakself, _ in
+        //                guard let feedViewController = weakself.superViewController as? FeedViewController else { return }
+        //                feedViewController.viewModel.input.cellRetweetButtonTapped.accept(weakself.cellModel.tweet)
+        //            }
+        //            .disposed(by: disposeBag)
+        //        likeButton.rx.tap
+        //            .bind(to: cellModel.input.likeButtonTapped)
+        //            .disposed(by: disposeBag)
+        //        cellModel.output.userLikeForTweet
+        //            .drive(onNext: { result in
+        //                if result {
+        //                    self.likeButton.tintColor = .red
+        //                } else {
+        //                    self.likeButton.tintColor = .gray
+        //                }
+        //            })
+        //            .disposed(by: disposeBag)
+        //        cellModel.output.checkIfUserLikeTweet
+        //            .drive(onNext: { result in
+        //                if result {
+        //                    self.likeButton.tintColor = .red
+        //                } else {
+        //                    self.likeButton.tintColor = .gray
+        //                }
+        //            })
+        //            .disposed(by: disposeBag)
     }
     override func prepareForReuse() {
         disposeBag = DisposeBag()
     }
 }
-
+// MARK: - LayoutProtocol
 extension TweetCell: LayoutProtocol {
     func addSubViews() {
         contentView.addSubview(profileImageView)

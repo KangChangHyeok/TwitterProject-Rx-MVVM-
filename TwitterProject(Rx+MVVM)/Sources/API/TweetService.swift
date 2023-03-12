@@ -41,13 +41,13 @@ struct TweetService {
         
     }
     
-    func uploadTweetRx(caption: String, type: UploadTweetControllerType) -> Observable<Void> {
+    func uploadTweetRx(caption: String, type: UploadTweetControllerType) -> Observable<UploadTweetControllerType> {
         Observable.create { observer in
             uploadTweet(caption: caption, type: type) { error, _ in
                 if let error = error {
                     observer.onError(error)
                 }
-                observer.onNext(())
+                observer.onNext(type)
                 observer.onCompleted()
             }
             return Disposables.create()
@@ -60,49 +60,19 @@ struct TweetService {
             guard let dictionary = snapshot.value as? [String: Any] else { return }
             guard let uid = dictionary["uid"] as? String else { return }
             let tweetID = snapshot.key
-
+            
             UserService.shared.fetchUser(uid: uid) { user in
                 let tweet = Tweet(user: user, tweetID: tweetID, dictionary: dictionary)
                 tweets.append(tweet)
-                if tweets.count == dictionary.keys.count {
-                    completion(tweets)
-                }
+                completion(tweets)
             }
         }
     }
-//    func fetchTweets(completion: @escaping([Tweet]) -> Void) {
-//        tweetsReference.getData { error, snapshot in
-//            var tweets = [Tweet]()
-//            if let error = error {
-//                print(error.localizedDescription)
-//            }
-//            guard let dictionary = snapshot?.value as? [String: [String: Any]] else {
-//                print("error!")
-//                return
-//            }
-//            dictionary.forEach { (key: String, value: [String : Any]) in
-//                let uid = value["uid"] as! String
-//
-//                UserService.shared.fetchUserData(uid: uid) { user in
-//                   let tweet = Tweet(user: user, tweetID: key, dictionary: value)
-//                    tweets.append(tweet)
-//                    if tweets.count == dictionary.keys.count {
-//                        tweets.sort { first, second in
-//                            first.timestamp < second.timestamp
-//                        }
-//                        completion(tweets)
-//                    }
-//                }
-//            }
-//
-//         }
-//    }
     // -rx
     func fetchTweetsRx() -> Observable<[Tweet]> {
         Observable.create { observer in
             fetchTweets { tweets in
                 observer.onNext(tweets)
-                observer.onCompleted()
             }
             return Disposables.create()
         }
@@ -241,5 +211,5 @@ struct TweetService {
             return Disposables.create()
         }
     }
-
+    
 }

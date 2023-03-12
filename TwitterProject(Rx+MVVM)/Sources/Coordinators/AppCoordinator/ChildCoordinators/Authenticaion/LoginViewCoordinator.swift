@@ -7,13 +7,13 @@
 
 import UIKit
 
-protocol LoginViewCoordinatorDelegate: AnyObject {
+protocol LoginViewModelCoordinatorDelegate: AnyObject {
     func coordinatorDidFinished(coordinator: Coordinator)
 }
 
 final class LoginViewCoordinator: Coordinator {
     
-    weak var appCoordinator: LoginViewCoordinatorDelegate?
+    weak var appCoordinator: LoginViewModelCoordinatorDelegate?
     var childCoordinators: [Coordinator] = []
     
     private var mainTabBarController: MainTabBarController

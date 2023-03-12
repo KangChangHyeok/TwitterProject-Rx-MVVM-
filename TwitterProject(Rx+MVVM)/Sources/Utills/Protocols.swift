@@ -4,10 +4,9 @@
 //
 //  Created by 강창혁 on 2022/12/21.
 //
-
-import Foundation
-import RxSwift
 import UIKit
+
+import RxSwift
 
 protocol ViewModelType {
     associatedtype Input
@@ -43,7 +42,6 @@ protocol Coordinator: AnyObject {
 }
 
 extension Coordinator {
-    
     func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
         let navigationController = UINavigationController(rootViewController: rootViewController)
         navigationController.tabBarItem.image = image

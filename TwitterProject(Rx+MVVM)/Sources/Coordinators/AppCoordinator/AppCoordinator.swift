@@ -71,7 +71,7 @@ extension AppCoordinator: MainTabViewModelDelegate {
     }
 }
 // MARK: - LoginViewCoordinatorDelegate
-extension AppCoordinator: LoginViewCoordinatorDelegate {
+extension AppCoordinator: LoginViewModelCoordinatorDelegate {
     func coordinatorDidFinished(coordinator: Coordinator) {
         self.childCoordinators = self.childCoordinators.filter({ $0 !== coordinator })
         self.configureMainTabBarController()

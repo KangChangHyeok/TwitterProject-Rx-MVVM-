@@ -8,6 +8,8 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxGesture
+
 // MARK: - UIView
 extension UIView {
     func setupNSLayoutAnchor(top: NSLayoutYAxisAnchor? = nil,
@@ -124,6 +126,15 @@ extension Reactive where Base: UITableView {
     }
 
 }
+// MARK: - RxGesture extension - 동시 인식 안돼게 하기
+extension Reactive where Base: RxGestureView {
+  public func tapGestureOnTop() -> TapControlEvent {
+    return self.tapGesture { gesture, delegate in
+      delegate.simultaneousRecognitionPolicy = .never
+    }
+  }
+}
+
 // MARK: - UIResponder
 
 extension UIResponder {
