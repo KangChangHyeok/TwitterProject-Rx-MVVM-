@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class TweetViewModel: ViewModelType {
+final class TweetViewModel: ViewModelType {
     // MARK: - Input
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()

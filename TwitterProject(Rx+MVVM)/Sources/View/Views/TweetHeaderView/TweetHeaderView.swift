@@ -6,10 +6,8 @@
 //
 
 import UIKit
+
 import SnapKit
-import SDWebImage
-import RxSwift
-import RxCocoa
 
 final class TweetHeaderView: UIView {
     // MARK: - UI
@@ -94,39 +92,6 @@ final class TweetHeaderView: UIView {
         setValue()
         addSubViews()
         layout()
-    }
-    func bind(viewModel tweetViewModel: TweetViewModel) {
-
-//        optionsButton.rx.tap
-//            .withUnretained(self)
-//            .bind { weakself, _ in
-//                weakself.actionSheet.show()
-//            }
-//            .disposed(by: disposeBag)
-//        likeButton.rx.tap
-//            .bind(to: viewModel.input.likeButtonTapped)
-//            .disposed(by: disposeBag)
-//        viewModel.output.userLikeForTweet
-//            .drive(onNext: { result in
-//                if result {
-//                    self.likeButton.tintColor = .red
-//                    self.statsView.viewModel.input.userLikesChange.accept(())
-//                } else {
-//                    self.likeButton.tintColor = .gray
-//                    self.statsView.viewModel.input.userLikesChange.accept(())
-//                }
-//                
-//            })
-//            .disposed(by: disposeBag)
-//        viewModel.output.checkIfUserLikeTweet
-//            .drive(onNext: { result in
-//                if result {
-//                    self.likeButton.tintColor = .red
-//                } else {
-//                    self.likeButton.tintColor = .gray
-//                }
-//            })
-//            .disposed(by: disposeBag)
     }
 }
 extension TweetHeaderView: LayoutProtocol {

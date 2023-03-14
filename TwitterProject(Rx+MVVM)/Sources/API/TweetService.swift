@@ -12,7 +12,7 @@ import RxSwift
 struct TweetService {
     
     static let shared = TweetService()
-    
+    // MARK: - 트윗 업로드하기
     func uploadTweet(caption: String, type: UploadTweetControllerType, completion: @escaping(Error?, DatabaseReference) -> Void) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         
@@ -40,7 +40,7 @@ struct TweetService {
         }
         
     }
-    
+    //MARK: - rx
     func uploadTweetRx(caption: String, type: UploadTweetControllerType) -> Observable<UploadTweetControllerType> {
         Observable.create { observer in
             uploadTweet(caption: caption, type: type) { error, _ in
@@ -53,7 +53,7 @@ struct TweetService {
             return Disposables.create()
         }
     }
-    // 서버에 저장되있는 모든 트윗 가져오기
+    // MARK: - 서버에 저장되있는 모든 트윗 가져오기
     func fetchTweets(completion: @escaping([TweetCellModel]) -> Void) {
         var tweetCellModels: [TweetCellModel] = []
         tweetsReference.observe(.childAdded) { snapshot in
@@ -69,7 +69,7 @@ struct TweetService {
             }
         }
     }
-    // -rx
+    // MARK: - rx
     func fetchTweetCellModels() -> Observable<[TweetCellModel]> {
         Observable.create { observer in
             fetchTweets { tweetCellModels in
@@ -78,8 +78,7 @@ struct TweetService {
             return Disposables.create()
         }
     }
-    
-    // 해당 유저의 특정 트윗만 가져오기
+    // MARK: - 해당 유저의 특정 트윗만 가져오기
     func fetchTweets(forUser user: User?, completion: @escaping([Tweet]) -> Void) {
         var tweets = [Tweet]()
         guard let user = user else { return }
@@ -99,6 +98,7 @@ struct TweetService {
             }
         }
     }
+    // MARK: - rx
     func fetchTweetsRx(user: User?) -> Observable<[Tweet]> {
         Observable.create { observer in
             fetchTweets(forUser: user) { tweets in
@@ -107,6 +107,7 @@ struct TweetService {
             return Disposables.create()
         }
     }
+    // MARK: - 특정 트윗 정보 가져오기
     func fetchTweet(withTweetID tweetID: String, completion: @escaping(Tweet) -> Void) {
         tweetsReference.child(tweetID).observeSingleEvent(of: .value) { snapshot in
             guard let dictionary = snapshot.value as? [String: Any] else { return }
@@ -117,6 +118,7 @@ struct TweetService {
             }
         }
     }
+    // MARK: - rx
     func fetchTweetRx(withTweetId tweetId: String) -> Observable<Tweet> {
         Observable.create { observer in
             fetchTweet(withTweetID: tweetId) { tweet in
@@ -147,30 +149,30 @@ struct TweetService {
             return Disposables.create()
         }
     }
-    func likeTweet(tweet: Tweet, completion: @escaping(Bool) -> Void) {
-
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        // 좋아요 누른 상태인 경우 눌렀을때 좋아요 - 1, 안누른 상태일 경우 누르면 좋아요 + 1
-        let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
-
-        tweetsReference.child(tweet.tweetID).child("likes").setValue(likes)
-        if tweet.didLike {
-            // 유저가 해당 트윗에 이미 좋아요 눌렀을 경우
-            // unlike tweet
-            userLikesTweetReference.child(uid).child(tweet.tweetID).removeValue { _, _ in
-                tweetLikesUserReference.child(tweet.tweetID).removeValue { _, _ in
-                    completion(false)
-                }
-            }
-        } else {
-            // 유저가 해당 트윗에 좋아요 누르지 않은 경우
-            userLikesTweetReference.child(uid).updateChildValues([tweet.tweetID: 0]) { _, _ in
-                tweetLikesUserReference.child(tweet.tweetID).updateChildValues([uid: 1]) { _, _ in
-                    completion(true)
-                }
-            }
-        }
-    }
+//    func likeTweet(tweet: Tweet, completion: @escaping(Bool) -> Void) {
+//
+//        guard let uid = Auth.auth().currentUser?.uid else { return }
+//        // 좋아요 누른 상태인 경우 눌렀을때 좋아요 - 1, 안누른 상태일 경우 누르면 좋아요 + 1
+//        let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
+//
+//        tweetsReference.child(tweet.tweetID).child("likes").setValue(likes)
+//        if tweet.didLike {
+//            // 유저가 해당 트윗에 이미 좋아요 눌렀을 경우
+//            // unlike tweet
+//            userLikesTweetReference.child(uid).child(tweet.tweetID).removeValue { _, _ in
+//                tweetLikesUserReference.child(tweet.tweetID).removeValue { _, _ in
+//                    completion(false)
+//                }
+//            }
+//        } else {
+//            // 유저가 해당 트윗에 좋아요 누르지 않은 경우
+//            userLikesTweetReference.child(uid).updateChildValues([tweet.tweetID: 0]) { _, _ in
+//                tweetLikesUserReference.child(tweet.tweetID).updateChildValues([uid: 1]) { _, _ in
+//                    completion(true)
+//                }
+//            }
+//        }
+//    }
     func likeTweet(tweet: Tweet) -> Bool {
         let currentLikesCount = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
         guard let currentUid = Auth.auth().currentUser?.uid else { return false }
@@ -184,32 +186,32 @@ struct TweetService {
             return true
         }
     }
-    func likeTweetRx(tweet: Tweet) -> Observable<Bool> {
-        Observable.create { observer in
-            likeTweet(tweet: tweet) { bool in
-                observer.onNext(bool)
-                observer.onCompleted()
-            }
-            return Disposables.create()
-        }
-        
-    }
-    func checkIfUserLikedTweet(_ tweet: Tweet, completion: @escaping(Bool) -> Void) {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        userLikesTweetReference.child(uid).child(tweet.tweetID).observeSingleEvent(of: .value) { snapshot in
-            completion(snapshot.exists())
-        }
-    }
-    
-    func checkIfUserLiketTweetRx(tweet: Tweet) -> Observable<Bool> {
-        Observable.create { observer in
-            checkIfUserLikedTweet(tweet) { bool in
-                observer.onNext(bool)
-                observer.onCompleted()
-            }
-            return Disposables.create()
-        }
-    }
+//    func likeTweetRx(tweet: Tweet) -> Observable<Bool> {
+//        Observable.create { observer in
+//            likeTweet(tweet: tweet) { bool in
+//                observer.onNext(bool)
+//                observer.onCompleted()
+//            }
+//            return Disposables.create()
+//        }
+//
+//    }
+//    func checkIfUserLikedTweet(_ tweet: Tweet, completion: @escaping(Bool) -> Void) {
+//        guard let uid = Auth.auth().currentUser?.uid else { return }
+//        userLikesTweetReference.child(uid).child(tweet.tweetID).observeSingleEvent(of: .value) { snapshot in
+//            completion(snapshot.exists())
+//        }
+//    }
+//
+//    func checkIfUserLiketTweetRx(tweet: Tweet) -> Observable<Bool> {
+//        Observable.create { observer in
+//            checkIfUserLikedTweet(tweet) { bool in
+//                observer.onNext(bool)
+//                observer.onCompleted()
+//            }
+//            return Disposables.create()
+//        }
+//    }
     func fetchTweetLikes(tweet: Tweet, completion: @escaping(Int) -> Void) {
         tweetsReference.child(tweet.tweetID).getData { error, snapshot in
             print("!!")

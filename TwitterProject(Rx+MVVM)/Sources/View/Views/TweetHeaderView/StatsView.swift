@@ -6,11 +6,11 @@
 //
 
 import UIKit
-import SnapKit
-import RxSwift
-import RxCocoa
 
-class StatsView: UIView {
+import SnapKit
+
+
+final class StatsView: UIView {
     // MARK: - UI
     private let statsView = UIView()
     private let topDivider: UIView = {
@@ -39,12 +39,13 @@ class StatsView: UIView {
         bottomDivider.backgroundColor = .systemBackground
         return bottomDivider
     }()
-    
+    // MARK: - layoutSubviews
     override func layoutSubviews() {
         addSubViews()
         layout()
     }
 }
+// MARK: - LayoutProtocol
 extension StatsView: LayoutProtocol {
     func addSubViews() {
         addSubview(topDivider)

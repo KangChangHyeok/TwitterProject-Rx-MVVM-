@@ -12,8 +12,6 @@ import SnapKit
 import RxViewController
 import RxDataSources
 
-
-
 final class ProfileViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
     
