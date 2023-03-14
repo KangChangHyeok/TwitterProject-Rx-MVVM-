@@ -12,31 +12,42 @@ import RxSwift
 import RxCocoa
 
 final class ProfileViewModel: ViewModelType {
-    let user: User
-    
-    init(user: User) {
-        self.user = user
-        
-    }
+    // MARK: - Input
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()
+        let backButtonTappped = PublishRelay<Void>()
         let followButtonTapped = BehaviorRelay<Void>(value: ())
         let buttonTitle = PublishRelay<String>()
     }
+    // MARK: - Output
     struct Output {
-        let userTweets: Observable<[Tweet]>
+        let tweetsForUser: Observable<[Tweet]>
         let buttonTitle: BehaviorRelay<String>
         let followerUsersCount: PublishRelay<NSAttributedString>
         let followingUsersCount: PublishRelay<NSAttributedString>
     }
+    // MARK: -
+    weak var coordinator: FeedViewCoordinatorType?
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
+    // MARK: -
+    let user: User
     
+    init(user: User) {
+        self.user = user
+    }
     func transform(input: Input) -> Output {
-        let viewWillAppear = input.viewWillAppear.share()
+        
+        input.backButtonTappped
+            .withUnretained(self)
+            .subscribe(onNext: { profileViewModel, _ in
+                profileViewModel.coordinator?.popProfileViewController()
+            })
+            .disposed(by: disposeBag)
+        
         // 뷰가 화면에 뜨기 전에 cell에 넣어줄 유저들 트윗 가져오기
-        let userTweets = viewWillAppear
+        let tweetsForUser = input.viewWillAppear
             .map({ [weak self] _ in
                 return self?.user
             })
@@ -47,7 +58,7 @@ final class ProfileViewModel: ViewModelType {
         let followerUsersCount = PublishRelay<NSAttributedString>()
         
         // 뷰가 화면에 뜨기 전에 표시할 해당 유저의 팔로워 가져오기
-        let getFollowerUsersCount = viewWillAppear
+        let getFollowerUsersCount = input.viewWillAppear
             .withUnretained(self)
             .flatMap { weakself, _ in
                 UserService.shared.fetchFollowerUsersRx(uid: weakself.user.uid)
@@ -64,7 +75,7 @@ final class ProfileViewModel: ViewModelType {
         let followingUsersCount = PublishRelay<NSAttributedString>()
         
         // 뷰가 화면에 표시되기 전에 해당 유저가 팔로잉한 유저 가져오기
-        let getFollowingUsersCount = viewWillAppear
+        let getFollowingUsersCount = input.viewWillAppear
             .withUnretained(self)
             .flatMap { weakself, _ in
                 UserService.shared.fetchFollowingUsersRx(uid: weakself.user.uid)
@@ -153,7 +164,7 @@ final class ProfileViewModel: ViewModelType {
             }
             .bind(to: followingUsersCount)
             .disposed(by: disposeBag)
-        return Output(userTweets: userTweets,
+        return Output(tweetsForUser: tweetsForUser,
                       buttonTitle: buttonTitle,
                       followerUsersCount: followerUsersCount,
                       followingUsersCount: followingUsersCount)

@@ -8,13 +8,12 @@
 import UIKit
 import SnapKit
 
-class ProfileFilterCell: UICollectionViewCell {
+final class ProfileFilterCell: UICollectionViewCell {
     
     let titleLabel: UILabel = {
         let label = UILabel()
         label.textColor = .lightGray
         label.font = UIFont.systemFont(ofSize: 14)
-        label.text = "Test filter"
         return label
     }()
     
@@ -24,18 +23,23 @@ class ProfileFilterCell: UICollectionViewCell {
             titleLabel.textColor = isSelected ? .twitterBlue : .lightGray
         }
     }
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
-    }
     override func layoutSubviews() {
+        setValue()
+        addSubViews()
+        layout()
+    }
+}
+
+extension ProfileFilterCell: LayoutProtocol {
+    func setValue() {
         backgroundColor = .white
+    }
+    func addSubViews() {
         addSubview(titleLabel)
+    }
+    func layout() {
         titleLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }

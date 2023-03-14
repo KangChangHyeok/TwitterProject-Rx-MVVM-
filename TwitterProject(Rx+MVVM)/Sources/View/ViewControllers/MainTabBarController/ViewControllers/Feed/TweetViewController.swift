@@ -18,10 +18,7 @@ final class TweetViewController: UIViewController, ViewModelBindable {
     var viewModel: TweetViewModel!
     var disposeBag = DisposeBag()
     // MARK: - UI
-    private lazy var headerView: TweetHeaderView = {
-        let tweetHeaderView = TweetHeaderView()
-        return tweetHeaderView
-    }()
+    private lazy var headerView = TweetHeaderView()
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero)
         tableView.register(TweetCell.self, forCellReuseIdentifier: tweetCellIdentifier)

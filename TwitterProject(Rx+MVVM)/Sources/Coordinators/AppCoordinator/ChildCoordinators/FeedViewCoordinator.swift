@@ -31,6 +31,7 @@ final class FeedViewCoordinator: Coordinator {
 extension FeedViewCoordinator: FeedViewCoordinatorType {
     func pushProfileViewController(user: User) {
         let profileViewModel = ProfileViewModel(user: user)
+        profileViewModel.coordinator = self
         let profileViewController = ProfileViewController()
         profileViewController.bind(viewModel: profileViewModel)
         self.navigationController?.pushViewController(profileViewController, animated: true)
@@ -52,8 +53,8 @@ extension FeedViewCoordinator: FeedViewCoordinatorType {
         navigationController.modalPresentationStyle = .fullScreen
         self.navigationController?.present(navigationController, animated: true)
     }
-    func cellaction() {
-        print("likeButtonTapped!!!!")
+    func popProfileViewController() {
+        self.navigationController?.popViewController(animated: true)
     }
 }
 extension FeedViewCoordinator: UploadTweetViewModelDelegate {

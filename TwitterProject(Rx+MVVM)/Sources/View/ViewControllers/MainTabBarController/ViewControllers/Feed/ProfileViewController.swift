@@ -35,24 +35,23 @@ final class ProfileViewController: UIViewController, ViewModelBindable {
         addSubViews()
         layout()
     }
+    override func viewDidLayoutSubviews() {
+        setValue()
+    }
     // MARK: - bindViewModel
     func bindViewModel() {
         // MARK: - viewModel Input
         profileHeaderView.bind(viewModel: viewModel)
-        let viewWillAppear = self.rx.viewWillAppear
-        
-        viewWillAppear.asDriver(onErrorDriveWith: .empty())
-            .drive(onNext: { [weak self] _ in
-                self?.navigationController?.navigationBar.isHidden = true
-            })
-            .disposed(by: disposeBag)
-        viewWillAppear
+        rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
     }
 }
 // MARK: - LayoutProtocol
 extension ProfileViewController: LayoutProtocol {
+    func setValue() {
+        navigationController?.navigationBar.isHidden = true
+    }
     func addSubViews() {
         view.addSubview(profileHeaderView)
         view.addSubview(tableView)

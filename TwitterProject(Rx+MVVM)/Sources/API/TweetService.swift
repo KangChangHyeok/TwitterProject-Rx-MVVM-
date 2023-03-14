@@ -32,13 +32,19 @@ struct TweetService {
                 userTweetsReference.child(uid).updateChildValues([tweetID: 1], withCompletionBlock: completion)
             }
         case .reply(let tweet):
+            let values: [String: Any] = ["uid": uid,
+                                         "timestamp": Int(NSDate().timeIntervalSince1970),
+                                         "caption": caption,
+                                         "replyingTo": tweet.user.userName]
+            //해당 트윗에 대한 리트윗 레포에 트윗 id로 하위 카테고리 만들고 고유 id만들어서 저장 tweet-replies/tweetId/AutoId
             tweetRepliesReference.child(tweet.tweetID).childByAutoId()
-                .updateChildValues(values) { error, ref in
-                    NotificationService.shared.uploadNotification(toUser: tweet.user, type: .reply, tweetID: tweet.tweetID)
-                    completion(error, ref)
+                .updateChildValues(values) { _, ref in
+                    guard let replyKey = ref.key else { return }
+                    //해당 유저가 등록한 리트윗 구분을 위해 해당 유저의 리트윗 카테코리 만들고 저장 user-replies/tweetId
+                    // 아헷갈려진짜.. 벡엔드까지하려니까 개빡치네
+                    userRepliesReference.child(uid).updateChildValues([tweet.tweetID: replyKey], withCompletionBlock: completion)
                 }
         }
-        
     }
     //MARK: - rx
     func uploadTweetRx(caption: String, type: UploadTweetControllerType) -> Observable<UploadTweetControllerType> {
@@ -128,6 +134,7 @@ struct TweetService {
             return Disposables.create()
         }
     }
+    // MARK: - 해당하는 트윗에 대한 리트윗 가져오기
     func fetchReplies(fortweet tweet: Tweet, completion: @escaping([Tweet]) -> Void) {
         var tweets = [Tweet]()
         tweetRepliesReference.child(tweet.tweetID).observe(.childAdded) { snapshot in
@@ -141,6 +148,7 @@ struct TweetService {
             }
         }
     }
+    // -rx
     func fetchRepliesRx(tweet: Tweet) -> Observable<[Tweet]> {
         Observable.create { observer in
             fetchReplies(fortweet: tweet) { tweets in
@@ -149,6 +157,7 @@ struct TweetService {
             return Disposables.create()
         }
     }
+    //트윗 좋아요
     func likeTweet(tweet: Tweet) -> Bool {
         let currentLikesCount = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
         guard let currentUid = Auth.auth().currentUser?.uid else { return false }
@@ -164,7 +173,6 @@ struct TweetService {
     }
     func fetchTweetLikes(tweet: Tweet, completion: @escaping(Int) -> Void) {
         tweetsReference.child(tweet.tweetID).getData { error, snapshot in
-            print("!!")
             guard let dictionary = snapshot?.value as? [String:Any] else { return }
             guard let value = dictionary[tweet.tweetID] as? [String:Any] else { return }
             print(value)
