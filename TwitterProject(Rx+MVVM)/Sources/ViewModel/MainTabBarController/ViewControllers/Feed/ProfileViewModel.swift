@@ -11,8 +11,7 @@ import FirebaseAuth
 import RxSwift
 import RxCocoa
 
-
-class ProfileViewModel: ViewModelType {
+final class ProfileViewModel: ViewModelType {
     let user: User
     
     init(user: User) {
@@ -158,11 +157,5 @@ class ProfileViewModel: ViewModelType {
                       buttonTitle: buttonTitle,
                       followerUsersCount: followerUsersCount,
                       followingUsersCount: followingUsersCount)
-    }
-    
-    func attributedText(withValue value: Int, text: String) -> NSAttributedString {
-        let attributedTitle = NSMutableAttributedString(string: "\(value)", attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
-        attributedTitle.append(NSAttributedString(string: " \(text)", attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
-        return attributedTitle
     }
 }

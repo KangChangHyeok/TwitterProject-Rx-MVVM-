@@ -66,7 +66,6 @@ struct Tweet {
         } else {
             self.didLike = false
         }
-        print(didLike)
     }
 }
 

@@ -13,14 +13,15 @@ import RxViewController
 import RxDataSources
 
 final class ProfileViewController: UIViewController, ViewModelBindable {
-    // MARK: - Properties
-    
+    // MARK: - viewModel, disposeBag
     var viewModel: ProfileViewModel!
     var disposeBag = DisposeBag()
-    
+    // MARK: - UI
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     lazy var profileHeaderView = ProfileHeaderView()
-    lazy var collectionView: UITableView = {
-        
+    lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero)
         tableView.register(TweetCell.self, forCellReuseIdentifier: tweetCellIdentifier)
         tableView.backgroundColor = .systemBackground
@@ -28,29 +29,15 @@ final class ProfileViewController: UIViewController, ViewModelBindable {
         tableView.isHidden = false
         return tableView
     }()
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-    // MARK: - Lifecycle
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        addSubViews()
+        layout()
     }
-    override func viewDidLayoutSubviews() {
-        view.addSubview(profileHeaderView)
-        view.addSubview(collectionView)
-        profileHeaderView.snp.makeConstraints { make in
-            make.top.left.right.equalToSuperview()
-            make.height.equalTo(350)
-        }
-        collectionView.snp.makeConstraints { make in
-            make.top.equalTo(profileHeaderView.snp.bottom)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
-    }
-    // MARK: - Methods
-    
+    // MARK: - bindViewModel
     func bindViewModel() {
-        // input
+        // MARK: - viewModel Input
         profileHeaderView.bind(viewModel: viewModel)
         let viewWillAppear = self.rx.viewWillAppear
         
@@ -62,16 +49,22 @@ final class ProfileViewController: UIViewController, ViewModelBindable {
         viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
-        
-        //output
-//        viewModel.output.userTweets
-//            .bind(to: collectionView.rx.items(cellIdentifier: tweetCellIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
-//                let tweetCellModel = TweetCellModel(tweet: tweet)
-//                cell.cellModel = tweetCellModel
-//                cell.bind(tweet: tweet)
-//            }
-//            .disposed(by: disposeBag)
-        
     }
 }
-
+// MARK: - LayoutProtocol
+extension ProfileViewController: LayoutProtocol {
+    func addSubViews() {
+        view.addSubview(profileHeaderView)
+        view.addSubview(tableView)
+    }
+    func layout() {
+        profileHeaderView.snp.makeConstraints { make in
+            make.top.left.right.equalToSuperview()
+            make.height.equalTo(350)
+        }
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(profileHeaderView.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+}

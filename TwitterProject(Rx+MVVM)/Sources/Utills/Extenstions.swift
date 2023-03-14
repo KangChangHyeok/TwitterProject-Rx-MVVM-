@@ -112,20 +112,6 @@ func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
     }
     return returnValue
 }
-
-// MARK: - UITableViewDelegate Proxy( not Working)
-
-extension Reactive where Base: UITableView {
-    
-    public var heightForRowAt: ControlEvent<IndexPath> {
-        let source = delegate.methodInvoked(#selector(UITableViewDelegate.tableView(_:heightForRowAt:)))
-            .map { a in
-                return a[1] as! IndexPath
-            }
-        return ControlEvent(events: source)
-    }
-
-}
 // MARK: - RxGesture extension - 동시 인식 안돼게 하기
 extension Reactive where Base: RxGestureView {
   public func tapGestureOnTop() -> TapControlEvent {
@@ -136,9 +122,7 @@ extension Reactive where Base: RxGestureView {
 }
 
 // MARK: - UIResponder
-
 extension UIResponder {
-    
     var superViewController: UIViewController? {
         var responder = self
         while let nextResponder = responder.next {
@@ -208,5 +192,13 @@ extension UIViewController {
         
         button.setAttributedTitle(attributedTitle, for: .normal)
         return button
+    }
+}
+
+extension ViewModelType {
+    func attributedText(withValue value: Int, text: String) -> NSAttributedString {
+        let attributedTitle = NSMutableAttributedString(string: "\(value)", attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
+        attributedTitle.append(NSAttributedString(string: " \(text)", attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
+        return attributedTitle
     }
 }

@@ -91,7 +91,6 @@ final class TweetViewModel: ViewModelType {
             .map { tweetViewModel, _ in
                 return tweetViewModel.attributedText(withValue: tweetViewModel.tweet.likes, text: "Likes")
             }
-            .debug("버튼 탭 될때마다 값 변경")
             .bind(to: likesCount)
             .disposed(by: disposeBag)
         
@@ -102,8 +101,6 @@ final class TweetViewModel: ViewModelType {
         }
         .bind(to: retweetCount)
         .disposed(by: disposeBag)
-        
-        
         
         input.retweetButtonTapped
             .withUnretained(self)
@@ -144,10 +141,4 @@ final class TweetViewModel: ViewModelType {
         }
         return dummyLabel.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
     }
-    func attributedText(withValue value: Int, text: String) -> NSAttributedString {
-        let attributedTitle = NSMutableAttributedString(string: "\(value)", attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
-        attributedTitle.append(NSAttributedString(string: " \(text)", attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
-        return attributedTitle
-    }
-    
 }
