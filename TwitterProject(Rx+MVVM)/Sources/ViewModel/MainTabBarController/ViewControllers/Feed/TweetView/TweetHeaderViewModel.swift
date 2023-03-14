@@ -6,20 +6,31 @@
 //
 
 import Foundation
+
 import RxSwift
 import RxCocoa
 
-class TweetHeaderViewModel {
+final class TweetHeaderViewModel {
+    // MARK: - Input
     struct Input {
         let likeButtonTapped = PublishRelay<Void>()
     }
+    // MARK: - Output
     struct Output {
         let userLikeForTweet: Driver<Bool>
         let checkIfUserLikeTweet: Driver<Bool>
     }
+    // MARK: -
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
+    // MARK: -
+    var tweet: Tweet
+    
+    init(tweet: Tweet) {
+        self.tweet = tweet
+    }
+    // MARK: - transform
     func transform(input: Input) -> Output {
         let userLikeForTweet = input.likeButtonTapped
             .flatMap { _ in
@@ -43,15 +54,5 @@ class TweetHeaderViewModel {
             .asDriver(onErrorDriveWith: .empty())
         return Output(userLikeForTweet: userLikeForTweet,
                       checkIfUserLikeTweet: checkIfUserLikeTweet)
-    }
-    var tweet: Tweet
-    
-    var headerTimeStamp: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "h:mm a ∙ MM/dd/yyyy"
-        return formatter.string(from: tweet.timestamp)
-    }
-    init(tweet: Tweet) {
-        self.tweet = tweet
     }
 }

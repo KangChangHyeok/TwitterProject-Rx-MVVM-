@@ -25,6 +25,11 @@ struct Tweet {
             return UIImage(named: "like")
         }
     }
+    var headerTimeStamp: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a ∙ MM/dd/yyyy"
+        return formatter.string(from: self.timestamp)
+    }
     var informationText: NSAttributedString {
         let title = NSMutableAttributedString(string: user.fullName, attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
         title.append(NSAttributedString(string: " @" + user.userName, attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))

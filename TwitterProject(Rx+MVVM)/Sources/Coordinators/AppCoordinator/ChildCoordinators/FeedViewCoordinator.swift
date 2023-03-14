@@ -37,6 +37,7 @@ extension FeedViewCoordinator: FeedViewCoordinatorType {
     }
     func pushTweetViewController(tweet: Tweet) {
         let tweetViewModel = TweetViewModel(tweet: tweet)
+        tweetViewModel.coordinator = self
         let tweetViewController = TweetViewController()
         tweetViewController.bind(viewModel: tweetViewModel)
         self.navigationController?.pushViewController(tweetViewController, animated: true)

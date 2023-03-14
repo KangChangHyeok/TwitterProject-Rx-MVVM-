@@ -44,6 +44,9 @@ final class FeedViewController: UIViewController, ViewModelBindable {
         addSubViews()
         layout()
     }
+    override func viewDidLayoutSubviews() {
+        navigationController?.navigationBar.isHidden = false
+    }
     // MARK: - bindViewModel
     func bindViewModel() {
         // MARK: - ViewModel Input
@@ -73,7 +76,6 @@ extension FeedViewController: LayoutProtocol {
         view.backgroundColor = .white
         navigationItem.titleView = titleImageView
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profileImageView)
-        navigationController?.navigationBar.isHidden = true
     }
     func addSubViews() {
         view.addSubview(feedTableView)

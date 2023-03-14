@@ -14,7 +14,7 @@ import RxDataSources
 
 
 
-class ProfileViewController: UIViewController, ViewModelBindable {
+final class ProfileViewController: UIViewController, ViewModelBindable {
     // MARK: - Properties
     
     var viewModel: ProfileViewModel!

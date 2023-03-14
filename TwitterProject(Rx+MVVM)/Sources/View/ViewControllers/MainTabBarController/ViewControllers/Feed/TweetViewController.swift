@@ -6,10 +6,12 @@
 //
 
 import UIKit
+
 import RxSwift
 import RxCocoa
 import RxViewController
 import SnapKit
+import SDWebImage
 
 final class TweetViewController: UIViewController, ViewModelBindable {
     // MARK: - viewModel, disposeBag
@@ -17,9 +19,7 @@ final class TweetViewController: UIViewController, ViewModelBindable {
     var disposeBag = DisposeBag()
     // MARK: - UI
     private lazy var headerView: TweetHeaderView = {
-        let tweetHeaderViewModel = TweetHeaderViewModel(tweet: viewModel.tweet)
-        let tweetHeaderView = TweetHeaderView(viewModel: tweetHeaderViewModel)
-        tweetHeaderView.bind()
+        let tweetHeaderView = TweetHeaderView()
         return tweetHeaderView
     }()
     private lazy var tableView: UITableView = {
@@ -38,27 +38,46 @@ final class TweetViewController: UIViewController, ViewModelBindable {
     // MARK: - bindViewModel
     func bindViewModel() {
         
-//        collectionView.rx.setDelegate(self)
-//            .disposed(by: disposeBag)
+        // MARK: - ViewModel Input
         rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
-//        viewModel.output.repliesForTweet
-//            .bind(to: collectionView.rx.items(cellIdentifier: tweetCellIdentifier, cellType: TweetCell.self)) { indexPath, tweet, cell in
-//                let tweetCellModel = TweetCellModel(tweet: tweet)
-//                cell.cellModel = tweetCellModel
-//                cell.bind(tweet: tweet)
-//            }
-//            .disposed(by: disposeBag)
+        headerView.retweetButton.rx.tap
+            .bind(to: viewModel.input.retweetButtonTapped)
+            .disposed(by: disposeBag)
+        headerView.likeButton.rx.tap
+            .bind(to: viewModel.input.likeButtonTapped)
+            .disposed(by: disposeBag)
+        // MARK: - viewModel Output
+        viewModel.output.profileImageUrl
+            .withUnretained(self)
+            .bind { tweetViewController, url in
+                tweetViewController.headerView.profileImageView.sd_setImage(with: url)
+            }
+            .disposed(by: disposeBag)
+        viewModel.output.userFullName
+            .bind(to: headerView.fullnameLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel.output.userName
+            .bind(to: headerView.usernameLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel.output.caption
+            .bind(to: headerView.captionLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel.output.date
+            .bind(to: headerView.dateLabel.rx.text)
+            .disposed(by: disposeBag)
+        viewModel.output.retweetCount
+            .bind(to: headerView.statsView.retweetsLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        viewModel.output.likesCount
+            .bind(to: headerView.statsView.likesLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        viewModel.output.likeButtonImage
+            .bind(to: headerView.likeButton.rx.image())
+            .disposed(by: disposeBag)
     }
 }
-
-//extension TweetViewController: UICollectionViewDelegateFlowLayout {
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        let cellHeight = viewModel.getCellHeightForReplies(forwidth: view.frame.width, indexPath: indexPath).height
-//        return CGSize(width: view.frame.width, height: cellHeight + 80)
-//    }
-//}
 
 // MARK: - LayoutProtocol
 extension TweetViewController: LayoutProtocol {
@@ -68,8 +87,7 @@ extension TweetViewController: LayoutProtocol {
     }
     func layout() {
         headerView.snp.makeConstraints { make in
-            make.top.left.right.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(viewModel.getCaptionHeight(forwidth: view.frame.width).height + 280)
+            make.top.left.right.equalToSuperview()
         }
         tableView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom)

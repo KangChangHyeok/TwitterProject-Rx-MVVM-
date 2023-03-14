@@ -61,10 +61,12 @@ final class TweetCellModel {
             .map { tweetCellModel, _ in
                 if TweetService.shared.likeTweet(tweet: tweetCellModel.tweet) {
                     tweetCellModel.tweet.didLike.toggle()
+                    tweetCellModel.tweet.likes += 1
                     let buttonImage = UIImage(named: "like_filled")
                     return buttonImage
                 } else {
                     tweetCellModel.tweet.didLike.toggle()
+                    tweetCellModel.tweet.likes -= 1
                     return UIImage(named: "like")
                 }
             }

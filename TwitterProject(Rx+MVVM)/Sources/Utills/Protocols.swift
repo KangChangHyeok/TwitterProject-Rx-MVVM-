@@ -48,3 +48,10 @@ extension Coordinator {
         return navigationController
     }
 }
+
+protocol FeedViewCoordinatorType: AnyObject {
+    func pushProfileViewController(user: User)
+    func pushTweetViewController(tweet: Tweet)
+    func presentReTweetViewController(tweet: Tweet)
+    
+}

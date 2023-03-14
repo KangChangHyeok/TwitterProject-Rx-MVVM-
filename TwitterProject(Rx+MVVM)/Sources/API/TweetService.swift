@@ -117,6 +117,15 @@ struct TweetService {
             }
         }
     }
+    func fetchTweetRx(withTweetId tweetId: String) -> Observable<Tweet> {
+        Observable.create { observer in
+            fetchTweet(withTweetID: tweetId) { tweet in
+                observer.onNext(tweet)
+                observer.onCompleted()
+            }
+            return Disposables.create()
+        }
+    }
     func fetchReplies(fortweet tweet: Tweet, completion: @escaping([Tweet]) -> Void) {
         var tweets = [Tweet]()
         tweetRepliesReference.child(tweet.tweetID).observe(.childAdded) { snapshot in
@@ -143,7 +152,7 @@ struct TweetService {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         // 좋아요 누른 상태인 경우 눌렀을때 좋아요 - 1, 안누른 상태일 경우 누르면 좋아요 + 1
         let likes = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
-        
+
         tweetsReference.child(tweet.tweetID).child("likes").setValue(likes)
         if tweet.didLike {
             // 유저가 해당 트윗에 이미 좋아요 눌렀을 경우
@@ -163,12 +172,15 @@ struct TweetService {
         }
     }
     func likeTweet(tweet: Tweet) -> Bool {
+        let currentLikesCount = tweet.didLike ? tweet.likes - 1 : tweet.likes + 1
         guard let currentUid = Auth.auth().currentUser?.uid else { return false }
         if tweet.didLike {
             tweetsReference.child("\(tweet.tweetID)").child("likesUser").child("\(currentUid)").removeValue()
+            tweetsReference.child(tweet.tweetID).child("likes").setValue(currentLikesCount)
             return false
         } else {
             tweetsReference.child("\(tweet.tweetID)").child("likesUser").updateChildValues(["\(currentUid)": 1])
+            tweetsReference.child(tweet.tweetID).child("likes").setValue(currentLikesCount)
             return true
         }
     }

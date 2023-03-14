@@ -11,12 +11,6 @@ import RxSwift
 import RxCocoa
 import SDWebImage
 
-protocol FeedViewCoordinatorType: AnyObject {
-    func pushProfileViewController(user: User)
-    func pushTweetViewController(tweet: Tweet)
-    func presentReTweetViewController(tweet: Tweet)
-}
-
 final class FeedViewModel: ViewModelType {
     // MARK: - Input
     struct Input {
