@@ -50,7 +50,6 @@ final class FeedViewController: UIViewController, ViewModelBindable {
         rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
-        
         // MARK: - ViewModel Output
         viewModel.output.userProfileImageUrl
             .withUnretained(self)
@@ -59,13 +58,13 @@ final class FeedViewController: UIViewController, ViewModelBindable {
             })
             .disposed(by: disposeBag)
 
-        viewModel.output.usersTweets
-            .bind(to: feedTableView.rx.items(cellIdentifier: tweetCellIdentifier, cellType: TweetCell.self)) { [weak self] row, tweet, cell in
-                guard let feedViewController = self else { return }
-                cell.bind(tweet: tweet, viewModel: feedViewController.viewModel)
+        viewModel.output.tweetCellModels
+            .bind(to: feedTableView.rx.items(cellIdentifier: tweetCellIdentifier, cellType: TweetCell.self)) { row, tweetCellModel, cell in
+                cell.bind(cellModel: tweetCellModel)
                 cell.layoutIfNeeded()
             }
             .disposed(by: disposeBag)
+        
     }
 }
 // MARK: - LayoutProtocol

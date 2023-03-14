@@ -28,7 +28,7 @@ final class FeedViewCoordinator: Coordinator {
     }
 }
 // MARK: - FeedViewModelDelegate
-extension FeedViewCoordinator: FeedViewModelDelegate {
+extension FeedViewCoordinator: FeedViewCoordinatorType {
     func pushProfileViewController(user: User) {
         let profileViewModel = ProfileViewModel(user: user)
         let profileViewController = ProfileViewController()
@@ -50,6 +50,9 @@ extension FeedViewCoordinator: FeedViewModelDelegate {
         let navigationController = UINavigationController(rootViewController: uploadTweetViewController)
         navigationController.modalPresentationStyle = .fullScreen
         self.navigationController?.present(navigationController, animated: true)
+    }
+    func cellaction() {
+        print("likeButtonTapped!!!!")
     }
 }
 extension FeedViewCoordinator: UploadTweetViewModelDelegate {

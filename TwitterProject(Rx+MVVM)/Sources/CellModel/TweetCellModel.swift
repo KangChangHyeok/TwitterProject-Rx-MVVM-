@@ -9,74 +9,67 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class TweetCellModel {
+final class TweetCellModel {
+    // MARK: - Input
     struct Input {
+        let cellProfileImageTapped = PublishRelay<Void>()
+        let itemSelected = PublishRelay<Void>()
+        let retweetButtonTapped = PublishRelay<Void>()
         let likeButtonTapped = PublishRelay<Void>()
     }
+    // MARK: - Output
     struct Output {
-        let userLikeForTweet: Driver<Bool>
-        let checkIfUserLikeTweet: Driver<Bool>
+        let likeButtonImage: Observable<UIImage?>
     }
+    // MARK: -
+    weak var coordinator: FeedViewCoordinatorType?
     let input = Input()
     lazy var output = transform(input: input)
-    
-    func transform(input: Input) -> Output {
-        let likeResult = input.likeButtonTapped
-            .flatMap { _ in
-                TweetService.shared.likeTweetRx(tweet: self.tweet)
-            }
-        let userLikeForTweet = likeResult
-            .map { bool in
-                self.tweet.didLike = bool
-                if bool {
-                    self.tweet.likes += 1
-                } else {
-                    self.tweet.likes -= 1
-                }
-                return bool
-            }.asDriver(onErrorDriveWith: .empty())
-        likeResult.subscribe(onNext: { result in
-            if result {
-                NotificationService.shared.uploadNotification(toUser: self.tweet.user, type: .like, tweetID: self.tweet.tweetID)
-            }
-        })
-        .disposed(by: disposeBag)
-        let checkIfUserLikeTweet = TweetService.shared.checkIfUserLiketTweetRx(tweet: self.tweet)
-            .map({ bool in
-                self.tweet.didLike = bool
-                return bool
-            })
-            .asDriver(onErrorDriveWith: .empty())
-        return Output(userLikeForTweet: userLikeForTweet,
-                      checkIfUserLikeTweet: checkIfUserLikeTweet)
-    }
     var disposeBag = DisposeBag()
+    
     var tweet: Tweet
     
-    var user: User {
-        return tweet.user
-    }
-    var captionLabelText: String {
-        return tweet.caption
-    }
-    var informationText: NSAttributedString {
-        let title = NSMutableAttributedString(string: tweet.user.fullName, attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
-        title.append(NSAttributedString(string: " @" + tweet.user.userName, attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
-        
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.second, .minute, .hour, .day, .weekOfMonth]
-        formatter.maximumUnitCount = 1
-        formatter.unitsStyle = .abbreviated
-        let now = Date()
-        guard let timeStamp = formatter.string(from: tweet.timestamp, to: now) else { return NSAttributedString() }
-        
-        title.append(NSAttributedString(string: " ・ " + timeStamp, attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
-        return title
-    }
-    var profileImageUrl: URL? {
-        return user.profileImageUrl
-    }
     init(tweet: Tweet) {
         self.tweet = tweet
     }
+    // MARK: - transform
+    func transform(input: Input) -> Output {
+        
+        input.cellProfileImageTapped
+            .withUnretained(self)
+            .subscribe(onNext: { tweetCellModel, _ in
+                tweetCellModel.coordinator?.pushProfileViewController(user: tweetCellModel.tweet.user)
+            })
+            .disposed(by: disposeBag)
+        
+        input.itemSelected
+            .withUnretained(self)
+            .subscribe(onNext: { tweetCellModel, _ in
+                tweetCellModel.coordinator?.pushTweetViewController(tweet: tweetCellModel.tweet)
+            })
+            .disposed(by: disposeBag)
+        
+        input.retweetButtonTapped
+            .withUnretained(self)
+            .subscribe(onNext: { tweetCellModel, _ in
+                tweetCellModel.coordinator?.presentReTweetViewController(tweet: tweetCellModel.tweet)
+            })
+            .disposed(by: disposeBag)
+        
+        let likeButtonImage = input.likeButtonTapped
+            .withUnretained(self)
+            .map { tweetCellModel, _ in
+                if TweetService.shared.likeTweet(tweet: tweetCellModel.tweet) {
+                    tweetCellModel.tweet.didLike.toggle()
+                    let buttonImage = UIImage(named: "like_filled")
+                    return buttonImage
+                } else {
+                    tweetCellModel.tweet.didLike.toggle()
+                    return UIImage(named: "like")
+                }
+            }
+        
+        return Output(likeButtonImage: likeButtonImage)
+    }
+    
 }

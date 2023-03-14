@@ -63,7 +63,7 @@ static NSString * _defaultDiskCacheDirectory;
 @property (nonatomic, strong, readwrite, nonnull) id<SDDiskCache> diskCache;
 @property (nonatomic, copy, readwrite, nonnull) SDImageCacheConfig *config;
 @property (nonatomic, copy, readwrite, nonnull) NSString *diskCachePath;
-@property (nonatomic, strong, nullable) dispatch_queue_t ioQueue;
+@property (nonatomic, strong, nonnull) dispatch_queue_t ioQueue;
 
 @end
 
@@ -118,7 +118,7 @@ static NSString * _defaultDiskCacheDirectory;
         
         // Create IO queue
         dispatch_queue_attr_t ioQueueAttributes = _config.ioQueueAttributes;
-        _ioQueue = dispatch_queue_create("com.hackemist.SDImageCache", ioQueueAttributes);
+        _ioQueue = dispatch_queue_create("com.hackemist.SDImageCache.ioQueue", ioQueueAttributes);
         NSAssert(_ioQueue, @"The IO queue should not be nil. Your configured `ioQueueAttributes` may be wrong");
         
         // Init the memory cache
@@ -419,6 +419,9 @@ static NSString * _defaultDiskCacheDirectory;
 }
 
 - (nullable UIImage *)imageFromDiskCacheForKey:(nullable NSString *)key options:(SDImageCacheOptions)options context:(nullable SDWebImageContext *)context {
+    if (!key) {
+        return nil;
+    }
     NSData *data = [self diskImageDataForKey:key];
     UIImage *diskImage = [self diskImageForKey:key data:data options:options context:context];
     
@@ -507,11 +510,10 @@ static NSString * _defaultDiskCacheDirectory;
 }
 
 - (nullable UIImage *)diskImageForKey:(nullable NSString *)key {
+    if (!key) {
+        return nil;
+    }
     NSData *data = [self diskImageDataForKey:key];
-    return [self diskImageForKey:key data:data];
-}
-
-- (nullable UIImage *)diskImageForKey:(nullable NSString *)key data:(nullable NSData *)data {
     return [self diskImageForKey:key data:data options:0 context:nil];
 }
 
@@ -525,7 +527,7 @@ static NSString * _defaultDiskCacheDirectory;
 }
 
 - (void)_unarchiveObjectWithImage:(UIImage *)image forKey:(NSString *)key {
-    if (!image) {
+    if (!image || !key) {
         return;
     }
     // Check extended data
@@ -725,7 +727,7 @@ static NSString * _defaultDiskCacheDirectory;
 }
 
 - (void)removeImageForKey:(nullable NSString *)key fromMemory:(BOOL)fromMemory fromDisk:(BOOL)fromDisk withCompletion:(nullable SDWebImageNoParamsBlock)completion {
-    if (key == nil) {
+    if (!key) {
         return;
     }
 

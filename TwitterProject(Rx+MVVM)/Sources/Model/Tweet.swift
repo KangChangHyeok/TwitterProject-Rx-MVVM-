@@ -7,6 +7,7 @@
 
 import Foundation
 import RxDataSources
+import FirebaseAuth
 
 struct Tweet {
     let caption: String
@@ -16,7 +17,14 @@ struct Tweet {
     var timestamp: Date!
     let retweetCount: Int
     let user: User
-    var didLike = false
+    var didLike: Bool
+    var likeButtonInitialImage: UIImage? {
+        if didLike {
+            return UIImage(named: "like_filled")
+        } else {
+            return UIImage(named: "like")
+        }
+    }
     var informationText: NSAttributedString {
         let title = NSMutableAttributedString(string: user.fullName, attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
         title.append(NSAttributedString(string: " @" + user.userName, attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
@@ -33,21 +41,29 @@ struct Tweet {
     }
     
     init(user: User, tweetID: String, dictionary: [String: Any]) {
-        
+        let currentUid = Auth.auth().currentUser?.uid
         self.tweetID = tweetID
         self.user = user
         self.caption = dictionary["caption"] as? String ?? ""
         self.uid = dictionary["uid"] as? String ?? ""
         self.likes = dictionary["likes"] as? Int ?? 0
         self.retweetCount = dictionary["retweets"] as? Int ?? 0
-        
         if let timestamp = dictionary["timestamp"] as? Double {
             self.timestamp = Date(timeIntervalSince1970: timestamp)
         }
+        
+        if let likesUser = dictionary["likesUser"] as? [String: Any] {
+            if likesUser.filter({ return $0.key == currentUid}).isEmpty {
+                self.didLike = false
+            } else {
+                self.didLike = true
+            }
+        } else {
+            self.didLike = false
+        }
+        print(didLike)
     }
 }
-
-
 
 struct Tweets {
     var items: [Item]

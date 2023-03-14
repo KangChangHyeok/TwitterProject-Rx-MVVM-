@@ -2549,7 +2549,7 @@ Fuller's blog&lt;/a&gt;
    limitations under the License.
 </string>
 			<key>License</key>
-			<string>Apache</string>
+			<string>Apache-2.0</string>
 			<key>Title</key>
 			<string>PromisesObjC</string>
 			<key>Type</key>
