@@ -51,8 +51,9 @@ class UploadTweetViewModel: ViewModelType {
     }
     // MARK: - transform
     func transform(input: Input) -> Output {
+        
         let userProfileImageUrl = input.viewWillAppear
-            .filter({ $0 == true })
+            .skip(1)
             .flatMap { _ in
                 UserService.shared.fetchUserRx()
             }
@@ -60,7 +61,7 @@ class UploadTweetViewModel: ViewModelType {
                 user.profileImageUrl
             }
         let buttonTitle = input.viewWillAppear
-            .filter({ $0 == true })
+            .skip(1)
             .withUnretained(self)
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
@@ -70,8 +71,9 @@ class UploadTweetViewModel: ViewModelType {
                     return "리트윗"
                 }
             }
+        
         let placeHolderText = input.viewWillAppear
-            .filter({ $0 == true })
+            .skip(1)
             .withUnretained(self)
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
@@ -81,13 +83,14 @@ class UploadTweetViewModel: ViewModelType {
                     return "리트윗을 남겨주세요!(최대 30자)"
                 }
             }
+        
         let captionTextViewPlaceHolderIsHidden = input.text
             .map { !$0.isEmpty }
         
         let replyLabelText = BehaviorSubject<String>(value: "")
         
         let replyLabelIsHidden = input.viewWillAppear
-            .filter({ $0 == true })
+            .skip(1)
             .withUnretained(self)
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
@@ -121,8 +124,6 @@ class UploadTweetViewModel: ViewModelType {
                 return String(string[..<index])
             }
             
-            
-        
         input.uploadTweetButtonTapped.withLatestFrom(input.text)
             .withUnretained(self)
             .flatMap { uploadTweetViewModel, caption in

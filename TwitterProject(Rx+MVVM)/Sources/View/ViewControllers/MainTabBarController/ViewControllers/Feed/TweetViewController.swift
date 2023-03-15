@@ -7,11 +7,14 @@
 
 import UIKit
 
+import SnapKit
+import SDWebImage
 import RxSwift
 import RxCocoa
 import RxViewController
-import SnapKit
-import SDWebImage
+import RxDataSources
+
+
 
 final class TweetViewController: UIViewController, ViewModelBindable {
     // MARK: - viewModel, disposeBag
@@ -19,12 +22,9 @@ final class TweetViewController: UIViewController, ViewModelBindable {
     var disposeBag = DisposeBag()
     // MARK: - UI
     private lazy var headerView = TweetHeaderView()
-    private lazy var tableView: UITableView = {
-        let tableView = UITableView(frame: .zero)
-        tableView.register(RetweetCell.self, forCellReuseIdentifier: retweetCellIdentifier)
-        tableView.separatorStyle = .none
-        tableView.rowHeight = UITableView.automaticDimension
-        return tableView
+    private lazy var retweetCollectionView: UICollectionView = {
+        let collectionView = UICollectionView(frame: .zero)
+        return collectionView
     }()
     // MARK: - viewDidLoad
     override func viewDidLoad() {
@@ -34,6 +34,13 @@ final class TweetViewController: UIViewController, ViewModelBindable {
     }
     // MARK: - bindViewModel
     func bindViewModel() {
+        let dataSource = RxCollectionViewSectionedReloadDataSource<Tweets> { dataSource, collectionView, indexPath, tweet in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: retweetCellIdentifier, for: indexPath) as! RetweetCell
+            cell.bind(tweet: tweet)
+        } configureSupplementaryView: { dataSource, collectionView, string, indexPath in
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: string, withReuseIdentifier: <#T##String#>, for: <#T##IndexPath#>)
+        }
+
         
         // MARK: - ViewModel Input
         rx.viewWillAppear
@@ -73,13 +80,7 @@ final class TweetViewController: UIViewController, ViewModelBindable {
         viewModel.output.likeButtonImage
             .bind(to: headerView.likeButton.rx.image())
             .disposed(by: disposeBag)
-        viewModel.output.repliesForTweet
-            .bind(to: tableView.rx.items(cellIdentifier: retweetCellIdentifier, cellType: RetweetCell.self)) {
-                row, tweet, cell in
-                cell.bind(tweet: tweet)
-                cell.layoutIfNeeded()
-            }
-            .disposed(by: disposeBag)
+        
     }
 }
 
@@ -87,14 +88,14 @@ final class TweetViewController: UIViewController, ViewModelBindable {
 extension TweetViewController: LayoutProtocol {
     func addSubViews() {
         view.addSubview(headerView)
-        view.addSubview(tableView)
+        view.addSubview(retweetCollectionView)
     }
     func layout() {
         headerView.snp.makeConstraints { make in
             make.top.left.right.equalToSuperview()
             make.height.equalTo(350)
         }
-        tableView.snp.makeConstraints { make in
+        retweetCollectionView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom)
             make.left.right.bottom.equalToSuperview()
         }

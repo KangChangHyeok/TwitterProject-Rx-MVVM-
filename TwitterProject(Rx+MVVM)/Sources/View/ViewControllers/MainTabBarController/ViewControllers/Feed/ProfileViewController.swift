@@ -40,8 +40,8 @@ final class ProfileViewController: UIViewController, ViewModelBindable {
     }
     // MARK: - bindViewModel
     func bindViewModel() {
-        // MARK: - viewModel Input
         profileHeaderView.bind(viewModel: viewModel)
+        // MARK: - viewModel Input
         rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)

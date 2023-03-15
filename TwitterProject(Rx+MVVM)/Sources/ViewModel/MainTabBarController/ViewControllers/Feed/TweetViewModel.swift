@@ -26,7 +26,7 @@ final class TweetViewModel: ViewModelType {
         let likeButtonImage: BehaviorRelay<UIImage?>
         let retweetCount: BehaviorRelay<NSAttributedString?>
         let likesCount: BehaviorRelay<NSAttributedString?>
-        let repliesForTweet: Observable<[Tweet]>
+        let repliesForTweet: Observable<[Tweets]>
     }
     // MARK: -
     weak var coordinator: FeedViewCoordinatorType?
@@ -35,7 +35,6 @@ final class TweetViewModel: ViewModelType {
     var disposeBag = DisposeBag()
     
     var tweet: Tweet
-    var repliesForTweet: [Tweet]?
     init(tweet: Tweet) {
         self.tweet = tweet
     }
@@ -129,8 +128,7 @@ final class TweetViewModel: ViewModelType {
             }
             .withUnretained(self)
             .map { tweetViewModel, replies in
-                tweetViewModel.repliesForTweet = replies
-                return replies
+                [Tweets(items: replies)]
             }
         
         return Output(profileImageUrl: profileImageUrl,
