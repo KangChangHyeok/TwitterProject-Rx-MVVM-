@@ -14,6 +14,8 @@ target 'TwitterProject(Rx+MVVM)' do
 	pod 'SDWebImage', '~> 5.0'
 	pod 'RxGesture'
   pod 'RxDataSources', '~> 5.0'
+  pod 'ActiveLabel'
+
   # Pods for TwitterProject(Rx+MVVM)
 
 end

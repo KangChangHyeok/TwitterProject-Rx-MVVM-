@@ -48,12 +48,14 @@ final class ProfileViewModel: ViewModelType {
         
         // 뷰가 화면에 뜨기 전에 cell에 넣어줄 유저들 트윗 가져오기
         let tweetsForUser = input.viewWillAppear
-            .map({ [weak self] _ in
-                return self?.user
-            })
+            .withUnretained(self)
+            .map { profileViewModel, _ in
+                profileViewModel.user
+            }
             .flatMap { user in
                 TweetService.shared.fetchTweetsRx(user: user)
             }
+            .debug("------")
         
         let followerUsersCount = PublishRelay<NSAttributedString>()
         

@@ -1,4 +1,5 @@
 PODS:
+  - ActiveLabel (1.1.0)
   - Differentiator (5.0.0)
   - FirebaseAppCheckInterop (10.6.0)
   - FirebaseAuth (10.6.0):
@@ -64,6 +65,7 @@ PODS:
   - SnapKit (5.6.0)
 
 DEPENDENCIES:
+  - ActiveLabel
   - FirebaseAuth
   - FirebaseDatabase
   - FirebaseStorage
@@ -77,6 +79,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - ActiveLabel
     - Differentiator
     - FirebaseAppCheckInterop
     - FirebaseAuth
@@ -100,6 +103,7 @@ SPEC REPOS:
     - SnapKit
 
 SPEC CHECKSUMS:
+  ActiveLabel: 5e3f4de79a1952d4604b845a0610d4776e4b82b3
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   FirebaseAppCheckInterop: 13e5394346a811e7158cc136c01f10e3302a3514
   FirebaseAuth: 743e5cd568af59d6d99a91ea9300843672515cf7
@@ -122,6 +126,6 @@ SPEC CHECKSUMS:
   SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 0b3053e6a63f8cb16016791ccf84986a918ad5ba
+PODFILE CHECKSUM: b0d96a7f46e6881bd8324972b50737d5f3dafd9b
 
 COCOAPODS: 1.11.3

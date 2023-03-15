@@ -18,6 +18,8 @@ struct Tweet {
     let retweetCount: Int
     let user: User
     var didLike: Bool
+    var replyingTo: String?
+    
     var likeButtonInitialImage: UIImage? {
         if didLike {
             return UIImage(named: "like_filled")
@@ -44,6 +46,10 @@ struct Tweet {
         title.append(NSAttributedString(string: " ・ " + timeStamp, attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
         return title
     }
+    var replyText: String? {
+        guard let replyingToUsername = self.replyingTo else { return nil }
+        return " replying to @\(replyingToUsername)"
+    }
     
     init(user: User, tweetID: String, dictionary: [String: Any]) {
         let currentUid = Auth.auth().currentUser?.uid
@@ -65,6 +71,9 @@ struct Tweet {
             }
         } else {
             self.didLike = false
+        }
+        if let replyingTo = dictionary["replyingTo"] as? String {
+            self.replyingTo = replyingTo
         }
     }
 }

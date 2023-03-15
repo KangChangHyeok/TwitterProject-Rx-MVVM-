@@ -26,6 +26,7 @@ final class TweetViewModel: ViewModelType {
         let likeButtonImage: BehaviorRelay<UIImage?>
         let retweetCount: BehaviorRelay<NSAttributedString?>
         let likesCount: BehaviorRelay<NSAttributedString?>
+        let repliesForTweet: Observable<[Tweet]>
     }
     // MARK: -
     weak var coordinator: FeedViewCoordinatorType?
@@ -102,12 +103,35 @@ final class TweetViewModel: ViewModelType {
         .bind(to: retweetCount)
         .disposed(by: disposeBag)
         
+        input.viewWillAppear
+            .withUnretained(self)
+            .flatMap { tweetViewModel, _ in
+                TweetService.shared.fetchRepliesRx(tweet: tweetViewModel.tweet)
+            }
+            .withUnretained(self)
+            .map { tweetViewModel, tweets in
+                return tweetViewModel.attributedText(withValue: tweets.count, text: "Retweets")
+            }
+            .bind(to: retweetCount)
+            .disposed(by: disposeBag)
+        
         input.retweetButtonTapped
             .withUnretained(self)
             .subscribe(onNext: { tweetViewModel, _ in
                 tweetViewModel.coordinator?.presentReTweetViewController(tweet: tweetViewModel.tweet)
             })
             .disposed(by: disposeBag)
+        
+       let repliesForTweet = input.viewWillAppear
+            .withUnretained(self)
+            .flatMap { tweetViewModel, _ in
+                TweetService.shared.fetchRepliesRx(tweet: tweetViewModel.tweet)
+            }
+            .withUnretained(self)
+            .map { tweetViewModel, replies in
+                tweetViewModel.repliesForTweet = replies
+                return replies
+            }
         
         return Output(profileImageUrl: profileImageUrl,
                       userFullName: userFullName,
@@ -116,7 +140,8 @@ final class TweetViewModel: ViewModelType {
                       date: date,
                       likeButtonImage: likeButtonImage,
                       retweetCount: retweetCount,
-                      likesCount: likesCount)
+                      likesCount: likesCount,
+                      repliesForTweet: repliesForTweet)
     }
     
     func getCaptionHeight(forwidth width: CGFloat) -> CGSize {

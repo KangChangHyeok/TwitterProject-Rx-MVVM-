@@ -21,7 +21,7 @@ final class TweetViewController: UIViewController, ViewModelBindable {
     private lazy var headerView = TweetHeaderView()
     private lazy var tableView: UITableView = {
         let tableView = UITableView(frame: .zero)
-        tableView.register(TweetCell.self, forCellReuseIdentifier: tweetCellIdentifier)
+        tableView.register(RetweetCell.self, forCellReuseIdentifier: retweetCellIdentifier)
         tableView.separatorStyle = .none
         tableView.rowHeight = UITableView.automaticDimension
         return tableView
@@ -73,6 +73,13 @@ final class TweetViewController: UIViewController, ViewModelBindable {
         viewModel.output.likeButtonImage
             .bind(to: headerView.likeButton.rx.image())
             .disposed(by: disposeBag)
+        viewModel.output.repliesForTweet
+            .bind(to: tableView.rx.items(cellIdentifier: retweetCellIdentifier, cellType: RetweetCell.self)) {
+                row, tweet, cell in
+                cell.bind(tweet: tweet)
+                cell.layoutIfNeeded()
+            }
+            .disposed(by: disposeBag)
     }
 }
 
@@ -85,6 +92,7 @@ extension TweetViewController: LayoutProtocol {
     func layout() {
         headerView.snp.makeConstraints { make in
             make.top.left.right.equalToSuperview()
+            make.height.equalTo(350)
         }
         tableView.snp.makeConstraints { make in
             make.top.equalTo(headerView.snp.bottom)
@@ -92,4 +100,3 @@ extension TweetViewController: LayoutProtocol {
         }
     }
 }
-

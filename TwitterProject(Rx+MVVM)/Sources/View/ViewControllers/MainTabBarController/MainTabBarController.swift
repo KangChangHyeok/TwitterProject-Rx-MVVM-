@@ -37,7 +37,7 @@ final class MainTabBarController: UITabBarController, ViewModelBindable {
     }
     // MARK: - bindViewModel
     func bindViewModel() {
-        viewModel.logUserOut()
+//        viewModel.logUserOut()
         // MARK: - viewModel Input
         rx.viewDidAppear
             .bind(to: viewModel.input.viewDidAppear)
