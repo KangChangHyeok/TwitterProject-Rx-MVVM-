@@ -29,7 +29,7 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
     }()
     private var cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Cancel", for: .normal)
+        button.setTitle("취소", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.titleLabel?.tintColor = .twitterBlue
         return button
@@ -38,9 +38,6 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
-        imageView.snp.makeConstraints { make in
-            make.size.equalTo(CGSize(width: 48, height: 48))
-        }
         imageView.layer.cornerRadius = 48 / 2
         imageView.backgroundColor = .twitterBlue
         return imageView
@@ -118,6 +115,10 @@ class UploadTweetViewController: UIViewController, ViewModelBindable {
         viewModel.output.replyLabelText
             .bind(to: replyLabel.rx.text)
             .disposed(by: disposeBag)
+        
+        viewModel.output.captionText
+            .bind(to: captionTextView.rx.text)
+            .disposed(by: disposeBag)
     }
 }
 // MARK: - LayoutProtocol
@@ -136,6 +137,9 @@ extension UploadTweetViewController: LayoutProtocol {
     func layout() {
         stackView.snp.makeConstraints { make in
             make.width.equalTo(stackViewWithReplyLabel.snp.width)
+        }
+        profileImageView.snp.makeConstraints { make in
+            make.size.equalTo(CGSize(width: 48, height: 48))
         }
         stackViewWithReplyLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(UIEdgeInsets(top: 16, left: 0, bottom: 0, right: 0))

@@ -143,27 +143,4 @@ final class TweetViewModel: ViewModelType {
                       likesCount: likesCount,
                       repliesForTweet: repliesForTweet)
     }
-    
-    func getCaptionHeight(forwidth width: CGFloat) -> CGSize {
-        let dummyLabel = UILabel()
-        dummyLabel.text = tweet.caption
-        dummyLabel.numberOfLines = 0
-        dummyLabel.lineBreakMode = .byWordWrapping
-        dummyLabel.translatesAutoresizingMaskIntoConstraints = false
-        dummyLabel.snp.makeConstraints { make in
-            make.width.equalTo(width)
-        }
-        return dummyLabel.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-    }
-    func getCellHeightForReplies(forwidth width: CGFloat, indexPath: IndexPath) -> CGSize {
-        let dummyLabel = UILabel()
-        dummyLabel.text = repliesForTweet?[indexPath.row].caption
-        dummyLabel.numberOfLines = 0
-        dummyLabel.lineBreakMode = .byWordWrapping
-        dummyLabel.translatesAutoresizingMaskIntoConstraints = false
-        dummyLabel.snp.makeConstraints { make in
-            make.width.equalTo(width)
-        }
-        return dummyLabel.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
-    }
 }

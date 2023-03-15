@@ -6,11 +6,11 @@
 //
 
 import UIKit
+
 import RxSwift
 import RxCocoa
 import SnapKit
 import RxViewController
-import RxDataSources
 
 final class ProfileViewController: UIViewController, ViewModelBindable {
     // MARK: - viewModel, disposeBag
@@ -40,27 +40,6 @@ final class ProfileViewController: UIViewController, ViewModelBindable {
     }
     // MARK: - bindViewModel
     func bindViewModel() {
-        
-//        let dataSource = RxCollectionViewSectionedReloadDataSource<Tweets> { dataSource, collectionView, indexPath, tweet in
-//            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! TweetCell
-//            let tweetCellModel = TweetCellModel(tweet: tweet)
-//            cell.bind(cellModel: tweetCellModel)
-//            return cell
-//        } configureSupplementaryView: { [weak self] dataSource, collectionView, kind , indexPath in
-//            let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: headerIdentifier, for: indexPath) as! ProfileHeaderView
-//            header.bindViewModel(viewModel: self?.viewModel)
-//            self?.viewModel.input.headerBindViewModel.accept(())
-//            return header
-//        }
-//        let dataSource = RxTableViewSectionedReloadDataSource<Tweets>(configureCell: { dataSource, tableView, indexPath, tweet in
-//            let cell = tableView.dequeueReusableCell(withIdentifier: tweetCellIdentifier, for: indexPath) as! RetweetCell
-//
-//            cell.bind(tweet: tweet)
-//            cell.layoutIfNeeded()
-//            return cell
-//        })
-//        viewModel.output.tweetsForUser
-//            .bind(to: tableView.rx.items(dataSource: dataSource))
         // MARK: - viewModel Input
         profileHeaderView.bind(viewModel: viewModel)
         rx.viewWillAppear

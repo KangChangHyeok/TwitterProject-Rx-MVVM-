@@ -16,9 +16,9 @@ final class ProfileFilterView: UIView {
     case likes
         var description: String {
             switch self {
-            case .tweets: return "Tweets"
-            case .replies: return "Tweets & Replies"
-            case .likes: return "Likes"
+            case .tweets: return "트윗"
+            case .replies: return "리트윗"
+            case .likes: return "좋아요 누른 트윗"
             }
         }
     }
@@ -57,6 +57,7 @@ final class ProfileFilterView: UIView {
             .asDriver(onErrorDriveWith: .empty())
             .drive(onNext: { profileFillterView, indexPath in
                 guard let profileFilterCell = profileFillterView.collectionView.cellForItem(at: indexPath) as? ProfileFilterCell else { return }
+                
                 let xPosition = profileFilterCell.frame.origin.x
                 UIView.animate(withDuration: 0.3) {
                     self.underlineView.frame.origin.x = xPosition

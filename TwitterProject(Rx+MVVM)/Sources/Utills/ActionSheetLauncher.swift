@@ -6,6 +6,7 @@
 //
 
 import UIKit
+
 import RxSwift
 import RxGesture
 class ActionSheetLauncher: NSObject {
@@ -64,7 +65,6 @@ class ActionSheetLauncher: NSObject {
             .disposed(by: disposeBag)
     }
     func show() {
-
         UIView.animate(withDuration: 0.5) {
             self.backgroundBackView.alpha = 1
             self.tableView.frame.origin.y -= 280

@@ -36,6 +36,7 @@ class UploadTweetViewModel: ViewModelType {
         let captionTextViewPlaceHolderIsHidden: Observable<Bool>
         let replyLabelIsHidden: Observable<Bool>
         let replyLabelText: BehaviorSubject<String>
+        let captionText: Observable<String>
     }
     // MARK: -
     weak var coordinator: UploadTweetViewModelDelegate?
@@ -64,9 +65,9 @@ class UploadTweetViewModel: ViewModelType {
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
                 case .tweet:
-                    return "Tweet"
+                    return "트윗"
                 case .reply(_):
-                    return "Reply"
+                    return "리트윗"
                 }
             }
         let placeHolderText = input.viewWillAppear
@@ -75,9 +76,9 @@ class UploadTweetViewModel: ViewModelType {
             .map { weakself, _ in
                 switch weakself.uploadTweetViewControllerType {
                 case .tweet:
-                    return "What's Happening?"
+                    return "트윗을 남겨주세요!(최대 30자)"
                 case .reply(_):
-                    return "Tweet your reply"
+                    return "리트윗을 남겨주세요!(최대 30자)"
                 }
             }
         let captionTextViewPlaceHolderIsHidden = input.text
@@ -111,6 +112,17 @@ class UploadTweetViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
 
+        let captionText = input.text
+            .filter { captionText in
+                return captionText.count >= 30
+            }
+            .map { string in
+                let index = string.index(string.startIndex, offsetBy: 30)
+                return String(string[..<index])
+            }
+            
+            
+        
         input.uploadTweetButtonTapped.withLatestFrom(input.text)
             .withUnretained(self)
             .flatMap { uploadTweetViewModel, caption in
@@ -132,6 +144,6 @@ class UploadTweetViewModel: ViewModelType {
                       placeHolderText: placeHolderText,
                       captionTextViewPlaceHolderIsHidden: captionTextViewPlaceHolderIsHidden,
                       replyLabelIsHidden: replyLabelIsHidden,
-                      replyLabelText: replyLabelText)
+                      replyLabelText: replyLabelText, captionText: captionText)
     }
 }
