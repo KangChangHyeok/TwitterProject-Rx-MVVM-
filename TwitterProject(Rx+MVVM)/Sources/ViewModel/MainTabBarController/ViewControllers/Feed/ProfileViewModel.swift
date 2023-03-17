@@ -18,10 +18,11 @@ final class ProfileViewModel: ViewModelType {
         let backButtonTappped = PublishRelay<Void>()
         let followButtonTapped = BehaviorRelay<Void>(value: ())
         let buttonTitle = PublishRelay<String>()
+        let itemSelected = PublishRelay<IndexPath>()
     }
     // MARK: - Output
     struct Output {
-        let tweetsForUser: Observable<[Tweet]>
+        let tweetsForUser: BehaviorRelay<[Tweet]>
         let buttonTitle: BehaviorRelay<String>
         let followerUsersCount: PublishRelay<NSAttributedString>
         let followingUsersCount: PublishRelay<NSAttributedString>
@@ -47,7 +48,9 @@ final class ProfileViewModel: ViewModelType {
             .disposed(by: disposeBag)
         
         // 뷰가 화면에 뜨기 전에 cell에 넣어줄 유저들 트윗 가져오기
-        let tweetsForUser = input.viewWillAppear
+        let tweetsForUser = BehaviorRelay<[Tweet]>(value: [])
+        
+        input.viewWillAppear
             .withUnretained(self)
             .map { profileViewModel, _ in
                 profileViewModel.user
@@ -55,7 +58,26 @@ final class ProfileViewModel: ViewModelType {
             .flatMap { user in
                 TweetService.shared.fetchTweetsRx(user: user)
             }
-            .debug("------")
+            .bind(to: tweetsForUser)
+            .disposed(by: disposeBag)
+        
+        input.itemSelected
+            .withUnretained(self)
+            .flatMap { profileViewModel, indexPath in
+                switch ProfileFilterOptions(rawValue: indexPath.row) {
+                case .tweets:
+                    return TweetService.shared.fetchTweetsRx(user: profileViewModel.user)
+                case .replies:
+                    return TweetService.shared.fetchRepliesRx(user: profileViewModel.user)
+                case .likes:
+                    return TweetService.shared.fetchLikesRx(user: profileViewModel.user)
+                case .none:
+                    return TweetService.shared.fetchTweetsRx(user: profileViewModel.user)
+                }
+            }
+            .debug("-----------")
+            .bind(to: tweetsForUser)
+            .disposed(by: disposeBag)
         
         let followerUsersCount = PublishRelay<NSAttributedString>()
         
@@ -165,6 +187,11 @@ final class ProfileViewModel: ViewModelType {
                 weakself.attributedText(withValue: followingUsersCount, text: "팔로잉")
             }
             .bind(to: followingUsersCount)
+            .disposed(by: disposeBag)
+        input.itemSelected
+            .bind { indexPath in
+                print(indexPath.row)
+            }
             .disposed(by: disposeBag)
         return Output(tweetsForUser: tweetsForUser,
                       buttonTitle: buttonTitle,

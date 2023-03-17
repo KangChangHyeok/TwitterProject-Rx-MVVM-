@@ -9,25 +9,31 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-final class ProfileFilterView: UIView {
-    enum ProfileFilterOptions: Int, CaseIterable {
-    case tweets
-    case replies
-    case likes
-        var description: String {
-            switch self {
-            case .tweets: return "트윗"
-            case .replies: return "리트윗"
-            case .likes: return "좋아요 누른 트윗"
-            }
+// MARK: - ProfileFilterOptions
+enum ProfileFilterOptions: Int, CaseIterable {
+case tweets
+case replies
+case likes
+    var description: String {
+        switch self {
+        case .tweets: return "트윗"
+        case .replies: return "리트윗"
+        case .likes: return "좋아요 누른 트윗"
         }
     }
-    // MARK: - disposeBag
-    var disposeBag = DisposeBag()
+}
+final class ProfileFilterView: UIView {
+    
+    // MARK: - UI
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .white
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: profileFilterCellIdentifier)
+        let selectedIndexPath = IndexPath(row: 0, section: 0)
+        collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
         return collectionView
     }()
     private let underlineView: UIView = {
@@ -35,22 +41,11 @@ final class ProfileFilterView: UIView {
         view.backgroundColor = .twitterBlue
         return view
     }()
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        bind()
-        collectionView.register(ProfileFilterCell.self, forCellWithReuseIdentifier: profileFilterCellIdentifier)
-        let selectedIndexPath = IndexPath(row: 0, section: 0)
-        collectionView.selectItem(at: selectedIndexPath, animated: true, scrollPosition: .left)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    func bind() {
-        collectionView.rx.setDelegate(self)
-            .disposed(by: disposeBag)
-        collectionView.rx.setDataSource(self)
+    // MARK: - bind
+    func bind(viewModel profileViewModel: ProfileViewModel, disposeBag: DisposeBag) {
+        
+        collectionView.rx.itemSelected
+            .bind(to: profileViewModel.input.itemSelected)
             .disposed(by: disposeBag)
         collectionView.rx.itemSelected
             .withUnretained(self)
@@ -66,7 +61,6 @@ final class ProfileFilterView: UIView {
             .disposed(by: disposeBag)
     }
     // MARK: - layoutSubviews
-
     override func layoutSubviews() {
         addSubViews()
         layout()

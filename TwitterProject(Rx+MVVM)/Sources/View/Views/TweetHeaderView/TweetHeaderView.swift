@@ -8,6 +8,7 @@
 import UIKit
 
 import SnapKit
+import RxSwift
 
 final class TweetHeaderView: UIView {
     // MARK: - UI
@@ -92,6 +93,43 @@ final class TweetHeaderView: UIView {
         setValue()
         addSubViews()
         layout()
+    }
+    func bind(viewModel tweetViewModel: TweetViewModel, disposeBag: DisposeBag) {
+        // MARK: - viewModel Input
+        retweetButton.rx.tap
+            .bind(to: tweetViewModel.input.retweetButtonTapped)
+            .disposed(by: disposeBag)
+        likeButton.rx.tap
+            .bind(to: tweetViewModel.input.likeButtonTapped)
+            .disposed(by: disposeBag)
+        
+        tweetViewModel.output.profileImageUrl
+            .withUnretained(self)
+            .bind { tweetViewController, url in
+                tweetViewController.profileImageView.sd_setImage(with: url)
+            }
+            .disposed(by: disposeBag)
+        tweetViewModel.output.userFullName
+            .bind(to: fullnameLabel.rx.text)
+            .disposed(by: disposeBag)
+        tweetViewModel.output.userName
+            .bind(to: usernameLabel.rx.text)
+            .disposed(by: disposeBag)
+        tweetViewModel.output.caption
+            .bind(to: captionLabel.rx.text)
+            .disposed(by: disposeBag)
+        tweetViewModel.output.date
+            .bind(to: dateLabel.rx.text)
+            .disposed(by: disposeBag)
+        tweetViewModel.output.retweetCount
+            .bind(to: statsView.retweetsLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        tweetViewModel.output.likesCount
+            .bind(to: statsView.likesLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        tweetViewModel.output.likeButtonImage
+            .bind(to: likeButton.rx.image())
+            .disposed(by: disposeBag)
     }
 }
 extension TweetHeaderView: LayoutProtocol {

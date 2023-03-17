@@ -10,7 +10,7 @@ import UIKit
 import SDWebImage
 import ActiveLabel
 
-final class RetweetCell: UICollectionViewCell {
+final class RetweetCell: UITableViewCell {
     // MARK: - UI
     private let replyLabel: ActiveLabel = {
         let label = ActiveLabel()

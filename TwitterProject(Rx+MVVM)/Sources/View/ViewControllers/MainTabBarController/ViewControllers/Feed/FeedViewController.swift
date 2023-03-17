@@ -44,6 +44,7 @@ final class FeedViewController: UIViewController, ViewModelBindable {
         addSubViews()
         layout()
     }
+    // MARK: - viewDidLayoutSubviews
     override func viewDidLayoutSubviews() {
         navigationController?.navigationBar.isHidden = false
     }
@@ -60,7 +61,6 @@ final class FeedViewController: UIViewController, ViewModelBindable {
                 feedViewController.profileImageView.sd_setImage(with: url)
             })
             .disposed(by: disposeBag)
-
         viewModel.output.tweetCellModels
             .bind(to: feedTableView.rx.items(cellIdentifier: tweetCellIdentifier, cellType: TweetCell.self)) { row, tweetCellModel, cell in
                 cell.bind(cellModel: tweetCellModel)

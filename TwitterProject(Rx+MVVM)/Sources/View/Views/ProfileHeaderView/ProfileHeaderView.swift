@@ -11,8 +11,6 @@ import RxCocoa
 import RxSwift
 
 final class ProfileHeaderView: UIView {
-    // MARK: - didposeBag
-    var disposeBag = DisposeBag()
     // MARK: - UI
     private lazy var containerView: UIView = {
         let view = UIView()
@@ -93,28 +91,29 @@ final class ProfileHeaderView: UIView {
         addSubViews()
         layout()
     }
-    func bind(viewModel: ProfileViewModel) {
-        profileImageView.sd_setImage(with: viewModel.user.profileImageUrl)
-        fullNameLabel.text = viewModel.user.fullName
-        userNameLabel.text = viewModel.user.userName
+    func bind(viewModel profileViewModel: ProfileViewModel, disposeBag: DisposeBag) {
+        filterBar.bind(viewModel: profileViewModel, disposeBag: disposeBag)
+        profileImageView.sd_setImage(with: profileViewModel.user.profileImageUrl)
+        fullNameLabel.text = profileViewModel.user.fullName
+        userNameLabel.text = profileViewModel.user.userName
         editProfileFollowButton.rx.tap
-            .bind(to: viewModel.input.followButtonTapped)
+            .bind(to: profileViewModel.input.followButtonTapped)
             .disposed(by: disposeBag)
         // MARK: - viewModel Input
         backButton.rx.tap
-            .bind(to: viewModel.input.backButtonTappped)
+            .bind(to: profileViewModel.input.backButtonTappped)
             .disposed(by: disposeBag)
         // MARK: - viewModel output
-        viewModel.output.buttonTitle
+        profileViewModel.output.buttonTitle
             .bind(to: editProfileFollowButton.rx.title())
             .disposed(by: disposeBag)
-        viewModel.output.buttonTitle
-            .bind(to: viewModel.input.buttonTitle)
+        profileViewModel.output.buttonTitle
+            .bind(to: profileViewModel.input.buttonTitle)
             .disposed(by: disposeBag)
-        viewModel.output.followerUsersCount
+        profileViewModel.output.followerUsersCount
             .bind(to: followersLabel.rx.attributedText)
             .disposed(by: disposeBag)
-        viewModel.output.followingUsersCount
+        profileViewModel.output.followingUsersCount
             .bind(to: followingLabel.rx.attributedText)
             .disposed(by: disposeBag)
     }

@@ -19,6 +19,7 @@ let userReference = dataBaseReference.child("users")
 let tweetsReference = dataBaseReference.child("tweets")
 
 let tweetRepliesReference = dataBaseReference.child("tweet-replies")
+let tweetLikesReference = dataBaseReference.child("tweet-likes")
 
 let userTweetsReference = dataBaseReference.child("user-tweets")
 let userRepliesReference = dataBaseReference.child("user-replies")

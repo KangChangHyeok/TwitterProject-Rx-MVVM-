@@ -26,7 +26,7 @@ final class TweetViewModel: ViewModelType {
         let likeButtonImage: BehaviorRelay<UIImage?>
         let retweetCount: BehaviorRelay<NSAttributedString?>
         let likesCount: BehaviorRelay<NSAttributedString?>
-        let repliesForTweet: Observable<[Tweets]>
+        let repliesForTweet: Observable<[Tweet]>
     }
     // MARK: -
     weak var coordinator: FeedViewCoordinatorType?
@@ -125,10 +125,6 @@ final class TweetViewModel: ViewModelType {
             .withUnretained(self)
             .flatMap { tweetViewModel, _ in
                 TweetService.shared.fetchRepliesRx(tweet: tweetViewModel.tweet)
-            }
-            .withUnretained(self)
-            .map { tweetViewModel, replies in
-                [Tweets(items: replies)]
             }
         
         return Output(profileImageUrl: profileImageUrl,

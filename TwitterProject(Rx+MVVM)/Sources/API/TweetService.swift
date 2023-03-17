@@ -113,6 +113,58 @@ struct TweetService {
             return Disposables.create()
         }
     }
+    // MARK: - 해당 유저가 좋아요 한 트윗만 가져오기
+    func fetchLikes(forUser user: User, completion: @escaping([Tweet]) -> Void) {
+        var tweets = [Tweet]()
+        userLikesReference.child(user.uid).observe(.childAdded) { snapshot in
+            let tweetID = snapshot.key
+            self.fetchTweet(withTweetID: tweetID) { likedTweet in
+                var tweet = likedTweet
+//                tweet.didLike = true
+                tweets.append(tweet)
+                completion(tweets)
+            }
+        }
+    }
+    // MARK: - rx
+    func fetchLikesRx(user: User) -> Observable<[Tweet]> {
+        Observable.create { observer in
+            fetchLikes(forUser: user) { tweets in
+                observer.onNext(tweets)
+            }
+            return Disposables.create()
+        }
+    }
+    // MARK: - 해당 유저의 리트윗 가져오기
+    func fetchReplies(forUser user: User, completion: @escaping([Tweet]) -> Void) {
+        var replies = [Tweet]()
+        
+        userRepliesReference.child(user.uid).observe(.childAdded) { snapshot in
+            let tweetKey = snapshot.key
+            guard let replyKey = snapshot.value as? String else { return }
+            tweetRepliesReference.child(tweetKey).child(replyKey).observeSingleEvent(of: .value) { snapshot in
+                guard let dictionary = snapshot.value as? [String: Any] else { return }
+                guard let uid = dictionary["uid"] as? String else { return }
+                let replyID = snapshot.key
+                
+                UserService.shared.fetchUser(uid: uid) { user in
+                    let reply = Tweet(user: user, tweetID: replyID, dictionary: dictionary)
+                    replies.append(reply)
+                    completion(replies)
+                }
+            }
+        }
+    }
+    // MARK: - rx
+    func fetchRepliesRx(user: User) -> Observable<[Tweet]> {
+        Observable.create { observer in
+            fetchReplies(forUser: user) { tweets in
+                observer.onNext(tweets)
+            }
+            return Disposables.create()
+        }
+    }
+    
     // MARK: - 특정 트윗 정보 가져오기
     func fetchTweet(withTweetID tweetID: String, completion: @escaping(Tweet) -> Void) {
         tweetsReference.child(tweetID).observeSingleEvent(of: .value) { snapshot in
@@ -164,10 +216,16 @@ struct TweetService {
         if tweet.didLike {
             tweetsReference.child("\(tweet.tweetID)").child("likesUser").child("\(currentUid)").removeValue()
             tweetsReference.child(tweet.tweetID).child("likes").setValue(currentLikesCount)
+            userLikesReference.child(currentUid).child(tweet.tweetID).removeValue { _, _ in
+                tweetLikesReference.child(tweet.tweetID).removeValue()
+            }
             return false
         } else {
             tweetsReference.child("\(tweet.tweetID)").child("likesUser").updateChildValues(["\(currentUid)": 1])
             tweetsReference.child(tweet.tweetID).child("likes").setValue(currentLikesCount)
+            userLikesReference.child(currentUid).updateChildValues([tweet.tweetID: 0]) { _, _ in
+                tweetLikesReference.child(tweet.tweetID).updateChildValues([currentUid: 1])
+            }
             return true
         }
     }
@@ -175,9 +233,7 @@ struct TweetService {
         tweetsReference.child(tweet.tweetID).getData { error, snapshot in
             guard let dictionary = snapshot?.value as? [String:Any] else { return }
             guard let value = dictionary[tweet.tweetID] as? [String:Any] else { return }
-            print(value)
             guard let likes = value["likes"] as? Int else { return }
-            print(likes)
             completion(likes)
         }
     }
