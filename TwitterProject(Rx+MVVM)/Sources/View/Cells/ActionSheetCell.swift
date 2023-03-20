@@ -23,8 +23,17 @@ class ActionSheetCell: UITableViewCell {
     }()
     // MARK: - Lifecycle
     override func layoutSubviews() {
+        addSubViews()
+        layout()
+    }
+}
+
+extension ActionSheetCell: LayoutProtocol {
+    func addSubViews() {
         addSubview(optionImageView)
         addSubview(titleLabel)
+    }
+    func layout() {
         optionImageView.snp.makeConstraints { make in
             make.centerY.equalTo(self)
             make.left.equalTo(self.snp.left).offset(8)

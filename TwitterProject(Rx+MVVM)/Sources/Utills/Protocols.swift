@@ -49,9 +49,8 @@ extension Coordinator {
     }
 }
 
-protocol FeedViewCoordinatorType: AnyObject {
+protocol FeedViewModelDelegate: AnyObject {
     func pushProfileViewController(user: User)
     func pushTweetViewController(tweet: Tweet)
     func presentReTweetViewController(tweet: Tweet)
-    func popProfileViewController()
 }

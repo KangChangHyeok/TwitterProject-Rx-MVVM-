@@ -11,6 +11,10 @@ import FirebaseAuth
 import RxSwift
 import RxCocoa
 
+protocol ProfileViewModelDelegate: AnyObject {
+    func popProfileViewController()
+}
+
 final class ProfileViewModel: ViewModelType {
     // MARK: - Input
     struct Input {
@@ -28,7 +32,7 @@ final class ProfileViewModel: ViewModelType {
         let followingUsersCount: PublishRelay<NSAttributedString>
     }
     // MARK: -
-    weak var coordinator: FeedViewCoordinatorType?
+    weak var coordinator: ProfileViewModelDelegate?
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
@@ -52,16 +56,13 @@ final class ProfileViewModel: ViewModelType {
         
         input.viewWillAppear
             .withUnretained(self)
-            .map { profileViewModel, _ in
-                profileViewModel.user
-            }
-            .flatMap { user in
-                TweetService.shared.fetchTweetsRx(user: user)
+            .flatMap { profileViewModel, user in
+                TweetService.shared.fetchTweetsRx(user: profileViewModel.user)
             }
             .bind(to: tweetsForUser)
             .disposed(by: disposeBag)
         
-        input.itemSelected
+       input.itemSelected
             .withUnretained(self)
             .flatMap { profileViewModel, indexPath in
                 switch ProfileFilterOptions(rawValue: indexPath.row) {
@@ -72,10 +73,9 @@ final class ProfileViewModel: ViewModelType {
                 case .likes:
                     return TweetService.shared.fetchLikesRx(user: profileViewModel.user)
                 case .none:
-                    return TweetService.shared.fetchTweetsRx(user: profileViewModel.user)
+                    return Observable.just([])
                 }
             }
-            .debug("-----------")
             .bind(to: tweetsForUser)
             .disposed(by: disposeBag)
         

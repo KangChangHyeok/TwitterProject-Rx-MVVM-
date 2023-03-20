@@ -22,7 +22,7 @@ final class TweetCellModel {
         let likeButtonImage: Observable<UIImage?>
     }
     // MARK: -
-    weak var coordinator: FeedViewCoordinatorType?
+    weak var coordinator: FeedViewModelDelegate?
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()

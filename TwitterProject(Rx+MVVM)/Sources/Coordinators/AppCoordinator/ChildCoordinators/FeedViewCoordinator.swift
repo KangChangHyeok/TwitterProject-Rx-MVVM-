@@ -28,13 +28,12 @@ final class FeedViewCoordinator: Coordinator {
     }
 }
 // MARK: - FeedViewModelDelegate
-extension FeedViewCoordinator: FeedViewCoordinatorType {
+extension FeedViewCoordinator: FeedViewModelDelegate {
     func pushProfileViewController(user: User) {
-        let profileViewModel = ProfileViewModel(user: user)
-        profileViewModel.coordinator = self
-        let profileViewController = ProfileViewController()
-        profileViewController.bind(viewModel: profileViewModel)
-        self.navigationController?.pushViewController(profileViewController, animated: true)
+        let profileViewCoordinator = ProfileViewCoordinator(navigationController: navigationController, user: user)
+        profileViewCoordinator.start()
+        profileViewCoordinator.parentCoordinator = self
+        childCoordinators.append(profileViewCoordinator)
     }
     func pushTweetViewController(tweet: Tweet) {
         let tweetViewModel = TweetViewModel(tweet: tweet)
@@ -53,12 +52,16 @@ extension FeedViewCoordinator: FeedViewCoordinatorType {
         navigationController.modalPresentationStyle = .fullScreen
         self.navigationController?.present(navigationController, animated: true)
     }
-    func popProfileViewController() {
-        self.navigationController?.popViewController(animated: true)
-    }
 }
+// MARK: - UploadTweetViewModelDelegate
 extension FeedViewCoordinator: UploadTweetViewModelDelegate {
     func dismissRetweetViewController() {
         self.navigationController?.dismiss(animated: true)
+    }
+}
+// MARK: - ProfileViewCoordinatorDelegate
+extension FeedViewCoordinator: ProfileViewCoordinatorDelegate {
+    func coordinatorDidFinished(coordinator: Coordinator) {
+        self.childCoordinators = self.childCoordinators.filter({ $0 !== coordinator })
     }
 }

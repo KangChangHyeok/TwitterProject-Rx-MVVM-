@@ -119,9 +119,7 @@ struct TweetService {
         userLikesReference.child(user.uid).observe(.childAdded) { snapshot in
             let tweetID = snapshot.key
             self.fetchTweet(withTweetID: tweetID) { likedTweet in
-                var tweet = likedTweet
-//                tweet.didLike = true
-                tweets.append(tweet)
+                tweets.append(likedTweet)
                 completion(tweets)
             }
         }

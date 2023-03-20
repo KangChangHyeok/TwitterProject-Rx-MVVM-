@@ -52,7 +52,7 @@ struct UserService {
             return Disposables.create()
         }
     }
-    
+    // MARK: - 모든 유저 정보 가져오기
     func fetchUsers(completion: @escaping([User]) -> Void) {
         var users = [User]()
         userReference.observe(.childAdded) { snapshot in
@@ -63,7 +63,7 @@ struct UserService {
             completion(users)
         }
     }
-    
+    // MARK: - rx
     func fetchUsersRx() -> Observable<[User]> {
         Observable.create { observer in
             fetchUsers { users in

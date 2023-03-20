@@ -12,7 +12,7 @@ import RxCocoa
 import RxViewController
 import SDWebImage
 
-class UploadTweetViewController: UIViewController, ViewModelBindable {
+final class UploadTweetViewController: UIViewController, ViewModelBindable {
     // MARK: - viewModel, DisposeBag
     var viewModel: UploadTweetViewModel!
     var disposeBag = DisposeBag()

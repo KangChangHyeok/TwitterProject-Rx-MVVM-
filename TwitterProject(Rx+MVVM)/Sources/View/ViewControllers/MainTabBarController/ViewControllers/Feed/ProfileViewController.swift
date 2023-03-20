@@ -26,7 +26,7 @@ final class ProfileViewController: UIViewController, ViewModelBindable {
         tableView.register(RetweetCell.self, forCellReuseIdentifier: retweetCellIdentifier)
         tableView.backgroundColor = .systemBackground
         tableView.contentInsetAdjustmentBehavior = .never
-        tableView.isHidden = false
+        tableView.separatorStyle = .none
         return tableView
     }()
     // MARK: - viewDidLoad
@@ -48,7 +48,7 @@ final class ProfileViewController: UIViewController, ViewModelBindable {
         // MARK: - viewModel Output
         viewModel.output.tweetsForUser
             .bind(to: tableView.rx.items(cellIdentifier: retweetCellIdentifier, cellType: RetweetCell.self)) {
-                row, tweet, cell in
+                 row, tweet, cell in
                 cell.bind(tweet: tweet)
                 cell.layoutIfNeeded()
             }

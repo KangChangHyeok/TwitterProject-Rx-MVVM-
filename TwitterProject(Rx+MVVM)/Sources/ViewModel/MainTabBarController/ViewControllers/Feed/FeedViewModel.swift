@@ -22,7 +22,7 @@ final class FeedViewModel: ViewModelType {
         let tweetCellModels: Observable<[TweetCellModel]>
     }
     // MARK: -
-    weak var coordinator: FeedViewCoordinatorType?
+    weak var coordinator: FeedViewModelDelegate?
     let input = Input()
     lazy var output = transform(input: input)
     var disposeBag = DisposeBag()
