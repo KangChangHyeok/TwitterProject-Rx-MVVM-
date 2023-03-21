@@ -9,23 +9,29 @@ import Foundation
 import RxSwift
 import RxCocoa
 
+protocol LoginViewControllerDelegate: AnyObject {
+    func dismissLoginViewController()
+    func showFailToastMeessageView()
+    func showRegisterViewController()
+}
 
-class LoginViewModel: ViewModelType {
-    
-    var disposeBag = DisposeBag()
-    
+final class LoginViewModel: ViewModelType {
+    // MARK: - Input
     struct Input {
-        let email = BehaviorRelay(value: String())
-        let password = BehaviorRelay(value: String())
+        let email = PublishRelay<String>()
+        let password = PublishRelay<String>()
         let loginButtonTapped = PublishRelay<Void>()
+        let signUpButtonTapped = PublishRelay<Void>()
     }
+    // MARK: - Output
     struct Output {
-        let successLogin: Driver<Void>
-        let failureLogin: Driver<Void>
     }
+    // MARK: -
+    weak var coordinator: LoginViewControllerDelegate?
     let input = Input()
     lazy var output = transform(input: input)
-    
+    var disposeBag = DisposeBag()
+    // MARK: - transform
     func transform(input: Input) -> Output {
         let loginResult = input.loginButtonTapped
             .withLatestFrom(Observable.combineLatest (input.email, input.password))
@@ -33,19 +39,28 @@ class LoginViewModel: ViewModelType {
                 AuthService.shared.logInUser(email: email, password: password)
             }.share()
         
+        loginResult
+            .filter { $0 == true }
+            .asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] _ in
+                self?.coordinator?.dismissLoginViewController()
+            })
+            .disposed(by: disposeBag)
         
-        let successLogin = loginResult
-            .filter { $0 == true}
-            .map { _ in
-                ()
-            }
-            .asDriver(onErrorDriveWith: .empty())
-        let failureLogin = loginResult
+        loginResult
             .filter { $0 == false }
-            .map { _ in
-                ()
-            }
             .asDriver(onErrorDriveWith: .empty())
-        return Output(successLogin: successLogin, failureLogin: failureLogin)
+            .drive(onNext: { [weak self] _ in
+                self?.coordinator?.showFailToastMeessageView()
+            })
+            .disposed(by: disposeBag)
+        
+        input.signUpButtonTapped.asDriver(onErrorDriveWith: .empty())
+            .drive(onNext: { [weak self] _ in
+                self?.coordinator?.showRegisterViewController()
+            })
+            .disposed(by: disposeBag)
+        
+        return Output()
     }
 }

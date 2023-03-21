@@ -16,14 +16,14 @@ open class RxCollectionViewDelegateProxy
     : RxScrollViewDelegateProxy {
 
     /// Typed parent object.
-    public weak private(set) var collectionView: UICollectionView?
+    public weak private(set) var feedTableView: UICollectionView?
 
     /// Initializes `RxCollectionViewDelegateProxy`
     ///
     /// - parameter collectionView: Parent object for delegate proxy.
-    public init(collectionView: UICollectionView) {
-        self.collectionView = collectionView
-        super.init(scrollView: collectionView)
+    public init(feedTableView: UICollectionView) {
+        self.feedTableView = feedTableView
+        super.init(scrollView: feedTableView)
     }
 }
 

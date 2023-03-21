@@ -7,11 +7,9 @@
 
 import UIKit
 
-class UserCell: UITableViewCell {
-    
-    var cellModel: UserCellModel!
-    
-    lazy var profileImageView: UIImageView = {
+final class UserCell: UITableViewCell {
+    // MARK: - UI
+    private lazy var profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -19,7 +17,6 @@ class UserCell: UITableViewCell {
         imageView.backgroundColor = .twitterBlue
         return imageView
     }()
-    
     private let userNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 14)
@@ -27,7 +24,6 @@ class UserCell: UITableViewCell {
         label.numberOfLines = 0
         return label
     }()
-    
     private let fullNameLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
@@ -35,43 +31,40 @@ class UserCell: UITableViewCell {
         label.text = "fullName"
         return label
     }()
-    
     private lazy var stackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [userNameLabel, fullNameLabel])
         stackView.axis = .vertical
         stackView.spacing = 2
         return stackView
     }()
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     override func layoutSubviews() {
+        setValue()
+        addSubViews()
+        layout()
+    }
+    func bind(user: User) {
+        profileImageView.sd_setImage(with: user.profileImageUrl)
+        userNameLabel.text = user.userName
+        fullNameLabel.text = user.fullName
+    }
+}
+extension UserCell: LayoutProtocol {
+    func setValue() {
         backgroundColor = .systemBackground
-        
+    }
+    func addSubViews() {
         addSubview(profileImageView)
+        addSubview(stackView)
+    }
+    func layout() {
         profileImageView.snp.makeConstraints { make in
             make.size.equalTo(CGSize(width: 40, height: 40))
             make.centerY.equalToSuperview()
             make.left.equalToSuperview().offset(12)
         }
-        addSubview(stackView)
         stackView.snp.makeConstraints { make in
             make.centerY.equalTo(profileImageView.snp.centerY)
             make.left.equalTo(profileImageView.snp.right).offset(12)
         }
     }
-    
-    func bind() {
-        
-        profileImageView.sd_setImage(with: cellModel.user.profileImageUrl)
-        userNameLabel.text = cellModel.user.userName
-        fullNameLabel.text = cellModel.user.fullName
-    }
-    
 }

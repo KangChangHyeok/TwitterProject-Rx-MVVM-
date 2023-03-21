@@ -10,11 +10,8 @@ import SDWebImage
 import RxCocoa
 import RxSwift
 
-class ProfileHeaderView: UIView {
-    // MARK: - properties
-
-    var disposeBag = DisposeBag()
-
+final class ProfileHeaderView: UIView {
+    // MARK: - UI
     private lazy var containerView: UIView = {
         let view = UIView()
         view.backgroundColor = .twitterBlue
@@ -88,16 +85,45 @@ class ProfileHeaderView: UIView {
     }()
     let filterBar = ProfileFilterView()
     
-    // MARK: - Override
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
+    // MARK: - layoutSubviews
     override func layoutSubviews() {
+        setValue()
+        addSubViews()
+        layout()
+    }
+    func bind(viewModel profileViewModel: ProfileViewModel, disposeBag: DisposeBag) {
+        filterBar.bind(viewModel: profileViewModel, disposeBag: disposeBag)
+        profileImageView.sd_setImage(with: profileViewModel.user.profileImageUrl)
+        fullNameLabel.text = profileViewModel.user.fullName
+        userNameLabel.text = profileViewModel.user.userName
+        editProfileFollowButton.rx.tap
+            .bind(to: profileViewModel.input.followButtonTapped)
+            .disposed(by: disposeBag)
+        // MARK: - viewModel Input
+        backButton.rx.tap
+            .bind(to: profileViewModel.input.backButtonTappped)
+            .disposed(by: disposeBag)
+        // MARK: - viewModel output
+        profileViewModel.output.buttonTitle
+            .bind(to: editProfileFollowButton.rx.title())
+            .disposed(by: disposeBag)
+        profileViewModel.output.buttonTitle
+            .bind(to: profileViewModel.input.buttonTitle)
+            .disposed(by: disposeBag)
+        profileViewModel.output.followerUsersCount
+            .bind(to: followersLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+        profileViewModel.output.followingUsersCount
+            .bind(to: followingLabel.rx.attributedText)
+            .disposed(by: disposeBag)
+    }
+}
+
+extension ProfileHeaderView: LayoutProtocol {
+    func setValue() {
         backgroundColor = .systemBackground
+    }
+    func addSubViews() {
         addSubview(containerView)
         containerView.addSubview(backButton)
         addSubview(editProfileFollowButton)
@@ -105,7 +131,8 @@ class ProfileHeaderView: UIView {
         addSubview(userDetailsStackView)
         addSubview(followStack)
         addSubview(filterBar)
-        
+    }
+    func layout() {
         containerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.height.equalTo(108)
@@ -136,35 +163,5 @@ class ProfileHeaderView: UIView {
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(52)
         }
-    }
-    func bind(viewModel: ProfileViewModel) {
-    
-        backButton.rx.tap.asDriver()
-            .drive(onNext: { [weak self] _ in
-                let profileViewController = self?.superViewController as? ProfileViewController
-                profileViewController?.navigationController?.popViewController(animated: true)
-            })
-            .disposed(by: disposeBag)
-        editProfileFollowButton.rx.tap
-            .bind(to: viewModel.input.followButtonTapped)
-            .disposed(by: disposeBag)
-        profileImageView.sd_setImage(with: viewModel.user.profileImageUrl)
-        fullNameLabel.text = viewModel.user.fullName
-        userNameLabel.text = viewModel.user.userName
-        followersLabel.attributedText = viewModel.attributedText(withValue: 2, text: "Follows")
-        followingLabel.attributedText = viewModel.attributedText(withValue: 0, text: "Following")
-        // output - buttonTitle
-        viewModel.output.buttonTitle
-            .bind(to: editProfileFollowButton.rx.title())
-            .disposed(by: disposeBag)
-        viewModel.output.buttonTitle
-            .bind(to: viewModel.input.buttonTitle)
-            .disposed(by: disposeBag)
-        viewModel.output.followerUsersCount
-            .bind(to: followersLabel.rx.attributedText)
-            .disposed(by: disposeBag)
-        viewModel.output.followingUsersCount
-            .bind(to: followingLabel.rx.attributedText)
-            .disposed(by: disposeBag)
     }
 }

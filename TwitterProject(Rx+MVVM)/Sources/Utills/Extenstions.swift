@@ -8,6 +8,8 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import RxGesture
+
 // MARK: - UIView
 extension UIView {
     func setupNSLayoutAnchor(top: NSLayoutYAxisAnchor? = nil,
@@ -76,7 +78,7 @@ extension UIColor {
     
     static let twitterBlue = UIColor.rgb(red: 29, green: 161, blue: 242)
 }
-// ImagePickerController RxExtension
+// MARK: - ImagePickerController RxExtension
 
 final class RxImagePickerDelegateProxy: DelegateProxy<UIImagePickerController, UINavigationControllerDelegate & UIImagePickerControllerDelegate>, DelegateProxyType, UINavigationControllerDelegate & UIImagePickerControllerDelegate {
 
@@ -108,13 +110,19 @@ func castOrThrow<T>(_ resultType: T.Type, _ object: Any) throws -> T {
     guard let returnValue = object as? T else {
         throw RxCocoaError.castingError(object: object, targetType: resultType)
     }
-
     return returnValue
 }
-// MARK: - UIResponder
+// MARK: - RxGesture extension - 동시 인식 안돼게 하기
+extension Reactive where Base: RxGestureView {
+  public func tapGestureOnTop() -> TapControlEvent {
+    return self.tapGesture { gesture, delegate in
+      delegate.simultaneousRecognitionPolicy = .never
+    }
+  }
+}
 
+// MARK: - UIResponder
 extension UIResponder {
-    
     var superViewController: UIViewController? {
         var responder = self
         while let nextResponder = responder.next {
@@ -124,5 +132,73 @@ extension UIResponder {
             }
         }
         return nil
+    }
+}
+
+extension UIViewController {
+    func makeContainerView(image: UIImage?, textField: UITextField) -> UIView {
+        let view = UIView()
+        
+        let imageView = UIImageView()
+        imageView.image = image
+        
+        let bottomLine = UIView()
+        bottomLine.backgroundColor = .white
+        
+        view.addSubview(imageView)
+        view.addSubview(textField)
+        view.addSubview(bottomLine)
+        
+        imageView.snp.makeConstraints { make in
+            make.leading.bottom.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 0))
+            make.size.equalTo(CGSize(width: 24, height: 24))
+        }
+        textField.snp.makeConstraints { make in
+            make.leading.equalTo(imageView.snp.trailing).offset(8)
+            make.trailing.bottom.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: 8, right: 8))
+        }
+        bottomLine.snp.makeConstraints { make in
+            make.leading.equalTo(imageView.snp.leading)
+            make.trailing.bottom.equalToSuperview()
+            make.height.equalTo(0.75)
+        }
+        return view
+    }
+    func makeTextField(placeHolerString: String) -> UITextField {
+        let textField = UITextField()
+        textField.textColor = .white
+        textField.font = UIFont.systemFont(ofSize: 16)
+        textField.attributedPlaceholder = NSAttributedString(string: placeHolerString, attributes: [NSAttributedString.Key.foregroundColor: UIColor.white])
+        return textField
+    }
+    func makeButton(buttonTitle: String) -> UIButton {
+        let button = UIButton(type: .system)
+        button.setTitle(buttonTitle, for: .normal)
+        button.setTitleColor(.twitterBlue, for: .normal)
+        button.backgroundColor = .white
+        button.snp.makeConstraints { make in
+            make.height.lessThanOrEqualTo(50)
+        }
+        button.layer.cornerRadius = 5
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        return button
+    }
+    func attributedButton(firstPart: String, secondPart: String) -> UIButton {
+        let button = UIButton(type: .system)
+        
+        let attributedTitle = NSMutableAttributedString(string: firstPart, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.white])
+        
+        attributedTitle.append(NSAttributedString(string: secondPart, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16), NSAttributedString.Key.foregroundColor: UIColor.white]))
+        
+        button.setAttributedTitle(attributedTitle, for: .normal)
+        return button
+    }
+}
+
+extension ViewModelType {
+    func attributedText(withValue value: Int, text: String) -> NSAttributedString {
+        let attributedTitle = NSMutableAttributedString(string: "\(value)", attributes: [.font: UIFont.boldSystemFont(ofSize: 14)])
+        attributedTitle.append(NSAttributedString(string: " \(text)", attributes: [.font: UIFont.systemFont(ofSize: 14), .foregroundColor: UIColor.lightGray]))
+        return attributedTitle
     }
 }

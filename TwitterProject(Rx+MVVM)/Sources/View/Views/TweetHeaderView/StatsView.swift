@@ -6,38 +6,26 @@
 //
 
 import UIKit
-import SnapKit
-import RxSwift
-import RxCocoa
 
-class StatsView: UIView {
-    var viewModel: StatsViewModel
-    var disposeBag = DisposeBag()
-    init(viewModel: StatsViewModel) {
-        self.viewModel = viewModel
-        super.init(frame: .zero)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+import SnapKit
+
+
+final class StatsView: UIView {
+    // MARK: - UI
     private let statsView = UIView()
     private let topDivider: UIView = {
         let topDivider = UIView()
         topDivider.backgroundColor = .systemBackground
         return topDivider
     }()
-    private lazy var retweetsLabel: UILabel = {
+    lazy var retweetsLabel: UILabel = {
         let retweetsLabel = UILabel()
         retweetsLabel.font = UIFont.systemFont(ofSize: 14)
-        retweetsLabel.text = " 2 Retweets"
         return retweetsLabel
     }()
-    private lazy var likesLabel: UILabel = {
+    lazy var likesLabel: UILabel = {
         let likesLabel = UILabel()
         likesLabel.font = UIFont.systemFont(ofSize: 14)
-        likesLabel.text = " 0 Likes "
         return likesLabel
     }()
     private lazy var stackView: UIStackView = {
@@ -51,12 +39,20 @@ class StatsView: UIView {
         bottomDivider.backgroundColor = .systemBackground
         return bottomDivider
     }()
+    // MARK: - layoutSubviews
     override func layoutSubviews() {
-        
+        addSubViews()
+        layout()
+    }
+}
+// MARK: - LayoutProtocol
+extension StatsView: LayoutProtocol {
+    func addSubViews() {
         addSubview(topDivider)
         addSubview(stackView)
         addSubview(bottomDivider)
-        
+    }
+    func layout() {
         topDivider.snp.makeConstraints { make in
             make.top.left.right.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 0))
             make.height.equalTo(1.0)
@@ -69,11 +65,5 @@ class StatsView: UIView {
             make.left.right.bottom.equalToSuperview()
             make.height.equalTo(1.0)
         }
-    }
-    func bind() {
-        retweetsLabel.attributedText = viewModel.retweetsAtrributedString
-        viewModel.output.userLikesAtrributedString
-            .bind(to: likesLabel.rx.attributedText)
-            .disposed(by: disposeBag)
     }
 }

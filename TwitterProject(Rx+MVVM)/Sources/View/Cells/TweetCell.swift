@@ -10,13 +10,13 @@ import SnapKit
 import RxSwift
 import RxGesture
 
-class TweetCell: UICollectionViewCell {
+final class TweetCell: UITableViewCell {
     
-    // MARK: - Properties
-    var disposeBag = DisposeBag()
+    // MARK: - disposeBag
     var cellModel: TweetCellModel!
-    
-    let profileImageView: UIImageView = {
+    var disposeBag = DisposeBag()
+    // MARK: - UI
+    private let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -24,34 +24,32 @@ class TweetCell: UICollectionViewCell {
         imageView.backgroundColor = .twitterBlue
         return imageView
     }()
-    
     private let captionLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14)
         label.numberOfLines = 0
         return label
     }()
-    
     private let informationLabel: UILabel = {
         let informationLabel = UILabel()
         informationLabel.font = UIFont.systemFont(ofSize: 14)
         return informationLabel
     }()
-    
-    private lazy var stackView: UIStackView = {
+    private lazy var userDataStackView: UIStackView = {
         let stackView = UIStackView(arrangedSubviews: [informationLabel, captionLabel])
         stackView.axis = .vertical
-        stackView.distribution = .fillProportionally
+        stackView.distribution = .fill
+        stackView.alignment = .leading
         stackView.spacing = 4
         return stackView
     }()
-    private let commentButton: UIButton = {
+    private let retweetButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "comment"), for: .normal)
         button.tintColor = .darkGray
         return button
     }()
-    private let retweetButton: UIButton = {
+    private let commentButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "retweet"), for: .normal)
         button.tintColor = .darkGray
@@ -59,8 +57,7 @@ class TweetCell: UICollectionViewCell {
     }()
     private let likeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setImage(UIImage(named: "like"), for: .normal)
-        button.tintColor = .darkGray
+        button.tintColor = .red
         return button
     }()
     private let shareButton: UIButton = {
@@ -69,7 +66,7 @@ class TweetCell: UICollectionViewCell {
         button.tintColor = .darkGray
         return button
     }()
-    private lazy var arrangedSubviewsInActionStackView = [commentButton, retweetButton, likeButton, shareButton]
+    private lazy var arrangedSubviewsInActionStackView = [retweetButton, commentButton, likeButton, shareButton]
     private lazy var actionStackView: UIStackView = {
         let actionStackView = UIStackView(arrangedSubviews: arrangedSubviewsInActionStackView)
         actionStackView.axis = .horizontal
@@ -79,94 +76,76 @@ class TweetCell: UICollectionViewCell {
     }()
     private let underlineView: UIView = {
         let underlineView = UIView()
-        underlineView.backgroundColor = .systemBackground
+        underlineView.backgroundColor = .systemGray5
         return underlineView
     }()
-    // MARK: - Lifecycle
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    // MARK: - layoutSubviews
     override func layoutSubviews() {
-        addSubview(profileImageView)
-        addSubview(stackView)
-        addSubview(underlineView)
-        addSubview(actionStackView)
-        
-        profileImageView.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 0))
-            make.size.equalTo(CGSize(width: 48, height: 48))
-        }
-        stackView.snp.makeConstraints { make in
-            make.top.equalTo(profileImageView.snp.top)
-            make.leading.equalTo(profileImageView.snp.trailing).offset(12)
-            make.trailing.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 12))
-        }
-        arrangedSubviewsInActionStackView.forEach { subView in
-            subView.snp.makeConstraints { make in
-                make.size.equalTo(CGSize(width: 20, height: 20))
-            }
-        }
-        actionStackView.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(underlineView.snp.top).offset(-8)
-        }
-        underlineView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(1)
-        }
+        addSubViews()
+        layout()
     }
-    func bind() {
-        profileImageView.sd_setImage(with: cellModel.profileImageUrl)
-        profileImageView.rx
-            .tapGesture()
+    // MARK: - bind
+    func bind(cellModel: TweetCellModel) {
+        self.cellModel = cellModel
+        profileImageView.sd_setImage(with: cellModel.tweet.user.profileImageUrl)
+        informationLabel.attributedText = cellModel.tweet.informationText
+        captionLabel.text = cellModel.tweet.caption
+        likeButton.setImage(cellModel.tweet.likeButtonInitialImage, for: .normal)
+        // MARK: - cellModel Input
+        profileImageView.rx.tapGestureOnTop()
             .when(.recognized)
-            .map({ _ in
-                ()
-            })
-            .withUnretained(self)
-            .subscribe(onNext: { weakself, _ in
-                guard let feedViewController = weakself.superViewController as? FeedViewController else { return }
-                feedViewController.viewModel.input.cellProfileImageTapped.accept(weakself.cellModel.tweet)
-            })
+            .map({ _ in return () })
+            .bind(to: cellModel.input.cellProfileImageTapped)
             .disposed(by: disposeBag)
-        informationLabel.attributedText = cellModel.informationText
-        captionLabel.text = cellModel.captionLabelText
-        commentButton.rx.tap
-            .withUnretained(self)
-            .bind { weakself, _ in
-                guard let feedViewController = weakself.superViewController as? FeedViewController else { return }
-                feedViewController.viewModel.input.cellRetweetButtonTapped.accept(weakself.cellModel.tweet)
-            }
+        
+        contentView.rx.tapGestureOnTop()
+            .when(.recognized)
+            .map({ _ in return () })
+            .bind(to: cellModel.input.itemSelected)
             .disposed(by: disposeBag)
+        
+        retweetButton.rx.tap
+            .bind(to: cellModel.input.retweetButtonTapped)
+            .disposed(by: disposeBag)
+        
         likeButton.rx.tap
             .bind(to: cellModel.input.likeButtonTapped)
             .disposed(by: disposeBag)
-        cellModel.output.userLikeForTweet
-            .drive(onNext: { result in
-                if result {
-                    self.likeButton.tintColor = .red
-                } else {
-                    self.likeButton.tintColor = .gray
-                }
-            })
-            .disposed(by: disposeBag)
-        cellModel.output.checkIfUserLikeTweet
-            .drive(onNext: { result in
-                if result {
-                    self.likeButton.tintColor = .red
-                } else {
-                    self.likeButton.tintColor = .gray
-                }
-            })
+        // MARK: - cellModel Output
+        cellModel.output.likeButtonImage
+            .bind(to: likeButton.rx.image())
             .disposed(by: disposeBag)
     }
     override func prepareForReuse() {
         disposeBag = DisposeBag()
     }
 }
-
-
+// MARK: - LayoutProtocol
+extension TweetCell: LayoutProtocol {
+    func addSubViews() {
+        contentView.addSubview(profileImageView)
+        contentView.addSubview(userDataStackView)
+        contentView.addSubview(actionStackView)
+        contentView.addSubview(underlineView)
+    }
+    func layout() {
+        profileImageView.snp.makeConstraints { make in
+            make.top.left.equalToSuperview().inset(UIEdgeInsets(top: 8, left: 8, bottom: 0, right: 0))
+            make.size.equalTo(CGSize(width: 48, height: 48))
+        }
+        userDataStackView.snp.makeConstraints { make in
+            make.top.equalTo(profileImageView.snp.top)
+            make.left.equalTo(profileImageView.snp.right).offset(12)
+            make.right.equalToSuperview().inset(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 12))
+        }
+        actionStackView.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(underlineView.snp.top).offset(-5)
+            make.top.equalTo(userDataStackView.snp.bottom).offset(20)
+        }
+        underlineView.snp.makeConstraints { make in
+            make.height.equalTo(1)
+            make.left.right.bottom.equalToSuperview()
+        }
+    }
+}

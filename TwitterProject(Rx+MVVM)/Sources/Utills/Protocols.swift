@@ -4,10 +4,9 @@
 //
 //  Created by 강창혁 on 2022/12/21.
 //
-
-import Foundation
-import RxSwift
 import UIKit
+
+import RxSwift
 
 protocol ViewModelType {
     associatedtype Input
@@ -27,10 +26,12 @@ protocol ViewModelBindable: AnyObject {
 extension ViewModelBindable where Self: UIViewController {
     func bind(viewModel: ViewModel) {
         self.viewModel = viewModel
+        loadViewIfNeeded()
         bindViewModel()
     }
 }
-protocol LayoutProtocol: AnyObject {
+@objc protocol LayoutProtocol: AnyObject {
+    @objc optional func setValue()
     func addSubViews()
     func layout()
 }
@@ -40,3 +41,16 @@ protocol Coordinator: AnyObject {
     func start()
 }
 
+extension Coordinator {
+    func makeNavigationController(image: UIImage?, rootViewController: UIViewController) -> UINavigationController {
+        let navigationController = UINavigationController(rootViewController: rootViewController)
+        navigationController.tabBarItem.image = image
+        return navigationController
+    }
+}
+
+protocol FeedViewModelDelegate: AnyObject {
+    func pushProfileViewController(user: User)
+    func pushTweetViewController(tweet: Tweet)
+    func presentReTweetViewController(tweet: Tweet)
+}

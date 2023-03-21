@@ -9,34 +9,63 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class RegisterationViewModel: ViewModelType {
-    
-    var disposeBag = DisposeBag()
-    
+protocol RegistrationViewControllerDelegate: AnyObject {
+    func dismissRegistrationViewController()
+    func popRegistrationViewController()
+    func showImagePickerController()
+}
+
+final class RegisterationViewModel: ViewModelType {
+    // MARK: - Input
     struct Input {
-        let profileImage = PublishRelay<UIImage>()
+        let plusPhotoButtonTapped = PublishRelay<Void>()
         let email = PublishRelay<String>()
         let password = PublishRelay<String>()
         let fullName = PublishRelay<String>()
         let userName = PublishRelay<String>()
         let signUpButtonTapped = PublishRelay<Void>()
+        let loginButtonTapped = PublishRelay<Void>()
     }
+    // MARK: - Output
     struct Output {
-        let signUpRequest: Driver<Void>
+        let didFinishPicking: Driver<UIImage>
     }
-    
+    // MARK: -
+    weak var coordinator: RegistrationViewControllerDelegate?
     let input = Input()
     lazy var output = transform(input: input)
+    var disposeBag = DisposeBag()
     
+    let pickedImage = PublishSubject<UIImage>()
+    // MARK: - transform
     func transform(input: Input) -> Output {
-        let userInformation = Observable.combineLatest(input.profileImage, input.email, input.password, input.fullName, input.userName)
-        
-        let signUpRequest = input.signUpButtonTapped.withLatestFrom(userInformation)
+        input.plusPhotoButtonTapped
+            .withUnretained(self)
+            .subscribe(onNext: { registerationViewModel, _ in
+                registerationViewModel.coordinator?.showImagePickerController()
+            })
+            .disposed(by: disposeBag)
+
+        let registerationInformation = Observable.combineLatest(
+            pickedImage.asObservable(), input.email, input.password, input.fullName, input.userName)
+            
+        input.signUpButtonTapped.withLatestFrom(registerationInformation)
             .flatMap { (profileImage, email, password, fullName, userName) in
                     AuthService.shared.signUpUserRx(email: email, password: password, fullName: fullName, userName: userName, profileImage: profileImage)
             }
-            .asDriver(onErrorJustReturn: ())
+            .withUnretained(self)
+            .subscribe(onNext: { registerationViewModel, _ in
+                registerationViewModel.coordinator?.dismissRegistrationViewController()
+            })
+            .disposed(by: disposeBag)
     
-        return Output(signUpRequest: signUpRequest)
+        input.loginButtonTapped
+            .withUnretained(self)
+            .subscribe(onNext: { registerationViewModel, _ in
+                registerationViewModel.coordinator?.popRegistrationViewController()
+            })
+            .disposed(by: disposeBag)
+        
+        return Output(didFinishPicking: pickedImage.asDriver(onErrorDriveWith: .empty()))
     }
 }

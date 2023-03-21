@@ -15,19 +15,19 @@ struct User {
     var userName: String
     var profileImageUrl: URL?
     
-    init(uid: String, dictionary: [String: AnyObject]) {
+    init(uid: String, dictionary: [String: Any]?) {
         self.uid = uid
         
-        let email = dictionary["email"] as? String ?? ""
+        let email = dictionary?["email"] as? String ?? ""
         self.email = email
         
-        let fullName = dictionary["fullName"] as? String ?? ""
+        let fullName = dictionary?["fullName"] as? String ?? ""
         self.fullName = fullName
         
-        let userName = dictionary["userName"] as? String ?? ""
+        let userName = dictionary?["userName"] as? String ?? ""
         self.userName = userName
         
-        if let profileImageUrlString = dictionary["profileImageUrl"] as? String {
+        if let profileImageUrlString = dictionary?["profileImageUrl"] as? String {
             guard let url = URL(string: profileImageUrlString) else { return }
             self.profileImageUrl = url
         }
