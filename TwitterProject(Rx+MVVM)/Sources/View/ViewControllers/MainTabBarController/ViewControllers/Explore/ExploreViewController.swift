@@ -36,9 +36,11 @@ final class ExploreViewController: UIViewController, ViewModelBindable {
     // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        setValue()
         addSubViews()
         layout()
+    }
+    override func viewDidLayoutSubviews() {
+        setValue()
     }
     // MARK: - bindViewModel
     func bindViewModel() {

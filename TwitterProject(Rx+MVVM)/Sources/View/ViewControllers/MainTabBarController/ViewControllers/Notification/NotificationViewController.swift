@@ -7,58 +7,39 @@
 
 
 import UIKit
+
+import SnapKit
+
 import RxSwift
 import RxCocoa
-import SnapKit
 import RxViewController
 
-class NotificationViewController: UIViewController, ViewModelBindable {
-    // MARK: - Properties
+final class NotificationViewController: UIViewController, ViewModelBindable {
+    // MARK: - viewModel, disposeBag
     var viewModel: NotificationViewModel!
     var disposeBag = DisposeBag()
+    // MARK: - UI
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.register(NotificationCell.self, forCellReuseIdentifier: notificationCellIdentifier)
         return tableView
     }()
-    // MARK: - Lifecycle
-    
+    // MARK: - viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+    // MARK: - viewDidLayoutSubviews
     override func viewDidLayoutSubviews() {
-        view.backgroundColor = .white
-        navigationItem.title = "Notifications"
-        view.addSubview(tableView)
-        
-        tableView.snp.makeConstraints { make in
-            make.top.left.right.bottom.equalToSuperview()
-        }
+        setValue()
+        addSubViews()
+        layout()
     }
+    // MARK: - bindViewModel
     func bindViewModel() {
         rx.viewWillAppear
             .bind(to: viewModel.input.viewWillAppear)
             .disposed(by: disposeBag)
-        rx.viewWillAppear
-            .withUnretained(self)
-            .bind { weakself, _ in
-                weakself.navigationController?.navigationBar.isHidden = false
-                weakself.navigationController?.navigationBar.barStyle = .default
-            }
-            .disposed(by: disposeBag)
-        tableView.rx.itemSelected
-            .debug("----")
-            .withUnretained(self)
-            .bind { weakself, indexPath in
-                guard let selectedCell = weakself.tableView.cellForRow(at: indexPath) as? NotificationCell else { return }
-                guard let selectedCellTweetData = selectedCell.cellModel.notification.tweet else { return }
-                print(selectedCellTweetData)
-                let tweetViewModel = TweetViewModel(tweet: selectedCellTweetData)
-                var tweetViewController = TweetViewController()
-                tweetViewController.bind(viewModel: tweetViewModel)
-                weakself.navigationController?.pushViewController(tweetViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
+        
         viewModel.output.notifications
             .bind(to: tableView.rx.items(cellIdentifier: notificationCellIdentifier, cellType: NotificationCell.self)) { row, notification, cell in
                 let cellModel = NotificationCellModel(notification: notification)
@@ -66,5 +47,22 @@ class NotificationViewController: UIViewController, ViewModelBindable {
                 cell.bind()
             }
             .disposed(by: disposeBag)
+    }
+}
+// MARK: - LayoutProtocol
+extension NotificationViewController: LayoutProtocol {
+    func setValue() {
+        view.backgroundColor = .white
+        navigationItem.title = "Notifications"
+        navigationController?.navigationBar.isHidden = false
+        navigationController?.navigationBar.barStyle = .default
+    }
+    func addSubViews() {
+        view.addSubview(tableView)
+    }
+    func layout() {
+        tableView.snp.makeConstraints { make in
+            make.top.left.right.bottom.equalToSuperview()
+        }
     }
 }

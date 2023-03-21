@@ -12,7 +12,6 @@ import RxCocoa
 class NotificationCellModel {
     var disposeBag = DisposeBag()
     struct Input {
-        let profileImageViewTapped = PublishRelay<UITapGestureRecognizer>()
     }
     struct Output {
         
@@ -20,7 +19,6 @@ class NotificationCellModel {
     let input = Input()
     lazy var output = transform(input: input)
     func transform(input: Input) -> Output {
-//        let input.profileImageViewTapped
         return Output()
     }
     let notification: Notification

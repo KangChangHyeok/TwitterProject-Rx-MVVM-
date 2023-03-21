@@ -9,7 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-class NotificationViewModel: ViewModelType {
+final class NotificationViewModel: ViewModelType {
     
     struct Input {
         let viewWillAppear = PublishRelay<Bool>()

@@ -217,6 +217,7 @@ struct TweetService {
             userLikesReference.child(currentUid).child(tweet.tweetID).removeValue { _, _ in
                 tweetLikesReference.child(tweet.tweetID).removeValue()
             }
+            NotificationService.shared.uploadNotification(toUser: tweet.user, type: .like)
             return false
         } else {
             tweetsReference.child("\(tweet.tweetID)").child("likesUser").updateChildValues(["\(currentUid)": 1])
