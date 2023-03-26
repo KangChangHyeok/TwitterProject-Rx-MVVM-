@@ -22,6 +22,8 @@ final class RegisterationViewController: UIViewController, ViewModelBindable {
         let button = UIButton(type: .system)
         button.setImage(UIImage(named: "plus_photo"), for: .normal)
         button.tintColor = .white
+        
+        
         return button
     }()
     private lazy var emailContainerView: UIView = {

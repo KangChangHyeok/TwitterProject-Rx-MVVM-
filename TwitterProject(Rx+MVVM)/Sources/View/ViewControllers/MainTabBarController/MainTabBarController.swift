@@ -48,6 +48,11 @@ final class MainTabBarController: UITabBarController, ViewModelBindable {
             .disposed(by: disposeBag)
         // MARK: - viewModel Output
         _ = viewModel.output
+        addTweetButton.rx.tap
+            .bind { _ in
+                print("화면 이동!! 코드 작성")
+            }
+            .disposed(by: disposeBag)
     }
 }
 // MARK: - LayoutProtocol
